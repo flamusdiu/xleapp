@@ -24,6 +24,8 @@ def ValidateInput(values, window):
     elif not os.path.exists(i_path):
         sg.PopupError('INPUT file/folder does not exist!')
         return False, ext_type
+    elif os.path.isdir(i_path) and os.path.exists(os.path.join(i_path, "Manifest.db")):
+        ext_type = 'itunes'
     elif os.path.isdir(i_path):
         ext_type = 'fs'
     else: # must be an existing file then
@@ -51,7 +53,11 @@ def ValidateInput(values, window):
 
 # initialize CheckBox control with module name   
 def CheckList(mtxt, lkey, mdstring, disable=False):
-    return [sg.CBox(mtxt, default=True, key=lkey, metadata=mdstring, disabled=disable)]
+    if mdstring == 'photosMetadata' or mdstring == 'journalStrings' or mdstring == 'walStrings': #items in the if are modules that take a long time to run. Deselects them by default.
+        dstate = False
+    else:
+        dstate = True
+    return [sg.CBox(mtxt, default=dstate, key=lkey, metadata=mdstring, disabled=disable)]
 
 def pickModules():
     global indx
@@ -138,7 +144,7 @@ while True:
                     key = window[x].metadata
                     if (key in tosearch) and (key != 'lastBuild'):
                         search_list[key] = tosearch[key]
-                        s_items = s_items + 1 #for progress bar
+                    s_items = s_items + 1 # for progress bar
                 
                 # no more selections allowed
                 window[x].Update(disabled = True)
@@ -148,27 +154,21 @@ while True:
 
             GuiWindow.window_handle = window
             out_params = OutputParameters(output_folder)
-            ileapp.crunch_artifacts(search_list, extracttype, input_path, out_params, len(ileapp.tosearch)/s_items)
-
-            '''
-            if values[5] == True:
-                start = process_time()
-                logfunc('')
-                logfunc(f'CSV export starting. This might take a while...')
-                html2csv(out_params.report_folder_base) 
-                end = process_time()
-                csv_time_secs =  end - start
-                csv_time_HMS = strftime('%H:%M:%S', gmtime(csv_time_secs))
-                logfunc("CSV processing time = {}".format(csv_time_HMS))
-            '''
-            report_path = os.path.join(out_params.report_folder_base, 'index.html')
-            
-            if report_path.startswith('\\\\?\\'): # windows
-                report_path = report_path[4:]
-            if report_path.startswith('\\\\'): # UNC path
-                report_path = report_path[2:]
-            locationmessage = 'Report name: ' + report_path
-            sg.Popup('Processing completed', locationmessage)
-            webbrowser.open_new_tab('file://' + report_path)
+            crunch_successful = ileapp.crunch_artifacts(search_list, extracttype, input_path, out_params, len(ileapp.tosearch)/s_items)
+            if crunch_successful:
+                report_path = os.path.join(out_params.report_folder_base, 'index.html')
+                
+                if report_path.startswith('\\\\?\\'): # windows
+                    report_path = report_path[4:]
+                if report_path.startswith('\\\\'): # UNC path
+                    report_path = report_path[2:]
+                locationmessage = 'Report name: ' + report_path
+                sg.Popup('Processing completed', locationmessage)
+                webbrowser.open_new_tab('file://' + report_path)
+            else:
+                log_path = out_params.screen_output_file_path
+                if log_path.startswith('\\\\?\\'): # windows
+                    log_path = log_path[4:]
+                sg.Popup('Processing failed    :( ', f'See log for error details..\nLog file located at {log_path}')
             break
 window.close()

@@ -4,7 +4,7 @@ import pathlib
 import sqlite3
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows 
+from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, open_sqlite_db_readonly
 
 
 def get_ooklaSpeedtestData(files_found, report_folder, seeker):
@@ -14,7 +14,7 @@ def get_ooklaSpeedtestData(files_found, report_folder, seeker):
         if file_found.endswith('speedtest.sqlite'):
             break
             
-    db = sqlite3.connect(file_found)
+    db = open_sqlite_db_readonly(file_found)
     cursor = db.cursor()
     cursor.execute('''
     SELECT
@@ -155,7 +155,7 @@ def get_ooklaSpeedtestData(files_found, report_folder, seeker):
             report = ArtifactHtmlReport('Applications')
             report.start_artifact_report(report_folder, 'Ookla Speedtest', description)
             report.add_script()
-            data_headers = ('Date/Time','External IP Address','Internal IP Address','Carrier Name','ISP','Wifi SSID','WAN Type','Device Model','Latitude','Longitude','Accuracy in Meters' )     
+            data_headers = ('Timestamp','External IP Address','Internal IP Address','Carrier Name','ISP','Wifi SSID','WAN Type','Device Model','Latitude','Longitude','Accuracy in Meters' )     
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
@@ -163,7 +163,10 @@ def get_ooklaSpeedtestData(files_found, report_folder, seeker):
             tsv(report_folder, data_headers, data_list, tsvname)
         
             tlactivity = 'Ookla Speedtest Data'
-            timeline(report_folder, tlactivity, data_list)
+            timeline(report_folder, tlactivity, data_list, data_headers)
+            
+            kmlactivity = 'Ookla Speedtest Data'
+            kmlgen(report_folder, kmlactivity, data_list, data_headers)
         else:
             logfunc('No Ookla Speedtest Application data available')
         

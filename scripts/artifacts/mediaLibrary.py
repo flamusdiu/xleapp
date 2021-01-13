@@ -6,11 +6,11 @@ import datetime
 import re
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, is_platform_windows 
+from scripts.ilapfuncs import logfunc, tsv, is_platform_windows, open_sqlite_db_readonly
 
 def get_mediaLibrary(files_found, report_folder, seeker):
     file_found = str(files_found[0])
-    db = sqlite3.connect(file_found)
+    db = open_sqlite_db_readonly(file_found)
     cursor = db.cursor()
     # Execute query for retrieving media information
     try:
@@ -63,6 +63,8 @@ def get_mediaLibrary(files_found, report_folder, seeker):
                     media_type = "Film"
                 if media_type == 33:
                     media_type = "Video M4V"
+        if media_type == 4:
+            media_type = "Podcast"
             if col_count == 4:
                 media_type = int(media_type)
 

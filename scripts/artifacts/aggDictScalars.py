@@ -6,22 +6,21 @@ import sqlite3
 import json
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows 
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, open_sqlite_db_readonly
 
 
 def get_aggDictScalars(files_found, report_folder, seeker):
 	file_found = str(files_found[0])
-	db = sqlite3.connect(file_found)
+	db = open_sqlite_db_readonly(file_found)
 	cursor = db.cursor()
 
-	cursor.execute(
-	"""
-	SELECT
-	   DATE(DAYSSINCE1970*86400, 'unixepoch') AS DAY,
-	   KEY AS "KEY",
-	   VALUE AS "VALUE"
-	FROM
-	   SCALARS
+	cursor.execute("""
+	select
+	date(dayssince1970*86400, 'unixepoch'),
+	key,
+	value
+	from
+	scalars
 	"""
 	)
 
@@ -44,7 +43,7 @@ def get_aggDictScalars(files_found, report_folder, seeker):
 		tsv(report_folder, data_headers, data_list, tsvname)
 		
 		tlactivity = 'Aggregate Dictionary Distributed Keys'
-		timeline(report_folder, tlactivity, data_list)
+		timeline(report_folder, tlactivity, data_list, data_headers)
 	else:
 		logfunc("No Aggregate Dictionary Distributed Keys Data available")
 	
