@@ -66,10 +66,12 @@ from scripts.artifacts.locationDparkedhistorical import get_locationDparkedhisto
 from scripts.artifacts.locationDsteps import get_locationDsteps
 from scripts.artifacts.mailprotect import get_mailprotect
 from scripts.artifacts.mediaLibrary import get_mediaLibrary
+from scripts.artifacts.medicalID import get_medicalID
 from scripts.artifacts.mobileActivationLogs import get_mobileActivationLogs
 from scripts.artifacts.mobileBackup import get_mobileBackup
 from scripts.artifacts.mobileContainerManager import get_mobileContainerManager
 from scripts.artifacts.mobileInstall import get_mobileInstall
+from scripts.artifacts.notes import get_notes
 from scripts.artifacts.notificationsXI import get_notificationsXI
 from scripts.artifacts.notificationsXII import get_notificationsXII
 from scripts.artifacts.ooklaSpeedtestData import get_ooklaSpeedtestData
@@ -181,10 +183,12 @@ tosearch = {'lastBuild': ('IOS Build', '*LastBuildInfo.plist'),
             'locationDparkedhistorical': ('Locations', '**/Local.sqlite'),
             'mailprotect': ('iOS Mail', '**/private/var/mobile/Library/Mail/* Index*'),
             'mediaLibrary': ('Media Library', '**/Medialibrary.sqlitedb'),
+            'medicalID': ('Medical ID', '*/private/var/mobile/Library/MedicalID/MedicalIDData.archive'),
             'mobileActivationLogs': ('Mobile Activation Logs', '**/mobileactivationd.log*'),
             'mobileBackup': ('Mobile Backup', '*/Preferences/com.apple.MobileBackup.plist'),
             'mobileContainerManager': ('Mobile Container Manager', '**/containermanagerd.log.*'),
             'mobileInstall': ('Mobile Installation Logs', '**/mobile_installation.log.*'),
+            'notes': ('Notes', '*/NoteStore.sqlite'),
             'notificationsXI': ('Notifications', '*PushStore*'),
             'notificationsXII': ('Notifications', '*private/var/mobile/Library/UserNotifications*'),
             'ooklaSpeedtestData': ('Applications', '**/speedtest.sqlite*'),
