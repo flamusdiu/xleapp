@@ -106,5 +106,5 @@ $RECYCLE.BIN/
 
 *.DS_Store
 
-# ignore old doc folder
+# ignore old doc files
 docs/old
