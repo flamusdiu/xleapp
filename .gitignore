@@ -105,3 +105,6 @@ $RECYCLE.BIN/
 *.lnk
 
 *.DS_Store
+
+# ignore old doc folder
+docs/old

@@ -1,8 +1,8 @@
 import html
 import os
-from scripts.html_parts import *
-from scripts.ilapfuncs import is_platform_windows
-from scripts.version_info import aleapp_version
+from html_report.html_parts import *
+from tools.ilapfuncs import is_platform_windows
+from tools.version_info import aleapp_version
 
 class ArtifactHtmlReport:
 

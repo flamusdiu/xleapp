@@ -6,9 +6,9 @@ import sqlite3
 import sys
 
 from collections import OrderedDict
-from scripts.html_parts import *
-from scripts.ilapfuncs import logfunc
-from scripts.version_info import aleapp_version, aleapp_contributors
+from html_report.html_parts import *
+from tools.ilapfuncs import logfunc
+from tools.version_info import aleapp_version, aleapp_contributors
 
 
 def get_icon_name(category, artifact):
@@ -253,7 +253,7 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
     create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data)
     elements_folder = os.path.join(reportfolderbase, '_elements')
     os.mkdir(elements_folder)
-    __location__ = os.path.dirname(os.path.abspath(__file__))
+    __location__ = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_static')
 
     def copy_no_perm(src, dst, *, follow_symlinks=True):
         if not os.path.isdir(dst):
@@ -261,7 +261,7 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
         return dst
 
     try:
-        shutil.copyfile(os.path.join(__location__, "logo.jpg"), os.path.join(elements_folder, "logo.jpg"))
+        shutil.copyfile(os.path.join(__location__, "../..", "logo.jpg"), os.path.join(elements_folder, "logo.jpg"))
         shutil.copyfile(os.path.join(__location__, "dashboard.css"), os.path.join(elements_folder, "dashboard.css"))
         shutil.copyfile(os.path.join(__location__, "feather.min.js"), os.path.join(elements_folder, "feather.min.js"))
         shutil.copyfile(os.path.join(__location__, "dark-mode.css"), os.path.join(elements_folder, "dark-mode.css"))

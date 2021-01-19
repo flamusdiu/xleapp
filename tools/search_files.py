@@ -1,12 +1,13 @@
 import fnmatch
 import os
-import sqlite3
 import tarfile
-
 from pathlib import Path
-from scripts.ilapfuncs import *
 from shutil import copyfile
 from zipfile import ZipFile
+
+from tools.ilapfuncs import (is_platform_windows, logfunc,
+                             open_sqlite_db_readonly, sanitize_file_path)
+
 
 class FileSeekerBase:
     # This is an abstract base class
@@ -17,6 +18,7 @@ class FileSeekerBase:
     def cleanup(self):
         '''close any open handles'''
         pass
+
 
 class FileSeekerDir(FileSeekerBase):
     def __init__(self, directory):
@@ -46,6 +48,7 @@ class FileSeekerDir(FileSeekerBase):
             return []
         return fnmatch.filter(self._all_files, filepattern)
 
+
 class FileSeekerItunes(FileSeekerBase):
     def __init__(self, directory, temp_folder):
         FileSeekerBase.__init__(self)
@@ -58,7 +61,7 @@ class FileSeekerItunes(FileSeekerBase):
 
     def build_files_list(self, directory):
         '''Populates paths from Manifest.db files into _all_files'''
-        try: 
+        try:
             db = open_sqlite_db_readonly(os.path.join(directory, "Manifest.db"))
             cursor = db.cursor()
             cursor.execute(
@@ -99,11 +102,12 @@ class FileSeekerItunes(FileSeekerBase):
                 logfunc(f'Could not copy {original_location} to {temp_location} ' + str(ex))
         return pathlist
 
+
 class FileSeekerTar(FileSeekerBase):
     def __init__(self, tar_file_path, temp_folder):
         FileSeekerBase.__init__(self)
         self.is_gzip = tar_file_path.lower().endswith('gz')
-        mode ='r:gz' if self.is_gzip else 'r'
+        mode = 'r:gz' if self.is_gzip else 'r'
         self.tar_file = tarfile.open(tar_file_path, mode)
         self.temp_folder = temp_folder
 
@@ -131,6 +135,7 @@ class FileSeekerTar(FileSeekerBase):
 
     def cleanup(self):
         self.tar_file.close()
+
 
 class FileSeekerZip(FileSeekerBase):
     def __init__(self, zip_file_path, temp_folder):
