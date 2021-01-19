@@ -3,10 +3,12 @@ import traceback
 from abc import ABC, abstractmethod
 from time import process_time
 
-from tools.ilapfuncs import logfunc, is_platform_windows
+from tools.ilapfuncs import is_platform_windows, logfunc
 
 
 class AbstractArtifact(ABC):
+    """Abstract class for creating Artifacts
+    """
 
     _name = 'AbstractArtifact'
     _search_dirs = ()
@@ -15,14 +17,29 @@ class AbstractArtifact(ABC):
     @staticmethod
     @abstractmethod
     def get(files_found, report_folder, seeker):
+        """Gets artifacts located in `files_found` params by the
+        `seeker`. It saves should save the report in `report_folder`.
+
+        Args:
+            files_found (:obj:`tuple` of :obj:`str`): list of files found
+                by `seeker`
+            report_folder (:obj:`str`): location of the `report_folder` to save
+                report of artifact
+            seeker (FileSeekerBase): object to search for files
+        """
         print("Needs to implement AbastractArtifact's get() method!")
 
     @property
     def name(self):
+        """:obj:`str`: Long name of the Artifact
+        """
         return self._name
 
     @property
     def search_dirs(self):
+        """:obj:`tuple`: of :obj:`str`: Tuple containing search regex for
+        location of files containing the Artifact.
+        """
         return self._search_dirs
 
     @property
@@ -30,24 +47,23 @@ class AbstractArtifact(ABC):
         return self._report_section
 
     def process(self, files_found, seeker, report_folder_base):
-        ''' Perform the common setup for each artifact, ie, 
-            1. Create the report folder for it
-            2. Fetch the method (function) and call it
-            3. Wrap processing function in a try..except block
+        """Processes artifact
 
-            Args:
-                files_found: list of files that matched regex
+           1. Create the report folder for it
+           2. Fetch the method (function) and call it
+           3. Wrap processing function in a try..except block
 
-                artifact_func: method to call
-
-                artifact_name: Pretty name of artifact
-
-                seeker: FileSeeker object to pass to method
-        '''
+        Args:
+            files_found (:obj:`tuple` of :obj:`str`): list of files found by
+            seeker report_folder (str): location of the :obj:`report_folder`
+                to save report of artifact
+            seeker (FileSeekerBase): object to search for files
+        """
         start_time = process_time()
         slash = '\\' if is_platform_windows() else '/'
         artifact_short_name = type(self).__name__
-        logfunc(f'{self.report_section} [{artifact_short_name}] artifact executing')
+        logfunc(f'{self.report_section} [{artifact_short_name}] artifact'
+                f'executing')
         report_folder = os.path.join(report_folder_base, self.name) + slash
         try:
             if os.path.isdir(report_folder):
