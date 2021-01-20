@@ -8,7 +8,7 @@ import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, timeline, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class AppItunesMetadata(AbstractArtifact):

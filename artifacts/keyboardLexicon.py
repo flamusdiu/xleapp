@@ -4,7 +4,7 @@ from os.path import dirname
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, timeline, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class KeyboardLexicon(AbstractArtifact):

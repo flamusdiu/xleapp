@@ -7,7 +7,7 @@ from os.path import basename, dirname, isfile, join
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, timeline, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class VoiceRecording (AbstractArtifact):

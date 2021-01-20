@@ -12,7 +12,7 @@ from tools.ilapfuncs import (is_platform_windows, kmlgen, logfunc,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class RoutineDParkedHistorical(AbstractArtifact):

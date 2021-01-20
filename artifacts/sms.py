@@ -8,7 +8,7 @@ from tools.ilapfuncs import (is_platform_windows, logfunc,
                              open_sqlite_db_readonly, sanitize_file_name,
                              timeline, tsv)
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class SMS (AbstractArtifact):

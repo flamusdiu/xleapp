@@ -1,11 +1,10 @@
-import os
 import plistlib
-import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, tsv, is_platform_windows 
+from tools.ilapfuncs import tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
+
 
 class AccountConfiguration(AbstractArtifact):
 

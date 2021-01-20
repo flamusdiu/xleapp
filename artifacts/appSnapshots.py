@@ -9,7 +9,7 @@ from PIL import Image
 from tools.ilapfuncs import is_platform_windows, logfunc, tsv
 from tools.ktx.ios_ktx2png import KTX_reader, liblzfse
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class AppSnapShots(AbstractArtifact):

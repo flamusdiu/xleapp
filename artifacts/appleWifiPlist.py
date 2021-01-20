@@ -7,7 +7,7 @@ from tools.ilapfuncs import (is_platform_windows, logdevinfo, logfunc,
                              timeline, tsv)
 
 import artifacts.artGlobals
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class AppleWifiPlist(AbstractArtifact):

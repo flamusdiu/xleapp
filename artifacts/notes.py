@@ -1,7 +1,7 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, tsv, timeline, open_sqlite_db_readonly
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class Notes (AbstractArtifact):

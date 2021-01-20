@@ -9,7 +9,7 @@ from tools.ccl import ccl_bplist
 from tools.ilapfuncs import (is_platform_windows, logfunc,
                              open_sqlite_db_readonly, timeline, tsv)
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class DataUsageProcessB(AbstractArtifact):

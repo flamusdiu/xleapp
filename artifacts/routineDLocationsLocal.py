@@ -7,7 +7,7 @@ from packaging import version
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, logdevinfo, timeline, tsv, kmlgen, is_platform_windows, open_sqlite_db_readonly
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 class RoutineDLocationsLocal (AbstractArtifact):
     

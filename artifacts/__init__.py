@@ -24,10 +24,17 @@ def get_list_of_artifacts():
 
     with os.scandir(module_dir) as it:
         for entry in it:
-            if entry.name.endswith(".py") and not (entry.name.startswith("__") or entry.name.startswith('lastbuild')):
+            if (entry.name.endswith(".py") and
+                not (entry.name.startswith("__")
+                     or entry.name.startswith('lastbuild'))):
+
                 module_name = __name__ + '.' + entry.name[:-3]
-                for name, cls in inspect.getmembers(importlib.import_module(module_name), inspect.isclass):
-                    if not str(cls.__module__).endswith('Artifact') and str(cls.__module__).startswith(__name__):
+                module = importlib.import_module(module_name)
+                module_members = inspect.getmembers(module, inspect.isclass)
+
+                for name, cls in module_members:
+                    if (not str(cls.__module__).endswith('Artifact')
+                            and str(cls.__module__).startswith(__name__)):
                         tmp_artifact = Artifact(name=cls().name, cls=cls())
                         artifact_list.update({name: tmp_artifact})
 

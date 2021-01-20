@@ -10,7 +10,7 @@ from tools.ilapfuncs import (is_platform_windows, logfunc,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class GeodApplication(AbstractArtifact):

@@ -5,7 +5,7 @@ from tools.ilapfuncs import (kmlgen, logfunc, open_sqlite_db_readonly,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class RoutineDCloud (AbstractArtifact):

@@ -3,7 +3,7 @@ import sqlite3
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, open_sqlite_db_readonly
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 class AddressBook(AbstractArtifact):
 

@@ -5,7 +5,7 @@ import artifacts.artGlobals
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, logdevinfo, tsv, is_platform_windows 
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 class AppleMapsGroup(AbstractArtifact):
     _name = 'Apple Maps Group'

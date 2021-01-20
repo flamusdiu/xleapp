@@ -4,7 +4,7 @@ from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, timeline, tsv
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class PowerLogAll (AbstractArtifact):

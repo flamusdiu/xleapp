@@ -18,6 +18,8 @@ from tools.version_info import aleapp_version
 
 
 def main():
+    """Main application entry point for CLI
+    """
     parser = argparse.ArgumentParser(description='iLEAPP: iOS Logs, Events, and Plists Parser.')
     parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'itunes'], required=False, action="store", help="Input type (fs = extracted to file system folder)")
     parser.add_argument('-o', '--output_path', required=False, action="store", help='Output folder path')
@@ -112,14 +114,28 @@ def generate_artifact_table():
             if isinstance(searchRegex, tuple):
                 searchRegex = '\n'.join(searchRegex)
             print(shortName)
-            output_table.add_row([shortName, fullName, wrapper.fill(searchRegex)])
-        paths.write(output_table.get_string(title='Artifact List', sortby='Short Name'))
+            output_table.add_row([shortName,
+                                  fullName,
+                                  wrapper.fill(searchRegex)])
+        paths.write(output_table.get_string(title='Artifact List',
+                                            sortby='Short Name'))
     print('')
     print('Artifact table generation completed')
 
 
 def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
-    '''Returns true/false on success/failure'''
+    """Processes all artifacts
+
+    Args:
+        search_list (dict): :obj:`dict` of Artifacts to process
+        extracttype (str): type of file to process
+        input_path (str): path to file
+        out_params (OutputParams): object with output parameters
+        ratio (int): progress bar percentage
+
+    Returns:
+        bool: Returns true/false on success/failure
+    """
     start = process_time()
 
     logfunc('Procesing started. Please wait. This may take a few minutes...')

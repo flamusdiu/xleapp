@@ -7,7 +7,7 @@ from tools.ilapfuncs import logfunc, timeline, tsv
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class IOSMail(AbstractArtifact):

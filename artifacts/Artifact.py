@@ -21,9 +21,9 @@ class AbstractArtifact(ABC):
         `seeker`. It saves should save the report in `report_folder`.
 
         Args:
-            files_found (:obj:`tuple` of :obj:`str`): list of files found
+            files_found (tuple): list of files found
                 by `seeker`
-            report_folder (:obj:`str`): location of the `report_folder` to save
+            report_folder (str): location of the `report_folder` to save
                 report of artifact
             seeker (FileSeekerBase): object to search for files
         """
@@ -31,13 +31,14 @@ class AbstractArtifact(ABC):
 
     @property
     def name(self):
-        """:obj:`str`: Long name of the Artifact
+        """
+        str: Long name of the Artifact
         """
         return self._name
 
     @property
     def search_dirs(self):
-        """:obj:`tuple`: of :obj:`str`: Tuple containing search regex for
+        """tuple: Tuple containing search regex for
         location of files containing the Artifact.
         """
         return self._search_dirs
@@ -54,8 +55,9 @@ class AbstractArtifact(ABC):
            3. Wrap processing function in a try..except block
 
         Args:
-            files_found (:obj:`tuple` of :obj:`str`): list of files found by
-            seeker report_folder (str): location of the :obj:`report_folder`
+            files_found (tuple): list of files found by
+                seeker
+            report_folder (str): location of the :obj:`report_folder`
                 to save report of artifact
             seeker (FileSeekerBase): object to search for files
         """

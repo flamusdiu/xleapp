@@ -9,7 +9,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import (is_platform_windows, logfunc,
                              open_sqlite_db_readonly, tsv)
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class MediaLibrary(AbstractArtifact):

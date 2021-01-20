@@ -14,7 +14,7 @@ from tools.ilapfuncs import (does_table_exist, is_platform_windows, kmlgen,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class LocationDAllB(AbstractArtifact):

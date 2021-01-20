@@ -1,15 +1,8 @@
-import glob
-import json
-import os
-import pathlib
-import plistlib
-import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import (is_platform_windows, logfunc,
-                             open_sqlite_db_readonly, tsv)
+from tools.ilapfuncs import open_sqlite_db_readonly, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class AggDictPasscodeType(AbstractArtifact):
@@ -28,7 +21,7 @@ class AggDictPasscodeType(AbstractArtifact):
         select
         date(dayssince1970*86400, 'unixepoch'),
         key,
-        case 
+        case
         when value=-1 then '6-digit'
         when value=0 then 'no passcode'
         when value=1 then '4-digit'
@@ -39,23 +32,25 @@ class AggDictPasscodeType(AbstractArtifact):
         from
         scalars
         where key like 'com.apple.passcode.passcodetype%'
-        """
-        )
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
-        data_list = []    
-        for row in all_rows:
-            data_list.append((row[0], row[1], row[2]))
 
-        description = ''
-        report = ArtifactHtmlReport('Aggregate Dictionary Passcode Type')
-        report.start_artifact_report(report_folder, 'Passcode Type', description)
-        report.add_script()
-        data_headers = ('Day','Key','Value')     
-        report.write_artifact_data_table(data_headers, data_list, file_found)
-        report.end_artifact_report()
-        
-        tsvname = 'Agg Dict Dictionary Passcode Type'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
+        if usageentries > 0:
+            data_list = []    
+            for row in all_rows:
+                data_list.append((row[0], row[1], row[2]))
+
+            description = ''
+            report = ArtifactHtmlReport('Aggregate Dictionary Passcode Type')
+            report.start_artifact_report(report_folder, 'Passcode Type',
+                                         description)
+            report.add_script()
+            data_headers = ('Day', 'Key', 'Value')
+            report.write_artifact_data_table(data_headers, data_list,
+                                             file_found)
+            report.end_artifact_report()
+
+            tsvname = 'Agg Dict Dictionary Passcode Type'
+            tsv(report_folder, data_headers, data_list, tsvname)

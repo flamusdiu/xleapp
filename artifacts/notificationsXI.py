@@ -11,7 +11,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from tools.ccl import ccl_bplist
 from tools.ilapfuncs import is_platform_windows, logfunc
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class NotificationsXI (AbstractArtifact):

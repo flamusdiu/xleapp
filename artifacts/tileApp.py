@@ -9,7 +9,7 @@ from tools.ilapfuncs import (is_platform_windows, kmlgen, logdevinfo, logfunc,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class TileApp (AbstractArtifact):

@@ -3,7 +3,7 @@ from tools.ilapfuncs import logfunc, tsv
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class DHCPHotspotClients(AbstractArtifact):

@@ -7,7 +7,7 @@ from pathlib import Path
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import is_platform_windows, logfunc
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 control_chars = ''.join(map(chr, range(0,32))) + ''.join(map(chr, range(127,160)))
 not_control_char_re = re.compile(f'[^{control_chars}]' + '{4,}')

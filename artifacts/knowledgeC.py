@@ -15,7 +15,7 @@ from tools.parse3 import ParseProto
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class KnowledgeC(AbstractArtifact):

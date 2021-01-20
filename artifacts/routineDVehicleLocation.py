@@ -5,7 +5,7 @@ from tools.ilapfuncs import (kmlgen, logfunc,
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class RoutineDVehicleLocation(AbstractArtifact):

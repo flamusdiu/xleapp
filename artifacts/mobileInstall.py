@@ -10,7 +10,7 @@ from html import escape
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import is_platform_windows, logfunc, timeline, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class MobileInstall(AbstractArtifact):

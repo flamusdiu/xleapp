@@ -7,7 +7,7 @@ from itertools import compress
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import is_platform_windows, logdevinfo, logfunc, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class DeviceActivator(AbstractArtifact):

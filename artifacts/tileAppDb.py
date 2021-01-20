@@ -7,7 +7,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import (is_platform_windows, kmlgen, logfunc,
                              open_sqlite_db_readonly, timeline, tsv)
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class TileAppDB (AbstractArtifact):

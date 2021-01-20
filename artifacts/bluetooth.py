@@ -4,7 +4,7 @@ import plistlib
 from html_report.artifact_report import ArtifactHtmlReport
 from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, timeline, tsv
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class BluetoothOther(AbstractArtifact):

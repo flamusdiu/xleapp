@@ -8,7 +8,7 @@ from tools.ilapfuncs import (generate_thumbnail, kmlgen, logfunc,
 
 import artifacts.artGlobals
 
-from .Artifact import AbstractArtifact
+from artifacts.Artifact import AbstractArtifact
 
 
 class PhotosMetadata (AbstractArtifact):
