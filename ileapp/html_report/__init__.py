@@ -2,8 +2,6 @@ import html
 import os
 import pathlib
 import shutil
-import sqlite3
-import sys
 
 from collections import OrderedDict
 from html_report.html_parts import *
@@ -20,7 +18,7 @@ def get_icon_name(category, artifact):
     artifact = artifact.upper()
     icon = 'alert-triangle'  # default (if not defined!)
 
-    ## Please keep list below SORTED by category
+    # Please keep list below SORTED by category
 
     if category.find('ACCOUNT') >= 0:
         if artifact.find('AUTH') >= 0:

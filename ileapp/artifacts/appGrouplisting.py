@@ -12,13 +12,14 @@ from artifacts.Artifact import AbstractArtifact
 class AppGroupListing(AbstractArtifact):
 
     _name = 'App Group Listing'
-    _search_dirs = ('*/private/var/mobile/Containers/Shared/AppGroup/*/*.metadata.plist', 
+    _search_dirs = (('*/private/var/mobile/Containers/Shared/AppGroup/*/*'
+                    '.metadata.plist'),
                     '**/PluginKitPlugin/*.metadata.plist')
     _report_section = 'Installed Apps'
 
     @staticmethod
     def get(files_found, report_folder, seeker):
-        data_list = []       
+        data_list = []
         for file_found in files_found:
             with open(file_found, "rb") as fp:
                 if sys.version_info >= (3, 9):
@@ -37,12 +38,18 @@ class AppGroupListing(AbstractArtifact):
 
         if len(data_list) > 0:
             filelocdesc = 'Path column in the report'
-            description = 'List can included once installed but not present apps. Each file is named .com.apple.mobile_container_manager.metadata.plist'
-            report = ArtifactHtmlReport('Bundle ID by AppGroup & PluginKit IDs')
-            report.start_artifact_report(report_folder, 'Bundle ID by AppGroup & PluginKit IDs', description)
+            description = ('List can included once installed but not present '
+                           'apps. Each file is named .com.apple.mobile_'
+                           'container_manager.metadata.plist')
+            report = ArtifactHtmlReport('Bundle ID by AppGroup '
+                                        '& PluginKit IDs')
+            report.start_artifact_report(report_folder,
+                                         ('Bundle ID by AppGroup'
+                                          '& PluginKit IDs'), description)
             report.add_script()
-            data_headers = ('Bundle ID','Type','Directory GUID','Path')     
-            report.write_artifact_data_table(data_headers, data_list, filelocdesc)
+            data_headers = ('Bundle ID', 'Type', 'Directory GUID', 'Path')
+            report.write_artifact_data_table(data_headers, data_list,
+                                             filelocdesc)
             report.end_artifact_report()
 
             tsvname = 'Bundle ID - AppGroup ID - PluginKit ID'

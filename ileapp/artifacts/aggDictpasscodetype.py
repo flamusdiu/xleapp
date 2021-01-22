@@ -38,7 +38,7 @@ class AggDictPasscodeType(AbstractArtifact):
         usageentries = len(all_rows)
 
         if usageentries > 0:
-            data_list = []    
+            data_list = []
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2]))
 

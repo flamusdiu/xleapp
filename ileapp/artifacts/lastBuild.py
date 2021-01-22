@@ -14,6 +14,7 @@ class LastBuild(AbstractArtifact):
     _name = 'Last Build'
     _search_dirs = ('*LastBuildInfo.plist')
     _report_section = 'IOS Build'
+    _core_artifact = True
 
     @staticmethod
     def get(files_found, report_folder, seeker):

@@ -11,5 +11,5 @@ pillow
 prettytable
 pyinstaller
 pyliblzfse
-PySimpleGUI==4.16.0
+PySimpleGUI==4.34.0
 simplekml

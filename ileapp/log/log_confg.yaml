@@ -1,0 +1,37 @@
+version: 1
+disable_existing_loggers: true
+
+formatters:
+  standard:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  error:
+    format: "%(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: standard
+    stream: ext://sys.stdout
+
+  info_file_file:
+    filename: ileapp.log
+    level: INFO
+    formatter: default
+    encoding: utf8
+
+  debug_file_handler:
+    level: DEBUG
+    formatter: standard
+    filename: ileapp_debug.log
+    encoding: utf8
+
+loggers:
+  sampleLogger:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+
+root:
+  level: DEBUG
+  handlers: [console]

@@ -1,14 +1,9 @@
-import glob
-import os
-import pathlib
-import plistlib
-import sqlite3
-import json
-
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, open_sqlite_db_readonly
+from ileap.helpers.ilapfuncs import (logfunc, open_sqlite_db_readonly,
+                                     timeline, tsv)
 
 from artifacts.Artifact import AbstractArtifact
+
 
 class AggDictPasscode(AbstractArtifact):
         
@@ -42,17 +37,20 @@ class AggDictPasscode(AbstractArtifact):
 
             description = ''
             report = ArtifactHtmlReport('Aggregate Dictionary Passcode State')
-            report.start_artifact_report(report_folder, 'Passcode State', description)
+            report.start_artifact_report(
+                                         report_folder, 'Passcode State',
+                                         description)
             report.add_script()
-            data_headers = ('Day','Key','Value')     
-            report.write_artifact_data_table(data_headers, data_list, file_found)
+            data_headers = ('Day', 'Key', 'Value')
+            report.write_artifact_data_table(data_headers,
+                                             data_list,
+                                             file_found)
             report.end_artifact_report()
-            
+
             tsvname = 'Agg Dict Dictionary Passcode State'
             tsv(report_folder, data_headers, data_list, tsvname)
-            
+
             tlactivity = 'Aggregate Dictionary Passcode State'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc("No Agg Dict Dictionary Data available")
-            
