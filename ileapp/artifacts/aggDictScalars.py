@@ -1,18 +1,22 @@
+from helpers.ilapfuncs import timeline, tsv
+from helpers.db import open_sqlite_db_readonly
 from html_report.artifact_report import ArtifactHtmlReport
-from ileapp.helpers.db import open_sqlite_db_readonly
-from ileapp.helpers.ilapfuncs import logfunc, timeline, tsv
+from html_report import Icon
 
 from artifacts.Artifact import AbstractArtifact
 
 
 class AggDictScalars(AbstractArtifact):
-    
+
     _name = 'Aggregate Dictionary Scalars'
     _search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
-    _report_section = 'Aggregate Dictionary'    
+    _category = 'Aggregate Dictionary'
+    _web_icon = Icon.BOOK
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def __init__(self):
+        super().__init__(self)
+
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()

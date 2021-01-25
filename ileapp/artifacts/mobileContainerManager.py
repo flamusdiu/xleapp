@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logfunc, tsv
+from tools.ilapfuncs import is_platform_windows,  tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -11,10 +11,9 @@ from artifacts.Artifact import AbstractArtifact
 class MobileContainerManger(AbstractArtifact):
     _name = 'Mobile Container Manager'
     _search_dirs = ('**/containermanagerd.log.*')
-    _report_section = 'Mobile Container Manager'
+    _category = 'Mobile Container Manager'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
 
         data_list = []
 
@@ -27,7 +26,7 @@ class MobileContainerManger(AbstractArtifact):
 
                 for line in data:
                     linecount += 1
-                    
+
                     if '[MCMGroupManager _removeGroupContainersIfNeededforUser:groupContainerClass:identifiers:referenceCounts:]: Last reference to group container' in line:
                         hitcount += 1
                         txts = line.split()
@@ -40,12 +39,12 @@ class MobileContainerManger(AbstractArtifact):
 
                         datetime_object = datetime.strptime(month, "%b")
                         month_number = datetime_object.month
-                        concat_date = year + "-" + str(month_number) + "-" + day + " " + time 
+                        concat_date = year + "-" + str(month_number) + "-" + day + " " + time
                         dtime_obj = datetime.strptime(concat_date, '%Y-%m-%d %H:%M:%S')
-                        
+
                         data_list.append((str(dtime_obj), group, str(linecount)))
 
-        
+
         report = ArtifactHtmlReport('Mobile Container Manager')
         report.start_artifact_report(report_folder, 'Mobile Container Manager')
         report.add_script()
@@ -53,6 +52,6 @@ class MobileContainerManger(AbstractArtifact):
 
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
-            
+
         tsvname = 'Mobile Container Manager'
         tsv(report_folder, data_headers, data_list, tsvname)

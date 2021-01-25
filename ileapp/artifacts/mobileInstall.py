@@ -8,7 +8,7 @@ import textwrap
 from html import escape
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logfunc, timeline, tsv
+from tools.ilapfuncs import is_platform_windows,  timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -16,10 +16,9 @@ from artifacts.Artifact import AbstractArtifact
 class MobileInstall(AbstractArtifact):
     _name = 'Mobile Installation Logs'
     _search_dirs = ('**/mobile_installation.log.*')
-    _report_section = 'Mobile Installation Logs'
+    _category = 'Mobile Installation Logs'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         counter = 0
         filescounter = 0
         tsv_tml_data_list = []
@@ -566,23 +565,23 @@ class MobileInstall(AbstractArtifact):
         '''
         data_headers_reboots = ('Timestamp (Local Time)', 'Description')
         tsv_data_headers = ('Timestamp (Local Time)', 'Action', 'Bundle ID', 'Path')
-        
+
         tsvname = 'Mobile Installation Logs - Reboots'
         tsv(report_folder, data_headers_reboots, data_list_reboots, tsvname)
-        
+
         tlactivity = 'Mobile Installation Logs - Reboots'
         timeline(report_folder, tlactivity, data_list_reboots, data_headers_reboots)
-        
+
         tsvname = 'Mobile Installation Logs - History'
         tsv(report_folder, tsv_data_headers, tsv_tml_data_list, tsvname)
-        
+
         tlactivity = 'Mobile Installation Logs - History'
         timeline(report_folder, tlactivity, tsv_tml_data_list, tsv_data_headers)
         '''
 
 
-'''    
-    
+'''
+
     x = 0
     data_list =[]
     for file_found in files_found:
@@ -590,7 +589,7 @@ class MobileInstall(AbstractArtifact):
         sx = str(x)
         journalName = os.path.basename(file_found)
         outputpath = os.path.join(report_folder, sx+'_'+journalName+'.txt') # name of file in txt
-        #linkpath = os.path.basename(
+        # linkpath = os.path.basename(
         level2, level1 = (os.path.split(outputpath))
         level2 = (os.path.split(level2)[1])
         final = level2+'/'+level1
@@ -598,9 +597,9 @@ class MobileInstall(AbstractArtifact):
             for s in strings(file_found):
                 g.write(s)
                 g.write('\n')
-        
-        out = (f'<a href="{final}" style = "color:blue" target="_blank">{journalName}</a>') 
-        
+
+        out = (f'<a href="{final}" style = "color:blue" target="_blank">{journalName}</a>')
+
         data_list.append((out, file_found))
 
     location =''

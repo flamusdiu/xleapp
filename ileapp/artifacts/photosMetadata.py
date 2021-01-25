@@ -3,7 +3,7 @@ import os
 import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import (generate_thumbnail, kmlgen, logfunc,
+from tools.ilapfuncs import(generate_thumbnail, kmlgen,
                              open_sqlite_db_readonly, timeline, tsv)
 
 import artifacts.artGlobals
@@ -14,10 +14,9 @@ from artifacts.Artifact import AbstractArtifact
 class PhotosMetadata (AbstractArtifact):
     _name = 'Photos-sqlite Metadata'
     _search_dirs = ('**/Photos.sqlite')
-    _report_section = 'Photos'
+    _category = 'Photos'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         if report_folder.endswith('/') or report_folder.endswith('\\'):
             report_folder = report_folder[:-1]
         iOSversion = artifacts.artGlobals.versionf
@@ -1036,4 +1035,3 @@ class PhotosMetadata (AbstractArtifact):
                 logfunc('No data available for Photos.sqlite metadata')
 
             db.close()
-            

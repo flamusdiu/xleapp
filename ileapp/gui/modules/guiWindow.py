@@ -10,7 +10,7 @@ window = sg.Window(f'iLEAPP version {aleapp_version}',
                    generate_layout(props.artifact_list))
 
 # save the window handle
-props.run_time_information('window_handle', window)
+props.run_time_info('window_handle', window)
 
 class Handler(logging.StreamHandler):
     def __init__(self):

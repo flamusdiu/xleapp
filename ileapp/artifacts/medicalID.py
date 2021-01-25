@@ -1,6 +1,6 @@
 import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, timeline, tsv
+from tools.ilapfuncs import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -8,7 +8,7 @@ from artifacts.Artifact import AbstractArtifact
 class MedicalID (AbstractArtifact):
     _name = 'Medical ID'
     _search_dirs = ('*/private/var/mobile/Library/MedicalID/MedicalIDData.archive')
-    _report_section = 'Medical ID'
+    _category = 'Medical ID'
 
     def get(files_found, report_folder, seeker):
         data_list = []

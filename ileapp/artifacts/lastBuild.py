@@ -2,9 +2,7 @@ import datetime
 import plistlib
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logdevinfo, logfunc, tsv
-
-import artifacts.artGlobals
+from helpers.ilapfuncs import tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -13,11 +11,10 @@ class LastBuild(AbstractArtifact):
 
     _name = 'Last Build'
     _search_dirs = ('*LastBuildInfo.plist')
-    _report_section = 'IOS Build'
+    _category = 'IOS Build'
     _core_artifact = True
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         versionnum = 0  # noqa
         data_list = []
         file_found = str(files_found[0])
@@ -52,10 +49,9 @@ class LastBuild(AbstractArtifact):
 class ITunesBackupInfo(AbstractArtifact):
     _name = 'iTunesBackup'
     _search_dirs = ('*LastBuildInfo.plist')
-    _report_section = 'IOS Build'
+    _category = 'IOS Build'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         versionnum = 0  # noqa
         data_list = []
         file_found = str(files_found[0])

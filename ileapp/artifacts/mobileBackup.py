@@ -2,7 +2,7 @@ import os
 import plistlib
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logdevinfo, logfunc, tsv
+from tools.ilapfuncs import is_platform_windows,   tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -10,18 +10,17 @@ from artifacts.Artifact import AbstractArtifact
 class MobileBackup(AbstractArtifact):
     _name = 'Mobile Backup'
     _search_dirs = ('*/Preferences/com.apple.MobileBackup.plist')
-    _report_section = 'Mobile Backup'
+    _category = 'Mobile Backup'
 
-    # Backup version of iOS, iOS version installed at the time of recovery, 
+    # Backup version of iOS, iOS version installed at the time of recovery,
     # recovery date, and whether the backup was restored from iCloud.
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         file_found = str(files_found[0])
-        
+
         with open(file_found, 'rb') as fp:
             pl = plistlib.load(fp)
-            
+
             if 'BackupStateInfo' in pl.keys():
                 for key, val in pl['BackupStateInfo'].items():
                     if key == 'isCloud':
@@ -42,13 +41,13 @@ class MobileBackup(AbstractArtifact):
                     if key == 'RestoreDate':
                         data_list.append((key, val))
 
-                
+
         report = ArtifactHtmlReport('Mobile Backup')
         report.start_artifact_report(report_folder, 'Mobile Backup')
         report.add_script()
-        data_headers = ('Key', 'Value')     
+        data_headers = ('Key', 'Value')
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
-        
+
         tsvname = 'Mobile Backup'
         tsv(report_folder, data_headers, data_list, tsvname)

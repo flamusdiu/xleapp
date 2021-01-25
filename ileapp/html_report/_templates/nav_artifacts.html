@@ -1,0 +1,28 @@
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky" id="sidebar_id">
+                    <ul class="nav flex-column">
+                        {% for category in navigation.category %}
+                        <h6 class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            {{category}}
+                        </h6>
+                        {% for item in category.items %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{item.href}}">
+                                <span data-feather="{{item.icon}}"></span>{item.caption}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        {% endfor %}
+                        <script>
+                            feather.replace();
+                            var element = document.getElementById("sidebar_id");
+                            var searchParams = new URLSearchParams(window.location.search);
+                            if (searchParams.has('navpos')) {
+                                var nav_pos = parseInt(searchParams.get('navpos'));
+                                if (!isNaN(nav_pos))
+                                    element.scrollTop = nav_pos;
+                            }
+                        </script>
+                    </ul>
+                </div>
+            </nav>

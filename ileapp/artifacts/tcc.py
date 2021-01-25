@@ -1,6 +1,6 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version  # use to search per version number
-from tools.ilapfuncs import logfunc, open_sqlite_db_readonly
+from tools.ilapfuncs import open_sqlite_db_readonly
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 
@@ -11,10 +11,9 @@ class TCC (AbstractArtifact):
 
     _name = 'TCC - Permissions'
     _search_dirs = ('*TCC.db*')
-    _report_section = 'App Permissions'
+    _category = 'App Permissions'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
 

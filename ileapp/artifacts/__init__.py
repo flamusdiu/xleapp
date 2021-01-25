@@ -10,13 +10,10 @@ from time import gmtime, process_time, strftime
 
 import html_report
 import prettytable
-from tools.ilapfuncs import is_platform_windows, logdevinfo, logfunc
-from tools.properities import props
-from tools.search_files import (FileSeekerDir, FileSeekerItunes, FileSeekerTar,
-                                FileSeekerZip)
-from tools.version_info import aleapp_version
-
-from artifacts.lastBuild import LastBuild
+from helpers.ilapfuncs import is_platform_windows
+from helpers.search_files import (FileSeekerDir, FileSeekerItunes,
+                                  FileSeekerTar, FileSeekerZip)
+from helpers.version_info import aleapp_version
 
 
 def get_list_of_artifacts(ordered=True):
@@ -39,31 +36,25 @@ def get_list_of_artifacts(ordered=True):
     Artifact.cls.__doc__ = 'Artifact object class'
     Artifact.name.__doc__ = 'Artifact short name'
 
-    with os.scandir(module_dir) as it:
-        for entry in it:
-            if (entry.name.endswith(".py") and
-                not (entry.name.startswith("__")
-                     or entry.name.startswith('lastbuild'))):
+    for it in module_dir.glob('*.py'):
+        if (it.suffix == '.py' and it.stem not in ['__init__']):
 
-                module_name = __name__ + '.' + entry.name[:-3]
-                module = importlib.import_module(module_name)
-                module_members = inspect.getmembers(module, inspect.isclass)
+            module_name = f'{__name__}.{it.stem}'
+            module = importlib.import_module(module_name)
+            module_members = inspect.getmembers(module, inspect.isclass)
+            print(module_members)
+            for name, cls in module_members:
+                if (not str(cls.__module__).endswith('Artifact')
+                        and str(cls.__module__).startswith(__name__)):
+                    print(name)
+                    tmp_artifact = Artifact(name=cls().name, cls=cls())
+                    artifact_list.update({name: tmp_artifact})
 
-                for name, cls in module_members:
-                    if (not str(cls.__module__).endswith('Artifact')
-                            and str(cls.__module__).startswith(__name__)):
-                        tmp_artifact = Artifact(name=cls().name, cls=cls())
-                        artifact_list.update({name: tmp_artifact})
+    # sort the artifact list
+    tmp_artifact_list = sorted(list(artifact_list.items()))
+    artifact_list.clear()
+    artifact_list.update(tmp_artifact_list)
 
-        # sort the artifact list
-        tmp_artifact_list = sorted(list(artifact_list.items()))
-        artifact_list.clear()
-        artifact_list.update(tmp_artifact_list)
-
-        # Create 'Last Build' artifact and move to top of the artifact list
-        lastBuild = Artifact(name='Last Build', cls=LastBuild())
-        artifact_list.update({'LastBuild': lastBuild})
-        artifact_list.move_to_end('LastBuild', last=False)
     return artifact_list
 
 

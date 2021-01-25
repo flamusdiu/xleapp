@@ -4,7 +4,7 @@ import re
 
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import (is_platform_windows, kmlgen, logdevinfo, logfunc,
+from tools.ilapfuncs import(is_platform_windows, kmlgen,
                              timeline, tsv)
 
 import artifacts.artGlobals
@@ -15,25 +15,24 @@ from artifacts.Artifact import AbstractArtifact
 class TileApp (AbstractArtifact):
     _name = 'Tile App Geolocation Logs'
     _search_dirs = ('*private/var/mobile/Containers/Data/Application/*/Library/log/com.thetileapp.tile*')
-    _report_section = 'Locations'
+    _category = 'Locations'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
-        
+
         for file_found in files_found:
             file_found = str(file_found)
-            
+
             if file_found.endswith('gz'):
                 x=gzip.open
             elif file_found.endswith('log'):
                 x=open
-            
+
             counter = 0
             with x(file_found,'rt',) as f:
                 for line in f:
                     regexdate = r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}"
-                    datestamp = re.search(regexdate, line)  
+                    datestamp = re.search(regexdate, line)
                     counter +=1
                     if datestamp != None:
                         datestamp = datestamp.group(0)
@@ -44,7 +43,7 @@ class TileApp (AbstractArtifact):
                             latlong = latlong.strip('<')
                             latlong = latlong.strip('>')
                             lat, longi = latlong.split(',')
-                            head_tail = os.path.split(file_found) 
+                            head_tail = os.path.split(file_found)
                             data_list.append((datestamp, lat.lstrip(), longi.lstrip(), counter, head_tail[1]))
 
         if len(data_list) > 0:
@@ -52,15 +51,15 @@ class TileApp (AbstractArtifact):
             report = ArtifactHtmlReport('Locations')
             report.start_artifact_report(report_folder, 'Tile App Geolocation Logs', description)
             report.add_script()
-            data_headers = ('Timestamp', 'Latitude', 'Longitude', 'Row Number', 'Source File' )     
+            data_headers = ('Timestamp', 'Latitude', 'Longitude', 'Row Number', 'Source File' )
             report.write_artifact_data_table(data_headers, data_list, head_tail[0])
             report.end_artifact_report()
-            
+
             tsvname = 'Tile App Lat Long'
             tsv(report_folder, data_headers, data_list, tsvname)
-            
+
             tlactivity = 'Tile App Lat Long'
             timeline(report_folder, tlactivity, data_list, data_headers)
-            
+
             kmlactivity = 'Tile App Lat Long'
             kmlgen(report_folder, kmlactivity, data_list, data_headers)

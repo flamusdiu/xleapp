@@ -2,6 +2,7 @@ astc_decomp
 biplist
 blackboxprotobuf
 bs4
+jinja2
 nska-deserialize>=1.3.1
 numpy==1.19.3
 packaging==20.1

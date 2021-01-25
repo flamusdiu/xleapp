@@ -7,7 +7,7 @@ import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import (is_platform_windows, kmlgen, logfunc,
+from tools.ilapfuncs import(is_platform_windows, kmlgen,
                              open_sqlite_db_readonly, timeline, tsv)
 
 import artifacts.artGlobals
@@ -18,10 +18,9 @@ from artifacts.Artifact import AbstractArtifact
 class RoutineDParkedHistorical(AbstractArtifact):
     _name = 'RoutineD Parked Vehicle Historical'
     _search_dirs = ('**/Local.sqlite')
-    _report_section = 'Locations'
+    _category = 'Locations'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         iOSversion = artifacts.artGlobals.versionf
         if version.parse(iOSversion) < version.parse("11"):
             logfunc("Unsupported version for RoutineD Parked Historical " + iOSversion)
@@ -45,7 +44,7 @@ class RoutineDParkedHistorical(AbstractArtifact):
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
         if usageentries > 0:
-            data_list = []    
+            data_list = []
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2], row[3], row[4], row[5]))
 
@@ -53,16 +52,16 @@ class RoutineDParkedHistorical(AbstractArtifact):
             report = ArtifactHtmlReport('RoutineD Parked Vehicle Historical')
             report.start_artifact_report(report_folder, 'Parked Vehicle Historical', description)
             report.add_script()
-            data_headers = ('Timestamp','Location Date','Location Uncertainty','Identifier','Latitude','Longitude')     
+            data_headers = ('Timestamp','Location Date','Location Uncertainty','Identifier','Latitude','Longitude')
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
-            
+
             tsvname = 'RoutineD Parked Vehicle Historical'
             tsv(report_folder, data_headers, data_list, tsvname)
-            
+
             tlactivity = 'RoutineD Parked Vehicle Historical'
             timeline(report_folder, tlactivity, data_list, data_headers)
-            
+
             kmlactivity = 'RoutineD Parked Vehicle Historical'
             kmlgen(report_folder, kmlactivity, data_list, data_headers)
         else:

@@ -5,7 +5,7 @@ from os import listdir
 from os.path import basename, dirname, isfile, join
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, timeline, tsv
+from tools.ilapfuncs import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -13,10 +13,9 @@ from artifacts.Artifact import AbstractArtifact
 class VoiceTriggers (AbstractArtifact):
     _name = 'Voice Triggers'
     _search_dirs = ('**/td/audio/*.json', '**/td/audio/*.wav')
-    _report_section = 'Voice-Triggers'
+    _category = 'Voice-Triggers'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         info_files = []
         data_list = []
         if len(files_found) > 1:
@@ -39,11 +38,11 @@ class VoiceTriggers (AbstractArtifact):
                         else:
                             creation_date = ''
 
-                        audio = ''' 
+                        audio = '''
                                 <audio controls>
                                     <source src={} type="audio/wav">
                                     <p>Your browser does not support HTML5 audio elements.</p>
-                                </audio> 
+                                </audio>
                                 '''.format(wav_file)
 
                         data_list.append((creation_date, fl['productType'], fl['utteranceWav'], audio))

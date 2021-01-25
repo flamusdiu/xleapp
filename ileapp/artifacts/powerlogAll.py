@@ -1,6 +1,6 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, timeline, tsv
+from tools.ilapfuncs import open_sqlite_db_readonly, timeline, tsv
 
 import artifacts.artGlobals
 
@@ -10,10 +10,9 @@ from artifacts.Artifact import AbstractArtifact
 class PowerLogAll (AbstractArtifact):
     _name = 'Powerlog WiFi Network Connections'
     _search_dirs = ('**/CurrentPowerlog.PLSQL')
-    _report_section = 'WiFi Network Connections'
+    _category = 'WiFi Network Connections'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
 
@@ -40,13 +39,13 @@ class PowerLogAll (AbstractArtifact):
             if usageentries > 0:
                 data_list = []
                 if version.parse(iOSversion) >= version.parse("9"):
-                    for row in all_rows:    
+                    for row in all_rows:
                         data_list.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
 
                     report = ArtifactHtmlReport('Powerlog Audio Routing via App')
                     report.start_artifact_report(report_folder, 'Audio Routing')
                     report.add_script()
-                    data_headers = ('Timestamp','Timestamped Logged','Bundle ID','Assertion Name','Audio Route','Mirroring State','Operation','PID')   
+                    data_headers = ('Timestamp','Timestamped Logged','Bundle ID','Assertion Name','Audio Route','Mirroring State','Operation','PID')
                     report.write_artifact_data_table(data_headers, data_list, file_found)
                     report.end_artifact_report()
 
@@ -74,13 +73,13 @@ class PowerLogAll (AbstractArtifact):
             usageentries = len(all_rows)
             if usageentries > 0:
                 data_list = []
-                for row in all_rows:    
+                for row in all_rows:
                     data_list.append((row[0],row[1],row[2],row[3],row[4]))
 
                 report = ArtifactHtmlReport('Powerlog Aggregate Bulletins')
                 report.start_artifact_report(report_folder, 'Aggregate Bulletins')
                 report.add_script()
-                data_headers = ('Timestamp','Bulletin Bundle ID','Time Interval in Seconds','Count','Post Type')   
+                data_headers = ('Timestamp','Bulletin Bundle ID','Time Interval in Seconds','Count','Post Type')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
@@ -107,13 +106,13 @@ class PowerLogAll (AbstractArtifact):
             usageentries = len(all_rows)
             if usageentries > 0:
                 data_list = []
-                for row in all_rows: 
+                for row in all_rows:
                     data_list.append((row[0], row[1], row[2], row[3], row[4]))
 
                 report = ArtifactHtmlReport('Powerlog Aggregate Notifications')
                 report.start_artifact_report(report_folder, 'Aggregate Notifications')
                 report.add_script()
-                data_headers = ('Timestamp','Notification Bundle ID','Time Interval in Seconds','Count','Notification Type')   
+                data_headers = ('Timestamp','Notification Bundle ID','Time Interval in Seconds','Count','Notification Type')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
@@ -138,7 +137,7 @@ class PowerLogAll (AbstractArtifact):
             apptype,
             case appdeleteddate
             when 0 then "not deleted"
-            else datetime(appdeleteddate, 'unixepoch') 
+            else datetime(appdeleteddate, 'unixepoch')
             end
             from
             plapplicationagent_eventnone_allapps
@@ -192,7 +191,7 @@ class PowerLogAll (AbstractArtifact):
             if usageentries > 0:
                 data_list = []
                 if version.parse(iOSversion) >= version.parse("9"):
-                    for row in all_rows:    
+                    for row in all_rows:
                         data_list.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
 
                     report = ArtifactHtmlReport('Powerlog App Info')
@@ -230,13 +229,13 @@ class PowerLogAll (AbstractArtifact):
             if usageentries > 0:
                 data_list = []
                 if version.parse(iOSversion) >= version.parse("11"):
-                    for row in all_rows:    
+                    for row in all_rows:
                         data_list.append((row[0],row[1],row[2],row[3],row[4],row[5]))
 
                     report = ArtifactHtmlReport('Powerlog Backup Info')
                     report.start_artifact_report(report_folder, 'Backup Info')
                     report.add_script()
-                    data_headers = ('Timestamp', 'Start', 'End', 'State', 'Finished', 'Has error')   
+                    data_headers = ('Timestamp', 'Start', 'End', 'State', 'Finished', 'Has error')
                     report.write_artifact_data_table(data_headers, data_list, file_found)
                     report.end_artifact_report()
 
@@ -338,13 +337,13 @@ class PowerLogAll (AbstractArtifact):
                 timeline(report_folder, tlactivity, data_list, data_headers)
 
             elif version.parse(iOSversion) == version.parse("9"):
-                for row in all_rows:    
+                for row in all_rows:
                     data_list.append((row[0],row[1],row[2],row[3]))
- 
+
                 report = ArtifactHtmlReport('Powerlog Deleted Apps')
                 report.start_artifact_report(report_folder, 'Deleted Apps')
                 report.add_script()
-                data_headers = ('App Deleted Date','Timestamp','App Name','Bundle ID',) 
+                data_headers = ('App Deleted Date','Timestamp','App Name','Bundle ID',)
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
@@ -391,35 +390,35 @@ class PowerLogAll (AbstractArtifact):
                 report = ArtifactHtmlReport('Powerlog Paired Device Configuration')
                 report.start_artifact_report(report_folder, 'Paired Device Configuration')
                 report.add_script()
-                data_headers = ('Timestamp','Build','Device','HW Model','Pairing ID')   
+                data_headers = ('Timestamp','Build','Device','HW Model','Pairing ID')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
-                
+
                 tsvname = 'Powerlog Paired Device Conf'
                 tsv(report_folder, data_headers, data_list, tsvname)
-                
+
                 tlactivity = 'Powerlog Paired Device Configuration'
                 timeline(report_folder, tlactivity, data_list, data_headers)
-            
+
             else:
                 for row in all_rows:
                     data_list.append((row[0], row[1], row[2]))
-                
+
                 report = ArtifactHtmlReport('Powerlog Paired Device Configuration')
                 report.start_artifact_report(report_folder, 'Paired Device Configuration')
                 report.add_script()
-                data_headers = ('Timestamp','Build','Device' )  
+                data_headers = ('Timestamp','Build','Device' )
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
-                
+
                 tsvname = 'Powerlog Paired Device Conf'
                 tsv(report_folder, data_headers, data_list, tsvname)
-                
+
                 tlactivity = 'Powerlog Paired Device Configuration'
                 timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No data available in table')
-        
+
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
             cursor.execute('''
@@ -453,34 +452,34 @@ class PowerLogAll (AbstractArtifact):
             plstorageoperator_eventforward_timeoffset.timestamp as tot,
             plstorageoperator_eventforward_timeoffset.id as toid,
             plstorageoperator_eventforward_timeoffset.system,
-            bundleid 
+            bundleid
             from
-            plcameraagent_eventforward_torch 
+            plcameraagent_eventforward_torch
             left join
-            plstorageoperator_eventforward_timeoffset 
-            ) 
+            plstorageoperator_eventforward_timeoffset
+            )
             as torchest
             group by
-            torchid 
+            torchid
             )
             ''')
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
                 data_list = []
-                for row in all_rows:    
+                for row in all_rows:
                     data_list.append((row[0], row[1], row[2], row[3], row[4], row[5]))
 
                 report = ArtifactHtmlReport('Powerlog Torch')
                 report.start_artifact_report(report_folder, 'Torch')
                 report.add_script()
-                data_headers = ('Adjusted Timestamp','Bundle ID','Status','Original Torch Timestamp','Offset Timestamp','Time Offset')   
+                data_headers = ('Adjusted Timestamp','Bundle ID','Status','Original Torch Timestamp','Offset Timestamp','Time Offset')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
-                
+
                 tsvname = 'Powerlog Torch'
                 tsv(report_folder, data_headers, data_list, tsvname)
-                
+
                 tlactivity = 'Powerlog Torch'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -518,30 +517,30 @@ class PowerLogAll (AbstractArtifact):
             from
             plwifiagent_eventbackward_cumulativeproperties
             left join
-            plstorageoperator_eventforward_timeoffset 
+            plstorageoperator_eventforward_timeoffset
             )
             as wifipropst
             group by
-            wifiorotsid 
-            )   
+            wifiorotsid
+            )
             ''')
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
                 data_list = []
-                for row in all_rows:    
+                for row in all_rows:
                     data_list.append((row[0], row[1], row[2], row[3], row[4]))
 
                 report = ArtifactHtmlReport('Powerlog WiFi Network Connections')
                 report.start_artifact_report(report_folder, 'WiFi Network Connections')
                 report.add_script()
-                data_headers = ('Adjusted Timestamp','Current SSID','Current Channel','Offset Timestamp','Time Offset')   
+                data_headers = ('Adjusted Timestamp','Current SSID','Current Channel','Offset Timestamp','Time Offset')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
-                
+
                 tsvname = 'Powerlog Wifi Network Connections'
                 tsv(report_folder, data_headers, data_list, tsvname)
-                
+
                 tlactivity = 'Powerlog Wifi Network Connections'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:

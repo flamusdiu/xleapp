@@ -6,7 +6,7 @@ import sys
 import time
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import (is_platform_windows, logfunc,
+from tools.ilapfuncs import(is_platform_windows,
                              open_sqlite_db_readonly, tsv)
 
 from artifacts.Artifact import AbstractArtifact
@@ -16,10 +16,9 @@ class MediaLibrary(AbstractArtifact):
 
     _name = 'Media Library'
     _search_dirs = ('**/Medialibrary.sqlitedb')
-    _report_section = 'Media Library'
+    _category = 'Media Library'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
@@ -33,7 +32,7 @@ class MediaLibrary(AbstractArtifact):
                     ite.track_number, art.artwork_token,
                     itev.extended_content_rating, itev.movie_info,
                     ext.description_long, sto.account_id,
-                    strftime(\'%d/%m/%Y %H:%M:%S\', 
+                    strftime(\'%d/%m/%Y %H:%M:%S\',
                     datetime(sto.date_purchased + 978397200, \'unixepoch\'))
                     date_purchased, sto.store_item_id, sto.purchase_history_id, ext.copyright
                     from item_extra
@@ -61,7 +60,7 @@ class MediaLibrary(AbstractArtifact):
         media_type = ''
 
         for row in all_rows:
-            col_count = 0 
+            col_count = 0
             tmp_row = []
 
             for media_type in row:
@@ -83,7 +82,7 @@ class MediaLibrary(AbstractArtifact):
                 tmp_row.append(str(media_type).replace('\n', ''))
 
             data_list.append(tmp_row)
-        
+
         # Recover account information
         data_list_info = []
         cursor.execute(
@@ -101,7 +100,7 @@ class MediaLibrary(AbstractArtifact):
             for elm in iCloud_items:
                 if row[0] == elm:
                     data_list_info.append((row[0],row[1]))
-        
+
         report = ArtifactHtmlReport('Media Library')
         report.start_artifact_report(report_folder, 'Media Library')
         report.add_script()
@@ -111,13 +110,13 @@ class MediaLibrary(AbstractArtifact):
                         'Genre','Track Number', 'Artwork','Content Rating',
                         'Movie Information','Description','Account ID',
                         'Date Purchased','Item ID','Purchase History ID','Copyright')
-                        
+
         report.write_artifact_data_table(data_headers_info, data_list_info, file_found, cols_repeated_at_bottom=False)
         report.write_artifact_data_table(data_headers, data_list, file_found, True, False)
-        
+
         report.end_artifact_report()
 
         tsvname = 'Media Library'
         tsv(report_folder, data_headers_info, data_list_info, tsvname)
         tsv(report_folder, data_headers, data_list, tsvname)
-        
+

@@ -1,5 +1,5 @@
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, tsv, timeline, open_sqlite_db_readonly
+from tools.ilapfuncs import tsv, timeline, open_sqlite_db_readonly
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -8,10 +8,9 @@ class Notes (AbstractArtifact):
 
     _name = 'Notes'
     _search_dirs = ('*/NoteStore.sqlite')
-    _report_section = 'Notes'
+    _category = 'Notes'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         for file_found in files_found:
             db = open_sqlite_db_readonly(file_found)
@@ -30,7 +29,7 @@ class Notes (AbstractArtifact):
                 case TabA.ZMARKEDFORDELETION
                 when 0 then "No"
                 when 1 then "Yes"
-                end, 
+                end,
                 case TabA.ZISPINNED
                 when 0 then "No"
                 when 1 then "Yes"

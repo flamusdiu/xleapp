@@ -2,8 +2,9 @@ import datetime
 import pathlib
 import re
 
+from helpers.ilapfuncs import tsv
+from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
-from ileapp.helpers import tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -12,10 +13,13 @@ class AppConduit(AbstractArtifact):
 
     _name = 'App Conduit'
     _search_dirs = ('**/AppConduit.log.*')
-    _report_section = 'App Conduit'
+    _category = 'App Conduit'
+    _web_icon = Icon.ACTIVITY
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def __init__(self):
+        super().__init__(self)
+
+    def get(self, files_found, seeker):
         data_list = []
         device_type_and_info = []
 

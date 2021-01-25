@@ -15,7 +15,7 @@ num_of_artifacts = len(props.artifact_list)
 
 
 def main_gui():
-    window = props.run_time_information['window_handle']
+    window = props.run_time_info['window_handle']
     # Event Loop to process "events" and get the "values" of the inputs
     while True:
         event, values = window.read()

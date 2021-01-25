@@ -1,6 +1,7 @@
 import datetime
 import os
-from collections import ChainMap
+from collections import ChainMap, defaultdict
+from pathlib import Path
 
 from artifacts import get_list_of_artifacts
 
@@ -15,11 +16,7 @@ class Props(object):
     _core_artifacts = {}
     _artifact_list = {}
     _selected_artifacts = {}
-    _run_time_information = {
-        'ios_version': '0',
-        'window_handle': object(),
-        'progress_bar_total': 0
-    }
+    _run_time_info = defaultdict(lambda: None)
 
     def __init__(self):
         self._artifact_list = get_list_of_artifacts(ordered=False)
@@ -30,18 +27,11 @@ class Props(object):
         }
 
         # Deletes core artifacts from main list
-        [self._artifact_list.pop(name)
-         for name, artifact in self._core_artifacts]
+        for name, artifact in self._core_artifacts:
+            self._artifact_list.pop(name)
 
-         self.run_time_information['progress_bar_total'] = len(self.installed_artifacts)
-
-    @property
-    def run_time_information(self):
-        return self.run_time_information
-
-    @run_time_information.setter
-    def run_time_information(self, key, val):
-        self._run_time_information.update({key: val})
+        self.run_time_info['progress_bar_total'] = (
+            len(self.installed_artifacts))
 
     @property
     def core_artifacts(self):
@@ -57,6 +47,8 @@ class Props(object):
 
     @property
     def installed_artifacts(self):
+        """List: list of strings of installed artifacts
+        """
         artifact_list = ChainMap(self.core_artifacts,
                                  self.artifact_list,
                                  self.selected_artifacts)
@@ -64,46 +56,53 @@ class Props(object):
 
     @property
     def selected_artifacts(self):
+        """dict: Selected artifacts to run
+        """
         return self._selected_artifacts
 
-    @property
-    def output_parameters(self):
-        return self._output_parameters or OutputParameters()
-
-    @output_parameters.setter
-    def output_parameters(self, output_path):
-        self._output_parameters = OutputParameters(output_path)
-
     def select_artifact(self, name):
+        """Adds an artifacts to be selected and run.
+        """
         artifact = self._artifact_list.pop(name)
         self._selected_artifacts.update(artifact)
 
     def set_progress_bar(self, val):
-        window = self.run_time_information['window_handle']
+        """Sets the progress bar for the GUI
+
+        Args:
+            val (int): how much progress is on the bar
+        """
+        window = self.run_time_info['window_handle']
         window['-PROGRESSBAR-'].update_bar(val)
 
+    @property
+    def run_time_info(self):
+        """defaultdict: returns program run state information
+        """
+        return self.run_time_info
 
-class OutputParameters:
-    '''Defines the parameters that are common for '''
-    # static parameters
-    nl = '\n'
-    screen_output_file_path = ''
+    def set_output_folder(self, output_folder):
+        """Sets and creates output folders for the reports
 
-    def __init__(self, output_folder):
+        Args:
+            output_folder (str or Path): output folder for reports
+        """
         now = datetime.datetime.now()
-        currenttime = str(now.strftime('%Y-%m-%d_%A_%H%M%S'))
-        self.report_folder_base = (
-            os.path.join(output_folder, 'iLEAPP_Reports_' + currenttime))
-        self.temp_folder = os.path.join(self.report_folder_base, 'temp')
-        OutputParameters.screen_output_file_path = (
-            os.path.join(self.report_folder_base,
-                         'Script Logs', 'Screen Output.html'))
-        OutputParameters.screen_output_file_path_devinfo = (
-            os.path.join(self.report_folder_base,
-                         'Script Logs', 'DeviceInfo.html'))
+        current_time = now.strftime('%Y-%m-%d_%A_%H%M%S')
 
-        os.makedirs(os.path.join(self.report_folder_base, 'Script Logs'))
-        os.makedirs(self.temp_folder)
+        report_folder_base = (Path(output_folder) /
+                              f'iLEAPP_Reports_{current_time}')
+
+        self.run_time_info['report_folder_base'] = report_folder_base
+
+        temp_folder = report_folder_base / 'temp'
+
+        self.run_time_info['temp_folder'] = temp_folder
+
+        self.run_time_info['log_folder'] = report_folder_base / 'Script Logs'
+
+        os.makedirs(os.path.join(report_folder_base, 'Script Logs'))
+        os.makedirs(temp_folder)
 
 
 # Global Class

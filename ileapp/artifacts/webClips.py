@@ -3,7 +3,7 @@ import os
 import plistlib
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logdevinfo, logfunc, tsv
+from tools.ilapfuncs import is_platform_windows,   tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -11,16 +11,15 @@ from artifacts.Artifact import AbstractArtifact
 class WebClips (AbstractArtifact):
     _name = 'Webclips'
     _search_dirs = ('*WebClips/*.webclip/*')
-    _report_section = 'iOS Screens'
+    _category = 'iOS Screens'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         webclip_data = {}
         data_list = []
         for path_val in files_found:
             # Extract the unique identifier
             pathstr = str(path_val).replace("\\", "/")
-            
+
             unique_id = pathstr.split("/WebClips/")[1].split(".webclip/")[0]
             if unique_id.endswith('.webclip'):
                 unique_id = unique_id[:-8]
@@ -39,12 +38,12 @@ class WebClips (AbstractArtifact):
             # Is this the path to the icon?
             if "icon.png" in pathstr:
                 webclip_data[unique_id]["Icon_path"] = path_val
-        
+
         logfunc(f"Webclips found: {len(webclip_data)} ")
 
         for unique_id, data in webclip_data.items():
             # Info plist information
-            #logfunc(str(data))
+            # logfunc(str(data))
             info_plist_raw = open(data["Info"], "rb")
             info_plist = plistlib.load(info_plist_raw)
             webclip_data[unique_id]["Title"] = info_plist["Title"]
@@ -56,7 +55,7 @@ class WebClips (AbstractArtifact):
             icon_data = base64.b64encode(icon_data_raw.read()).decode("utf-8")
             webclip_data[unique_id]["Icon_data"] = icon_data
             icon_data_raw.close()
-            
+
         # Create the report
         for unique_id, data in webclip_data.items():
             htmlstring = (f'<table>')
@@ -66,11 +65,11 @@ class WebClips (AbstractArtifact):
             htmlstring = htmlstring +('</tr>')
             htmlstring = htmlstring +('</table>')
             data_list.append((htmlstring,))
-            
-        
+
+
         report = ArtifactHtmlReport(f'WebClips')
         report.start_artifact_report(report_folder, f'WebClips')
         report.add_script()
-        data_headers = ((f'WebClips',))     
+        data_headers = ((f'WebClips',))
         report.write_artifact_data_table(data_headers, data_list, files_found[0], html_escape=False)
         report.end_artifact_report()

@@ -3,7 +3,7 @@ import sys
 
 import biplist
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, timeline, tsv
+from tools.ilapfuncs import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -11,10 +11,9 @@ from artifacts.Artifact import AbstractArtifact
 class SafariRecentWebSearches (AbstractArtifact):
     _name = 'Safari Recent WebSearches'
     _search_dirs = ('**/Library/Preferences/com.apple.mobilesafari.plist')
-    _report_section = 'Safari Browser'
+    _category = 'Safari Browser'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         for file_found in files_found:
             file_found = str(file_found)

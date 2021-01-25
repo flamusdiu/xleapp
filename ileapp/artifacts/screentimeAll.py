@@ -1,6 +1,6 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version  # use to search per version number
-from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, tsv
+from tools.ilapfuncs import open_sqlite_db_readonly, tsv
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 
@@ -11,10 +11,9 @@ class ScreentimeAll (AbstractArtifact):
 
     _name = 'Screentime Timed Items'
     _search_dirs = ('**/RMAdminStore-Local.sqlite')
-    _report_section = 'Screentime'
+    _category = 'Screentime'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
 
@@ -45,7 +44,7 @@ class ScreentimeAll (AbstractArtifact):
             when 'DH1009' then 'other'
             else zusagecategory.zidentifier
             end,
-            zusagetimeditem.ztotaltimeinseconds,	
+            zusagetimeditem.ztotaltimeinseconds,
             zusagetimeditem.ztotaltimeinseconds/60.00,
             zusageblock.znumberofpickupswithoutapplicationusage,
             zcoredevice.zname,
@@ -59,7 +58,7 @@ class ScreentimeAll (AbstractArtifact):
             zcoreuser.zgivenname as 'given name',
             zcoreuser.zfamilyname as 'family name',
             zcoreuser.zfamilymembertype
-            from zusagetimeditem, zusagecategory, zusageblock, zusage, zcoreuser, zcoredevice 
+            from zusagetimeditem, zusagecategory, zusageblock, zusage, zcoreuser, zcoredevice
             where zusagecategory.z_pk = zusagetimeditem.zcategory
             and zusagecategory.zblock = zusageblock.z_pk
             and zusageblock.zusage = zusage.z_pk
@@ -88,7 +87,7 @@ class ScreentimeAll (AbstractArtifact):
             when 'DH1009' then 'other'
             else zusagecategory.zidentifier
             end,
-            zusagetimeditem.ztotaltimeinseconds,	
+            zusagetimeditem.ztotaltimeinseconds,
             zusagetimeditem.ztotaltimeinseconds/60.00,
             zusageblock.znumberofpickupswithoutapplicationusage,
             zcoredevice.zname,
@@ -115,20 +114,20 @@ class ScreentimeAll (AbstractArtifact):
                 report = ArtifactHtmlReport('Screentime Timed Items')
                 report.start_artifact_report(report_folder, 'Timed Items')
                 report.add_script()
-                data_headers = ('Hour','Bundle ID','Domain','Category ID', 'App Usage Time Item in Seconds','App Usage Time Item in Minutes','Number of Pickpus w/o App Usage','Name','Platform','Given Name','Family Name','Family Member Type')  
+                data_headers = ('Hour','Bundle ID','Domain','Category ID', 'App Usage Time Item in Seconds','App Usage Time Item in Minutes','Number of Pickpus w/o App Usage','Name','Platform','Given Name','Family Name','Family Member Type')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
                 tsvname = 'Screentime Timed Items'
                 tsv(report_folder, data_headers, data_list, tsvname)
             else:
-                for row in all_rows: 
+                for row in all_rows:
                     data_list.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10]))
 
                 report = ArtifactHtmlReport('Screentime Timed Items')
                 report.start_artifact_report(report_folder, 'Timed Items')
                 report.add_script()
-                data_headers = ('Hour','Bundle ID','Domain','Category ID', 'App Usage Time Item in Seconds','App Usage Time Item in Minutes','Number of Pickpus w/o App Usage','Name','Local User Device State','Given Name','Family Name')   
+                data_headers = ('Hour','Bundle ID','Domain','Category ID', 'App Usage Time Item in Seconds','App Usage Time Item in Minutes','Number of Pickpus w/o App Usage','Name','Local User Device State','Given Name','Family Name')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
@@ -142,7 +141,7 @@ class ScreentimeAll (AbstractArtifact):
             cursor.execute('''
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
-            zusagecounteditem.zbundleidentifier, 
+            zusagecounteditem.zbundleidentifier,
             zusagecounteditem.znumberofnotifications,
             zusagecounteditem.znumberofpickups,
             datetime(zusageblock.zfirstpickupdate+978307200,'unixepoch'),
@@ -169,7 +168,7 @@ class ScreentimeAll (AbstractArtifact):
             cursor.execute('''
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
-            zusagecounteditem.zbundleidentifier, 
+            zusagecounteditem.zbundleidentifier,
             zusagecounteditem.znumberofnotifications,
             zusagecounteditem.znumberofpickups,
             datetime(zusageblock.zfirstpickupdate+978307200,'unixepoch'),
@@ -178,7 +177,7 @@ class ScreentimeAll (AbstractArtifact):
             zcoredevice.zlocaluserdevicestate,
             zcoreuser.zgivenname,
             zcoreuser.zfamilyname
-            from zusagecounteditem, zusageblock, zusage, zcoreuser, zcoredevice 
+            from zusagecounteditem, zusageblock, zusage, zcoreuser, zcoredevice
             where zusagecounteditem.zblock == zusageblock.z_pk
             and zusageblock.zusage == zusage.z_pk
             and zusage.zuser == zcoreuser.z_pk
@@ -197,14 +196,14 @@ class ScreentimeAll (AbstractArtifact):
                 report = ArtifactHtmlReport('Screentime Counted Items')
                 report.start_artifact_report(report_folder, 'Counted Items')
                 report.add_script()
-                data_headers = ('Hour','Bundle ID','Number of Notifications','Number of Pickups', 'First Pickup','Number of Pickups W/O App Usage','Name','Local User Device State','Platform','Given Name','Family Name')  
+                data_headers = ('Hour','Bundle ID','Number of Notifications','Number of Pickups', 'First Pickup','Number of Pickups W/O App Usage','Name','Local User Device State','Platform','Given Name','Family Name')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
 
                 tsvname = 'Screentime Counted Items'
                 tsv(report_folder, data_headers, data_list, tsvname)
             else:
-                for row in all_rows: 
+                for row in all_rows:
                     data_list.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]))
 
                 report = ArtifactHtmlReport('Screentime Counted Items')
@@ -226,7 +225,7 @@ class ScreentimeAll (AbstractArtifact):
             distinct
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
             zusageblock.zscreentimeinseconds,
-            zusageblock.zscreentimeinseconds/60.00,	
+            zusageblock.zscreentimeinseconds/60.00,
             zcoreuser.zgivenname,
             zcoreuser.zfamilyname,
             zcoredevice.zname,

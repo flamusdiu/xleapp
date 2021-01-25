@@ -1,37 +1,42 @@
+from helpers.ilapfuncs import timeline, tsv
+from helpers.db import open_sqlite_db_readonly
+from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
-from ileap.helpers.ilapfuncs import (logfunc, open_sqlite_db_readonly,
-                                     timeline, tsv)
 
 from artifacts.Artifact import AbstractArtifact
 
 
 class AggDictPasscode(AbstractArtifact):
-        
+
     _name = "Aggregate Dictionary Passcode State"
     _search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
-    _report_section = 'Aggregate Dictionary'
+    _category = 'Aggregate Dictionary'
+    _web_icon = Icon.BOOK
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def __init__(self):
+        super().__init__(self)
+
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
 
-        cursor.execute("""
-        select
-        date(dayssince1970*86400, 'unixepoch'),
-        key,
-        value
-        from
-        scalars
-        where key like 'com.apple.passcode.numpasscode%'
-        """
+        cursor.execute(
+            """
+            select
+            date(dayssince1970*86400, 'unixepoch'),
+            key,
+            value
+            from
+            scalars
+            where key like 'com.apple.passcode.numpasscode%'
+            """
         )
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
         data_list = []
-        if usageentries > 0:    
+        if usageentries > 0:
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2]))
 

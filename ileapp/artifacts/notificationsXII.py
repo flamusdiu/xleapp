@@ -3,7 +3,7 @@ import os
 
 import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, timeline, tsv
+from tools.ilapfuncs import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -11,10 +11,9 @@ from artifacts.Artifact import AbstractArtifact
 class NotificationsXII(AbstractArtifact):
     _name = 'iOS Notifications'
     _search_dirs = ('*private/var/mobile/Library/UserNotifications*')
-    _report_section = 'Notifications'
+    _category = 'Notifications'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
 
         bundle_info = get_bundle_info(files_found)
         data_list = []
@@ -56,9 +55,9 @@ class NotificationsXII(AbstractArtifact):
                                 if isinstance(v, bytes):
                                     logfunc(f'Found binary data, look into this one later k={k}!')
                                 elif isinstance(v, dict):
-                                    pass # recurse look for plists #TODO
+                                    pass # recurse look for plists # TODO
                                 elif isinstance(v, list):
-                                    pass # recurse look for plists #TODO
+                                    pass # recurse look for plists # TODO
                                 other_dict[k] = str(v)
                         if subtitle:
                             title += f'[{subtitle}]'

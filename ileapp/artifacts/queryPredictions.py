@@ -1,5 +1,5 @@
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, timeline, tsv
+from tools.ilapfuncs import open_sqlite_db_readonly, timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -7,10 +7,9 @@ from artifacts.Artifact import AbstractArtifact
 class QueryPredictions(AbstractArtifact):
     _name = 'Query Predictions'
     _search_dirs = ('**/query_predictions.db')
-    _report_section = 'SMS & iMessage'
+    _category = 'SMS & iMessage'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
@@ -28,7 +27,7 @@ class QueryPredictions(AbstractArtifact):
         usageentries = len(all_rows)
         if usageentries > 0:
             data_list = []
-            for row in all_rows:    
+            for row in all_rows:
                 data_list.append((row[0], row[1], row[2], row[3], row[4], row[5]))
 
             report = ArtifactHtmlReport('Query Predictions')

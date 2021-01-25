@@ -1,26 +1,19 @@
 import datetime
 import glob
 import os
-import re
-import string
-import sys
-import textwrap
-from html import escape
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ccl import ccl_bplist
-from tools.ilapfuncs import is_platform_windows, logfunc
+from helpers.parsers import cclparser
+from helpers.ilapfuncs import logfunc
 
 from artifacts.Artifact import AbstractArtifact
-
 
 class NotificationsXI (AbstractArtifact):
     _name = 'iOS Notifications'
     _search_dirs = ('*PushStore*')
     _report_section = 'Notifications'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(files_found, seeker):
         pathfound = 0
         count = 0
         notdircount = 0
@@ -29,19 +22,15 @@ class NotificationsXI (AbstractArtifact):
         cocoa = datetime.datetime(2001, 1, 1)  # UTC
         delta = cocoa - unix
 
-        __location__ = os.path.dirname(os.path.abspath(__file__))
+        __location__ = Path.cwd().resolve()
 
-        f = open(os.path.join(__location__,"NotificationParams.txt"), "r")
-        notiparams = [line.strip() for line in f]
-        f.close()
-        
         pathfound = str(files_found[0])
-        #logfunc(pathfound)
+        # logfunc(pathfound)
         if pathfound == 0:
             logfunc("No PushStore directory located")
         else:
-            #logfunc('Pathfound was found')
-            folder = report_folder 
+            # logfunc('Pathfound was found')
+            folder = self.report_folder
             # logfunc("Processing:")
             for filename in glob.iglob(pathfound + "/**", recursive=True):
                 if os.path.isfile(filename):  # filter dirs
@@ -52,14 +41,14 @@ class NotificationsXI (AbstractArtifact):
                     # create directory
                     if filename.endswith("pushstore"):
                         # create directory where script is running from
-                        #logfunc(filename)  # full path
+                        # logfunc(filename)  # full path
                         notdircount = notdircount + 1
-                        # logfunc (os.path.basename(file_name)) #filename with  no extension
+                        # logfunc (os.path.basename(file_name)) # filename with  no extension
                         openplist = os.path.basename(
                             os.path.normpath(filename)
                         )  # filename with extension
                         # logfunc (openplist)
-                        # bundlepath = (os.path.basename(os.path.dirname(filename)))#previous directory
+                        # bundlepath = (os.path.basename(os.path.dirname(filename)))# previous directory
                         bundlepath = file_name
                         appdirect = folder + bundlepath
                         # logfunc(appdirect)
@@ -67,7 +56,7 @@ class NotificationsXI (AbstractArtifact):
 
                         # open the plist
                         p = open(filename, "rb")
-                        plist = ccl_bplist.load(p)
+                        plist = cclparser.load(p)
                         plist2 = plist["$objects"]
 
                         long = len(plist2)
@@ -80,18 +69,18 @@ class NotificationsXI (AbstractArtifact):
                         h.write(filename)
                         h.write("<br/>")
                         h.write(
-                            "<style> table, td {border: 1px solid black; border-collapse: collapse;}tr:nth-child(even) {background-color: #f2f2f2;} .table th { background: #888888; color: #ffffff}.table.sticky th{ position:sticky; top: 0; }</style>"
+                            "<style> table, td {border: 1px solid black; border-collapse: collapse;}tr:nth-child(even) {background-color: # f2f2f2;} .table th { background: # 888888; color: # ffffff}.table.sticky th{ position:sticky; top: 0; }</style>"
                         )
                         h.write("<br/>")
 
                         h.write('<button onclick="hideRows()">Hide rows</button>')
                         h.write('<button onclick="showRows()">Show rows</button>')
 
-                        f = open(os.path.join(__location__,"script.txt"), "r")
+                        f = open(os.path.join(__location__, "script.txt"), "r")
                         for line in f:
                             h.write(line)
                         f.close()
-                        
+
                         h.write("<br>")
                         h.write('<table name="hide">')
                         h.write('<tr name="hide">')
@@ -273,9 +262,9 @@ class NotificationsXI (AbstractArtifact):
                                                 + ".bplist",
                                                 "rb",
                                             )
-                                            secondplist = ccl_bplist.load(procfile)
+                                            secondplist = cclparser.load(procfile)
                                             secondplistint = secondplist["$objects"]
-                                            #logfunc("Bplist processed and exported.")
+                                            # logfunc("Bplist processed and exported.")
                                             exportedbplistcount = exportedbplistcount + 1
                                             h.write('<tr name="hide">')
                                             h.write("<td>NS.data</td>")
@@ -299,10 +288,10 @@ class NotificationsXI (AbstractArtifact):
                     elif "AttachmentsList" in file_name:
                         test = 0  # future development
 
-        path = report_folder
+        path = self.report_folder
         level2, level1 = (os.path.split(path))
-        
-        #final = level2+'/'+level1
+
+        # final = level2+'/'+level1
         dict = {}
         files = os.listdir(path)
         for name in files:
@@ -314,24 +303,71 @@ class NotificationsXI (AbstractArtifact):
                 logfunc(nade)
                 pass
 
-            
         data_list = []
         for k, v in dict.items():
             v = v / 1000
             # logfunc(f'{k} -> {v}')
             data_list.append((k, v))
-        
+
         location = pathfound
         description = 'iOS <= 11 Notifications'
         report = ArtifactHtmlReport('iOS Notificatons')
-        report.start_artifact_report(report_folder, 'iOS Notifications', description)
+        report.start_artifact_report(self.report_folder, 'iOS Notifications', description)
         report.add_script()
         data_headers = ('Bundle GUID', 'Reports Size')
         report.write_artifact_data_table(data_headers, data_list, location, html_escape=False)
         report.end_artifact_report()
-        
 
         logfunc("Total notification directories processed:" + str(notdircount))
         logfunc("Total exported bplists from notifications:" + str(exportedbplistcount))
         if notdircount == 0:
             logfunc("No notifications located.")
+
+NotificationParams = ['AppNotificationAttachments',
+                      'AppNotificationBadgeNumber',
+                      'AppNotificationContentAvailable',
+                      'AppNotificationCreationDate',
+                      'AppNotificationIdentifier',
+                      'AppNotificationMessage',
+                      'AppNotificationMessageLocalizationArguments',
+                      'AppNotificationMessageLocazationKey',
+                      'AppNotificationMutableContent',
+                      'AppNotificationSummaryArgument',
+                      'AppNotificationSummaryArgumentCount',
+                      'AppNotificationTitle',
+                      'BadgeApplicationIcon',
+                      'CriticalAlertSound',
+                      'HasDefaultActionKey',
+                      'Header',
+                      'SBSPushStoreNotificationCategoryKey',
+                      'SBSPushStoreNotificationThreadKey',
+                      'SchemaVersion',
+                      'ShouldAuthenticateDefaultAction',
+                      'ShouldBackgroundDefaultAction',
+                      'ShouldHideDate',
+                      'ShouldHideTime',
+                      'ShouldIgnoreDoNotDisturb',
+                      'ShouldIgnoreDowntime',
+                      'ShouldPlaySound',
+                      'ShouldPresentAlert',
+                      'ShouldPreventNotificationDismissalAfterDefaultAction',
+                      'ShouldSuppressScreenLightUp',
+                      'ShouldSuppressSyncDismissalWhenRemoved',
+                      'ShouldUseRequestIdentifierForDismissalSync',
+                      'SoundMaximumDuration',
+                      'SoundShouldIgnoreRingerSwitch',
+                      'SoundShouldRepeat',
+                      'ToneAlertType',
+                      'ToneFileName',
+                      'ToneMediaLibraryItemIdentifier',
+                      'TriggerRepeatInterval',
+                      'TriggerRepeats',
+                      'TriggerTimeInterval',
+                      'UNNotificationAlertDestination',
+                      'UNNotificationCarPlayDestination',
+                      'UNNotificationDefaultDestinations',
+                      'UNNotificationLockScreenDestination',
+                      'UNNotificationNotificationCenterDestination',
+                      'UNNotificationTriggerType',
+                      'UNNotificationUserInfo'
+                      ]

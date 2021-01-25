@@ -5,7 +5,7 @@ from os import listdir
 from os.path import basename, dirname, isfile, join
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, timeline, tsv
+from tools.ilapfuncs import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -13,10 +13,9 @@ from artifacts.Artifact import AbstractArtifact
 class VoiceRecording (AbstractArtifact):
     _name = 'Voice Recordings'
     _search_dirs = ('**/Recordings/*.composition/manifest.plist', '**/Recordings/*.m4a')
-    _report_section = 'Voice-Recordings'
+    _category = 'Voice-Recordings'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         if len(files_found) > 0:
             data_list = []
             plist_files = []
@@ -39,11 +38,11 @@ class VoiceRecording (AbstractArtifact):
                     pl = plistlib.load(file)
                     ct = unix_epoch_to_readable_date(pl['RCSavedRecordingCreationTime'])
 
-                    audio = ''' 
+                    audio = '''
                                 <audio controls>
                                     <source src={} type="audio/wav">
                                     <p>Your browser does not support HTML5 audio elements.</p>
-                                </audio> 
+                                </audio>
                                 '''.format(m4a_file)
 
                     data_list.append((ct, pl['RCSavedRecordingTitle'], pl['RCComposedAVURL'].split('//')[1], audio))

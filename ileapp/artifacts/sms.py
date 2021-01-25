@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 from html_report.artifact_report import ArtifactHtmlReport
 from html_report.chat_rendering import chat_HTML, render_chat
-from tools.ilapfuncs import (is_platform_windows, logfunc,
+from tools.ilapfuncs import(is_platform_windows,
                              open_sqlite_db_readonly, sanitize_file_name,
                              timeline, tsv)
 
@@ -14,10 +14,9 @@ from artifacts.Artifact import AbstractArtifact
 class SMS (AbstractArtifact):
     _name = 'SMS'
     _search_dirs = ('**/sms.db')
-    _report_section = 'SMS & iMessage'
+    _category = 'SMS & iMessage'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         sms_df = pd.read_sql_query('''

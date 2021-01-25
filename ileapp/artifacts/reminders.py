@@ -1,7 +1,7 @@
 from os.path import dirname
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import logfunc, open_sqlite_db_readonly, timeline, tsv
+from tools.ilapfuncs import open_sqlite_db_readonly, timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -9,10 +9,9 @@ from artifacts.Artifact import AbstractArtifact
 class Reminders (AbstractArtifact):
     _name = 'Reminders'
     _search_dirs = ('**/Reminders/Container_v1/Stores/*.sqlite')
-    _report_section = 'Reminders'
+    _category = 'Reminders'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         for file_found in files_found:
             db = open_sqlite_db_readonly(file_found)

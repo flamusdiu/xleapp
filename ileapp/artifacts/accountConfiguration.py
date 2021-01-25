@@ -1,8 +1,7 @@
 import plistlib
 
-from gui.modules.web_icons import Icon
-from html_report.artifact_report import ArtifactHtmlReport
-from helpers import tsv
+from html_report import Icon
+from helpers.ilapfuncs import tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -11,12 +10,13 @@ class AccountConfiguration(AbstractArtifact):
 
     _name = 'Account Configuration'
     _search_dirs = ('**/com.apple.accounts.exists.plist')
-    _report_section = 'Accounts'
+    _category = 'Accounts'
     _web_icon = Icon.USER
 
+    def __init__(self):
+        super().__init__(self)
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         file_found = str(files_found[0])
         with open(file_found, "rb") as fp:
@@ -24,12 +24,18 @@ class AccountConfiguration(AbstractArtifact):
             for key, val in pl.items():
                 data_list.append((key, val))
 
-        report = ArtifactHtmlReport('Account Configuration')
-        report.start_artifact_report(report_folder, 'Account Configuration')
+        self.data = data_list
+        self.files_found = files_found
+
+    def report(self):
+        report_folder = self._props.run_time_info['report_folder_path']
+
+        report = self.artifact_report
+        report.start_artifact_report(report_folder, self.name)
         report.add_script()
         data_headers = ('Key', 'Values')
-        report.write_artifact_data_table(data_headers, data_list, file_found)
+        report.write_artifact_data_table(data_headers, self.data,
+                                         self.files_found)
         report.end_artifact_report()
 
-        tsvname = 'Account Configuration'
-        tsv(report_folder, data_headers, data_list, tsvname)
+        tsv(report_folder, data_headers, self.datat, self.name)

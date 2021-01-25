@@ -1,5 +1,6 @@
-from helpers import logfunc, timeline, tsv
+from helpers.ilapfuncs import timeline, tsv
 from helpers.db import open_sqlite_db_readonly
+from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
 
 from artifacts.Artifact import AbstractArtifact
@@ -9,10 +10,13 @@ class AddressBook(AbstractArtifact):
 
     _name = 'Address Book'
     _search_dirs = ('**/AddressBook.sqlitedb')
-    _report_section = 'Address Book'
+    _category = 'Address Book'
+    _web_icon = Icon.BOOK_OPEN
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def __init__(self):
+        super().__init__(self)
+
+    def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()

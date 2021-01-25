@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logdevinfo, logfunc, tsv
+from tools.ilapfuncs import is_platform_windows,   tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -12,10 +12,9 @@ from artifacts.Artifact import AbstractArtifact
 class MobileActivationLogs(AbstractArtifact):
     _name = 'Mobile Activation Logs'
     _search_dirs = ('**/mobileactivationd.log*')
-    _report_section = 'Mobile Activation Logs'
+    _category = 'Mobile Activation Logs'
 
-    @staticmethod
-    def get(files_found, report_folder, seeker):
+    def get(self, files_found, seeker):
         data_list = []
         data_list_info = []
 
@@ -29,12 +28,12 @@ class MobileActivationLogs(AbstractArtifact):
                 file_name = pathlib.Path(file_found).name
                 source_files.append(file_found)
 
-            with open(file_found, 'r') as fp:        
+            with open(file_found, 'r') as fp:
                 data = fp.readlines()
                 linecount = 0
                 hitcount = 0
                 activationcount = 0
-                
+
                 for line in data:
                     linecount += 1
                     date_filter = re.compile(r'(([A-Za-z]+[\s]+([a-zA-Z]+[\s]+[0-9]+)[\s]+([0-9]+\:[0-9]+\:[0-9]+)[\s]+([0-9]{4}))([\s]+[\[\d\]]+[\s]+[\<a-z\>]+[\s]+[\(\w\)]+[\s]+[A-Z]{2}\:[\s]+)([main\:\s]*.*)$)')
@@ -51,9 +50,9 @@ class MobileActivationLogs(AbstractArtifact):
                             hitcount += 1
                             upgrade_match = re.search((r'((.*)(Upgrade\s+from\s+[\w]+\s+to\s+[\w]+\s+detected\.$))'), values)
                             if upgrade_match:
-                                upgrade = upgrade_match.group(3)            
+                                upgrade = upgrade_match.group(3)
                                 data_list.append((ma_datetime, upgrade, file_name))
-                        
+
                         if '____________________ Mobile Activation Startup _____________________' in values:
                             activationcount += 1
                             ma_startup_line = str(linecount)
@@ -63,7 +62,7 @@ class MobileActivationLogs(AbstractArtifact):
                     upgrade_entries = (f'Found {hitcount} Upgrade entries in {file_name}')
                     boot_entries = (f'Found {activationcount} Mobile Activation entries in {file_name}')
                 data_list_info.append((boot_entries, upgrade_entries))
-                
+
         report = ArtifactHtmlReport('Mobile Activation Logs')
         report.start_artifact_report(report_folder, 'Mobile Activation Logs')
         report.add_script()
@@ -71,12 +70,11 @@ class MobileActivationLogs(AbstractArtifact):
         data_headers = ('Datetime', 'Event', 'Log Name')
 
         source_files_found = ', '.join(source_files)
-        
+
         report.write_artifact_data_table(data_headers_info, data_list_info, source_files_found, cols_repeated_at_bottom=False)
         report.write_artifact_data_table(data_headers, data_list, source_files_found, True, False)
         report.end_artifact_report()
-        
+
         tsvname = 'Mobile Activation Logs'
         tsv(report_folder, data_headers, data_list, tsvname)
         tsv(report_folder, data_headers_info, data_list_info, tsvname)
-        
