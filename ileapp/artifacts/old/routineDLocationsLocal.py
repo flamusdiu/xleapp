@@ -5,7 +5,7 @@ import artifacts.artGlobals
 
 from packaging import version
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import  timeline, tsv, kmlgen, is_platform_windows, open_sqlite_db_readonly
+from helpers import  timeline, tsv, kmlgen, is_platform_windows, open_sqlite_db_readonly
 
 from artifacts.Artifact import AbstractArtifact
 

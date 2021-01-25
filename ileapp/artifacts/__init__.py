@@ -4,16 +4,196 @@ import io
 import os
 import pathlib
 import traceback
+from abc import ABC, abstractmethod
 from collections import OrderedDict, namedtuple
 from textwrap import TextWrapper
 from time import gmtime, process_time, strftime
 
 import html_report
 import prettytable
-from helpers.ilapfuncs import is_platform_windows
+from helpers import is_platform_windows
+from globals import props
 from helpers.search_files import (FileSeekerDir, FileSeekerItunes,
                                   FileSeekerTar, FileSeekerZip)
-from helpers.version_info import aleapp_version
+from html_report.artifact_report import ArtifactHtmlReport
+from html_report.web_icons import Icon
+
+# from helpers.version_info import aleapp_version
+
+# Setup named tuple to hold each artifact
+Artifact = namedtuple('Artifact', ['name', 'cls'])
+Artifact.__doc__ += ': Loaded forensic artifact'
+Artifact.cls.__doc__ = 'Artifact object class'
+Artifact.name.__doc__ = 'Artifact short name'
+
+
+class AbstractArtifact(ABC):
+    """Abstract class for creating Artifacts
+    """
+
+    _core_artifact = False
+    _long_running_process = False
+    _web_icon = Icon.ALERT_TRIANGLE
+
+    def __init__(self, name):
+        self._name = name
+        self._category = 'None'
+        self._artifact_report = ArtifactHtmlReport()
+
+    @abstractmethod
+    def get(files_found, seeker):
+        """Gets artifacts located in `files_found` params by the
+        `seeker`. It saves should save the report in `report_folder`.
+
+        Args:
+            files_found (tuple): list of files found
+                by `seeker`
+            report_folder (str): location of the `report_folder` to save
+                report of artifact
+            seeker (FileSeekerBase): object to search for files
+        """
+        print("Needs to implement AbastractArtifact's get() method!")
+
+    @property
+    def long_running_process(self):
+        """True if this artifact takes an extremely long time to run.
+
+            Set to true to mark this artifact has having an extremely
+            long run time during processing of the artifact. Artifacts
+            whose run time is greater then 2 mins probably need to
+            have this value set.
+
+            This will cause the artifact not to be select by default
+            when using the GUI;
+
+            Returns:
+                bool: True/False if long running process
+        """
+        return self._long_running_process
+
+    @property
+    def web_icon(self):
+        """
+        str: Returns Bootstrap web icon class for this artifact
+        """
+        return self._web_icon
+
+    @property
+    def name(self):
+        """
+        str: Long name of the Artifact
+        """
+        return self._name
+
+    @property
+    def search_dirs(self):
+        """
+        tuple: Tuple containing search regex for
+        location of files containing the Artifact.
+        """
+        return self._search_dirs
+
+    @property
+    def category(self):
+        """
+        str: Section of the report the artifacts shows under.
+        """
+        return self._category
+
+    @property
+    def core_artifact(self):
+        """bool: Sets if this is a core artifact
+        """
+        return self._core_artifact
+
+    @property
+    def artifact_report(self):
+        """Returns object for the artifact html report
+
+        Call `self.artifact_report.init()` and pass in report name
+        to set it.
+
+        Returns:
+            ArtifactHtmlReport: artifact html report object
+        """
+        return self._artifact_report
+
+    @artifact_report.setter
+    def artifact_report(self, artifact_report):
+        self.artifact_report = artifact_report
+
+    @property
+    def report_folder(self):
+        """Wrapper for the report folder object
+        """
+        return self._props.run_time_info['report_folder']
+
+    @property
+    def file_found(self):
+        """list: files or folders found for an artifact
+        """
+        self._files_found
+
+    @file_found.setter
+    def file_found(self, files):
+        self._files_found = files
+
+    @property
+    def data(self):
+        """list: data found per artifact
+        """
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        self._data = data
+
+    def process(self, files_found, seeker, report_folder_base):
+        """Processes artifact
+
+           1. Create the report folder for it
+           2. Fetch the method (function) and call it
+           3. Wrap processing function in a try..except block
+
+        Args:
+            files_found (tuple): list of files found by
+                seeker
+            report_folder (str): location of the :obj:`report_folder`
+                to save report of artifact
+            seeker (FileSeekerBase): object to search for files
+        """
+        start_time = process_time()
+        slash = '\\' if is_platform_windows() else '/'
+        artifact_short_name = type(self).__name__
+        # logfunc(f'{self.report_section} [{artifact_short_name}] artifact'
+        #       f'executing')
+        report_folder = os.path.join(report_folder_base, self.name) + slash
+        try:
+            if os.path.isdir(report_folder):
+                pass
+            else:
+                os.makedirs(report_folder)
+        except Exception as ex:
+            pass
+            # logfunc(f'Error creating {self.name} report '
+            #       f'directory at path {report_folder}')
+            # logfunc(f'Reading {self.name} artifact failed!')
+            # logfunc(f'Error was {ex}')
+            return
+        try:
+            self.get(files_found, report_folder, seeker)
+        except Exception as ex:
+            pass
+            # logfunc(f'Reading {self.name} artifact had errors!')
+            # logfunc(f'Error was {ex}')
+            # logfunc(f'Exception Traceback: {traceback.format_exc()}')
+            return
+
+        end_time = process_time()
+        run_time_secs = end_time - start_time
+        # run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
+        # logfunc(f'{self.report_section} [{artifact_short_name}] artifact '
+        #       f'completed in time {run_time_secs} seconds')
 
 
 def get_list_of_artifacts(ordered=True):
@@ -30,12 +210,6 @@ def get_list_of_artifacts(ordered=True):
     module_dir = pathlib.Path(importlib.util.find_spec(__name__).origin).parent
     artifact_list = OrderedDict() if ordered else {}
 
-    # Setup named tuple to hold each artifact
-    Artifact = namedtuple('Artifact', ['name', 'cls'])
-    Artifact.__doc__ += ': Loaded forensic artifact'
-    Artifact.cls.__doc__ = 'Artifact object class'
-    Artifact.name.__doc__ = 'Artifact short name'
-
     for it in module_dir.glob('*.py'):
         if (it.suffix == '.py' and it.stem not in ['__init__']):
 
@@ -46,7 +220,7 @@ def get_list_of_artifacts(ordered=True):
             for name, cls in module_members:
                 if (not str(cls.__module__).endswith('Artifact')
                         and str(cls.__module__).startswith(__name__)):
-                    print(name)
+
                     tmp_artifact = Artifact(name=cls().name, cls=cls())
                     artifact_list.update({name: tmp_artifact})
 
@@ -109,7 +283,7 @@ def generate_artifact_table():
     print('Artifact table generation completed')
 
 
-def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
+def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):  # noqa C901
     """Processes all artifacts
 
     Args:
@@ -123,17 +297,6 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
         bool: Returns true/false on success/failure
     """
     start = process_time()
-
-    logfunc('Procesing started. Please wait. This may take a few minutes...')
-
-    logfunc('\n-------------------------------------------------'
-            '-------------------------------------')
-    logfunc(f'iLEAPP v{aleapp_version}: iLEAPP Logs,'
-            f'Events, and Properties Parser')
-    logfunc('Objective: Triage iOS Full System Extractions.')
-    logfunc('By: Alexis Brignoni | @AlexisBrignoni | abrignoni.com')
-    logfunc('By: Yogesh Khatri   | @SwiftForensics | swiftforensics.com')
-    logdevinfo()
 
     seeker = None
     try:
@@ -150,26 +313,26 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
             seeker = FileSeekerItunes(input_path, out_params.temp_folder)
 
         else:
-            logfunc('Error on argument -o (input type)')
+            # logfunc('Error on argument -o (input type)')
             return False
     except Exception as ex:  # noqa
-        logfunc('Had an exception in Seeker - see details below.'
-                'Terminating Program!')
+        # logfunc('Had an exception in Seeker - see details below.'
+        #        'Terminating Program!')
         temp_file = io.StringIO()
         traceback.print_exc(file=temp_file)
-        logfunc(temp_file.getvalue())
+        # logfunc(temp_file.getvalue())
         temp_file.close()
         exit(1)
 
     # Now ready to run
-    logfunc(f'Artifact categories to parse: {str(len(search_list))}')
-    logfunc(f'File/Directory selected: {input_path}')
-    logfunc('\n--------------------------------------------'
-            '------------------------------------------')
+    # logfunc(f'Artifact categories to parse: {str(len(search_list))}')
+    # logfunc(f'File/Directory selected: {input_path}')
+    # logfunc('\n--------------------------------------------'
+    #       '------------------------------------------')
 
-    log = open(os.path.join(out_params.report_folder_base, 'Script Logs',
-               'ProcessedFilesLog.html'), 'w+', encoding='utf8')
-    log.write(f'Extraction/Path selected: {input_path}<br><br>')
+    # log = open(os.path.join(out_params.report_folder_base, 'Script Logs',
+    #           'ProcessedFilesLog.html'), 'w+', encoding='utf8')
+    # log.write(f'Extraction/Path selected: {input_path}<br><br>')
 
     categories_searched = 0
     # Special processing for iTunesBackup Info.plist as it is a
@@ -183,8 +346,9 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
             # removing lastBuild as this takes its place
             del search_list['lastBuild']
         else:
-            logfunc('Info.plist not found for iTunes Backup!')
-            log.write('Info.plist not found for iTunes Backup!')
+            pass
+            # logfunc('Info.plist not found for iTunes Backup!')
+            # log.write('Info.plist not found for iTunes Backup!')
         categories_searched += 1
         # GuiWindow.SetProgressBar(categories_searched * ratio)
 
@@ -200,35 +364,36 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
         for artifact_search_regex in search_regexes:
             found = seeker.search(artifact_search_regex)
             if not found:
-                logfunc()
-                logfunc(f'No files found for {name} '
-                        f'-> {artifact_search_regex}')
-                log.write(f'No files found for {name} '
-                          f'-> {artifact_search_regex}<br><br>')
+                pass
+                # logfunc()
+                # logfunc(f'No files found for {name} '
+                #        f'-> {artifact_search_regex}')
+                # log.write(f'No files found for {name} '
+                #          f'-> {artifact_search_regex}<br><br>')
             else:
                 files_found.extend(found)
         if files_found:
-            logfunc()
+            # logfunc()
             artifact.cls.process(files_found, seeker,
                                  out_params.report_folder_base)
             for pathh in files_found:
                 if pathh.startswith('\\\\?\\'):
                     pathh = pathh[4:]
-                log.write(f'Files for {artifact_search_regex} located '
-                          f'at {pathh}<br><br>')
+                # log.write(f'Files for {artifact_search_regex} located '
+                #          f'at {pathh}<br><br>')
         categories_searched += 1
         # GuiWindow.SetProgressBar(categories_searched * ratio)
-    log.close()
+    # log.close()
 
-    logfunc('')
-    logfunc('Processes completed.')
+    # logfunc('')
+    # logfunc('Processes completed.')
     end = process_time()
     run_time_secs = end - start
     run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
-    logfunc("Processing time = {}".format(run_time_HMS))
+    # logfunc("Processing time = {}".format(run_time_HMS))
 
-    logfunc('')
-    logfunc('Report generation started.')
+    # logfunc('')
+    # logfunc('Report generation started.')
     # remove the \\?\ prefix we added to input and output paths, so it does
     # not reflect in report
     if is_platform_windows():
@@ -238,9 +403,9 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):
             input_path = input_path[4:]
     html_report.generate_report(out_params.report_folder_base, run_time_secs,
                                 run_time_HMS, extracttype, input_path)
-    logfunc('Report generation Completed.')
-    logfunc('')
-    logfunc(f'Report location: {out_params.report_folder_base}')
+    # logfunc('Report generation Completed.')
+    # logfunc('')
+    # logfunc(f'Report location: {out_params.report_folder_base}')
     return True
 
 

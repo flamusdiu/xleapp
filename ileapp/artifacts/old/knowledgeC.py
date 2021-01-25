@@ -9,7 +9,7 @@ import textwrap
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
 from tools.ccl import ccl_bplist
-from tools.ilapfuncs import(is_platform_windows, kmlgen,
+from helpers import(is_platform_windows, kmlgen,
                              open_sqlite_db_readonly, timeline, tsv)
 from tools.parse3 import ParseProto
 

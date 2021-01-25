@@ -1,4 +1,4 @@
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
@@ -50,13 +50,17 @@ class AggDictPasscodeType(AbstractArtifact):
 
             description = ''
             report = ArtifactHtmlReport('Aggregate Dictionary Passcode Type')
-            report.start_artifact_report(report_folder, 'Passcode Type',
-                                         description)
+            report.start_artifact_report(
+                self.report_folder,
+                'Passcode Type',
+                description)
             report.add_script()
             data_headers = ('Day', 'Key', 'Value')
-            report.write_artifact_data_table(data_headers, data_list,
-                                             file_found)
+            report.write_artifact_data_table(
+                data_headers,
+                data_list,
+                file_found)
             report.end_artifact_report()
 
             tsvname = 'Agg Dict Dictionary Passcode Type'
-            tsv(report_folder, data_headers, data_list, tsvname)
+            tsv(self.report_folder, data_headers, data_list, tsvname)

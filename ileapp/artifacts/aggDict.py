@@ -1,4 +1,4 @@
-from helpers.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
@@ -60,4 +60,5 @@ class AggDict(AbstractArtifact):
             tlactivity = 'Aggregate Dictionary Distributed Keys'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc("No Aggregate Dictionary Distributed Keys Data available")
+            pass
+            # logfunc("No Aggregate Dictionary Distributed Keys Data available")

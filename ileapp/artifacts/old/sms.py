@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 from html_report.artifact_report import ArtifactHtmlReport
 from html_report.chat_rendering import chat_HTML, render_chat
-from tools.ilapfuncs import(is_platform_windows,
+from helpers import(is_platform_windows,
                              open_sqlite_db_readonly, sanitize_file_name,
                              timeline, tsv)
 

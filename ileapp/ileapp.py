@@ -4,13 +4,12 @@ from pathlib import Path
 from sys import argv, exit
 
 import artifacts
-from gui.gui import main_gui
+import html_report.artifact_report as report
 from helpers import is_platform_windows
-from helpers.properities import props
-from html_report.artifact_report import ArtifactHtmlReport
+from globals import props
 
 
-def main():
+def main():  # noqa C901
     """Main application entry point for CLI
     """
     parser = argparse.ArgumentParser(description='iLEAPP: iOS Logs, Events, and Plists Parser.')
@@ -21,10 +20,15 @@ def main():
     parser.add_argument('-l', '--artifact_table', required=False, action="store_true", help='Text file with table of artifacts')
 
     args = parser.parse_args()
-    props.artifact_report = ArtifactHtmlReport()
+
+    # configuration the global properties
+    props.init()
+    props.artifact_report = report.ArtifactHtmlReport()
 
     if len(argv) == 1:
-        main_gui()
+        import gui
+
+        gui.main()
     elif args.artifact_paths is True:
         artifacts.generate_artifact_path_list()
     elif args.artifact_table is True:

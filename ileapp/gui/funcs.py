@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import PySimpleGUI as sg
-from ileapl.helpers.properities import props
+from helpers.properties import props
 
 
 def ValidateInput(values, window):

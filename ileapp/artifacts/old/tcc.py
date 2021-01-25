@@ -1,6 +1,6 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version  # use to search per version number
-from tools.ilapfuncs import open_sqlite_db_readonly
+from helpers import open_sqlite_db_readonly
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 

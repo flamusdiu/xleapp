@@ -1,6 +1,6 @@
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import(kmlgen,  open_sqlite_db_readonly,
+from helpers import(kmlgen,  open_sqlite_db_readonly,
                              timeline, tsv)
 
 import artifacts.artGlobals

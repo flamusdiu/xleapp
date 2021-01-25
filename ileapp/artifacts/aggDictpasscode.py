@@ -1,4 +1,4 @@
-from helpers.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
@@ -43,19 +43,22 @@ class AggDictPasscode(AbstractArtifact):
             description = ''
             report = ArtifactHtmlReport('Aggregate Dictionary Passcode State')
             report.start_artifact_report(
-                                         report_folder, 'Passcode State',
-                                         description)
+                self.report_folder,
+                'Passcode State',
+                description)
             report.add_script()
             data_headers = ('Day', 'Key', 'Value')
-            report.write_artifact_data_table(data_headers,
-                                             data_list,
-                                             file_found)
+            report.write_artifact_data_table(
+                data_headers,
+                data_list,
+                file_found)
             report.end_artifact_report()
 
             tsvname = 'Agg Dict Dictionary Passcode State'
-            tsv(report_folder, data_headers, data_list, tsvname)
+            tsv(self.report_folder, data_headers, data_list, tsvname)
 
             tlactivity = 'Aggregate Dictionary Passcode State'
-            timeline(report_folder, tlactivity, data_list, data_headers)
+            timeline(self.report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc("No Agg Dict Dictionary Data available")
+            pass
+            # logfunc("No Agg Dict Dictionary Data available")

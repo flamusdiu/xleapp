@@ -3,7 +3,7 @@ import os
 from collections import ChainMap, defaultdict
 from pathlib import Path
 
-from artifacts import get_list_of_artifacts
+import artifacts
 
 THUMBNAIL_ROOT = '**/Media/PhotoData/Thumbnails/**'
 MEDIA_ROOT = '**/Media'
@@ -18,8 +18,8 @@ class Props(object):
     _selected_artifacts = {}
     _run_time_info = defaultdict(lambda: None)
 
-    def __init__(self):
-        self._artifact_list = get_list_of_artifacts(ordered=False)
+    def init(self):
+        self._artifact_list = artifacts.get_list_of_artifacts(ordered=False)
 
         self._core_artifacts = {
             [(name, artifact) for name, artifact in self._artifact_list.items()
@@ -44,6 +44,7 @@ class Props(object):
             dict: list of artifacts
         """
         return self._core_artifacts
+
 
     @property
     def installed_artifacts(self):

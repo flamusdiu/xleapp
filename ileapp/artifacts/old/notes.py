@@ -1,5 +1,5 @@
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import tsv, timeline, open_sqlite_db_readonly
+from helpers import tsv, timeline, open_sqlite_db_readonly
 
 from artifacts.Artifact import AbstractArtifact
 

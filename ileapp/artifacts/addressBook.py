@@ -1,4 +1,4 @@
-from helpers.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
@@ -66,6 +66,7 @@ class AddressBook(AbstractArtifact):
             tlactivity = 'Address Book'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc('No Address Book data available')
+            pass
+            # logfunc('No Address Book data available')
 
         db.close()

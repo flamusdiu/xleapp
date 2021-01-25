@@ -1,4 +1,4 @@
-# import the protobuf-decoder module 
+# import the protobuf-decoder module
 import blackboxprotobuf as pbparser
 
 # import the ktx parser

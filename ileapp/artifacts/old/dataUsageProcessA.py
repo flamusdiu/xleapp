@@ -1,5 +1,5 @@
 from helpers.db import open_sqlite_db_readonly
-from helpers.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 from html_report import Icon
 
 from artifacts.Artifact import AbstractArtifact

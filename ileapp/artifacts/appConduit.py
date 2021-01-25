@@ -2,7 +2,7 @@ import datetime
 import pathlib
 import re
 
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
 
@@ -92,25 +92,26 @@ class AppConduit(AbstractArtifact):
                         'Log File Name')
 
         report = ArtifactHtmlReport('App Conduit')
-        report.start_artifact_report(report_folder,
-                                     'App Conduit',
-                                     ('The AppConduit log file stores '
-                                      'information about interactions between '
-                                      'iPHone and other iOS devices, i.e. '
-                                      'Apple Watch'))
+        report.start_artifact_report(
+            self.report_folder,
+            'App Conduit',
+            ('The AppConduit log file stores information about interactions '
+             'between iPHone and other iOS devices, i.e. Apple Watch'))
         report.add_script()
         source_files_found = ', '.join(source_files)
 
-        report.write_artifact_data_table(data_headers_device_info,
-                                         device_type_and_info,
-                                         source_files_found,
-                                         cols_repeated_at_bottom=False)
-        report.write_artifact_data_table(data_headers,
-                                         data_list,
-                                         file_found,
-                                         True,
-                                         False)
+        report.write_artifact_data_table(
+            data_headers_device_info,
+            device_type_and_info,
+            source_files_found,
+            cols_repeated_at_bottom=False)
+        report.write_artifact_data_table(
+            data_headers,
+            data_list,
+            file_found,
+            True,
+            False)
         report.end_artifact_report()
 
         tsvname = 'App Conduit'
-        tsv(report_folder, data_headers, data_list, tsvname)
+        tsv(self.report_folder, data_headers, data_list, tsvname)

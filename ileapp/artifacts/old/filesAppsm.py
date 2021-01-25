@@ -5,7 +5,7 @@ import sqlite3
 import datetime
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import tsv, timeline, is_platform_windows, open_sqlite_db_readonly
+from helpers import tsv, timeline, is_platform_windows, open_sqlite_db_readonly
 
 from artifacts.Artifact import AbstractArtifact
 

@@ -7,7 +7,7 @@ import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import(is_platform_windows, kmlgen,
+from helpers import(is_platform_windows, kmlgen,
                              open_sqlite_db_readonly, timeline, tsv)
 
 import artifacts.artGlobals

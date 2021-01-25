@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows,   tsv
+from helpers import is_platform_windows,   tsv
 
 from artifacts.Artifact import AbstractArtifact
 

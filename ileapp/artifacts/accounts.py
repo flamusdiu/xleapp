@@ -1,4 +1,4 @@
-from helpers.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
@@ -51,10 +51,11 @@ class Accounts(AbstractArtifact):
             report.end_artifact_report()
 
             tsvname = 'Account Data'
-            tsv(report_folder, data_headers, data_list, tsvname)
+            tsv(self.report_folder, data_headers, data_list, tsvname)
 
             tlactivity = 'Account Data'
-            timeline(report_folder, tlactivity, data_list, data_headers)
+            timeline(self.report_folder, tlactivity, data_list, data_headers)
 
         else:
-            logfunc("No Account Data available")
+            pass
+            # logfunc("No Account Data available")

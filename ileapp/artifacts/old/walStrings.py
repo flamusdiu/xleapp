@@ -5,7 +5,7 @@ from html import escape
 from pathlib import Path
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows, logfunc
+from helpers import is_platform_windows, logfunc
 
 from artifacts.Artifact import AbstractArtifact
 

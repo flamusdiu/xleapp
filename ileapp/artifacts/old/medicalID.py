@@ -1,6 +1,6 @@
 import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 

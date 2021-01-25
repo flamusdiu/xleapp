@@ -9,7 +9,7 @@ import sys
 
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import (does_table_exist, is_platform_windows, kmlgen,
+from helpers import (does_table_exist, is_platform_windows, kmlgen,
                              logfunc, open_sqlite_db_readonly, timeline, tsv)
 
 import artifacts.artGlobals

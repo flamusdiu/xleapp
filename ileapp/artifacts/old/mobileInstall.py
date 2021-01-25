@@ -8,7 +8,7 @@ import textwrap
 from html import escape
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows,  timeline, tsv
+from helpers import is_platform_windows,  timeline, tsv
 
 from artifacts.Artifact import AbstractArtifact
 

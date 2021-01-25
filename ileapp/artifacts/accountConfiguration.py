@@ -1,9 +1,9 @@
 import plistlib
 
 from html_report import Icon
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 
-from artifacts.Artifact import AbstractArtifact
+from artifacts import AbstractArtifact
 
 
 class AccountConfiguration(AbstractArtifact):

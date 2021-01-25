@@ -3,7 +3,7 @@ import plistlib
 import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import is_platform_windows,  logfunc
+from helpers import is_platform_windows,  logfunc
 
 from artifacts.Artifact import AbstractArtifact
 

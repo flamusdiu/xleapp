@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
-from helpers.ilapfuncs import is_platform_windows,  tsv
+from helpers import is_platform_windows,  tsv
 from helpers.parsers import ktxparser
 from PIL import Image
 

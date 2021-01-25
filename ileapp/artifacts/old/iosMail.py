@@ -3,7 +3,7 @@ import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import timeline, tsv
+from helpers import timeline, tsv
 
 import artifacts.artGlobals
 

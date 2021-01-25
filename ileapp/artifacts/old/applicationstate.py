@@ -1,7 +1,7 @@
 import io
 
 import nska_deserialize as nd
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 from helpers.db import open_sqlite_db_readonly
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport

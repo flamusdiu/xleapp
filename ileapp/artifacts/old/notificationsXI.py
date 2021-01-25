@@ -4,7 +4,7 @@ import os
 
 from html_report.artifact_report import ArtifactHtmlReport
 from helpers.parsers import cclparser
-from helpers.ilapfuncs import logfunc
+from helpers import logfunc
 
 from artifacts.Artifact import AbstractArtifact
 

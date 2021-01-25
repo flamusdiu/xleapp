@@ -1,7 +1,7 @@
 import html
 import os
 import jinja2
-from helpers.ilapfuncs import is_platform_windows
+from helpers import is_platform_windows
 from helpers.version_info import aleapp_version
 
 

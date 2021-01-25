@@ -3,7 +3,7 @@ import os
 import nska_deserialize as nd
 from html_report.artifact_report import ArtifactHtmlReport
 from packaging import version
-from tools.ilapfuncs import(generate_thumbnail, kmlgen,
+from helpers import(generate_thumbnail, kmlgen,
                              open_sqlite_db_readonly, timeline, tsv)
 
 import artifacts.artGlobals

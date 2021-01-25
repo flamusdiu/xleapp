@@ -4,7 +4,7 @@ import pathlib
 import sqlite3
 
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import(is_platform_windows,
+from helpers import(is_platform_windows,
                              open_sqlite_db_readonly, timeline, tsv)
 
 from artifacts.Artifact import AbstractArtifact

@@ -2,7 +2,7 @@ import plistlib
 
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 
 from artifacts.Artifact import AbstractArtifact
 

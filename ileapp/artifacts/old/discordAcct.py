@@ -1,6 +1,6 @@
 import string
 
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 from html_report.artifact_report import ArtifactHtmlReport
 
 from artifacts.Artifact import AbstractArtifact

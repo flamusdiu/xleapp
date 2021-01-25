@@ -1,16 +1,17 @@
 import logging
 
 import PySimpleGUI as sg
-from gui.modules.funcs import CheckList
-from gui.modules.guiLayout import generate_layout
-from ileapp.helpers.properities import props
-from ileapp.helpers.version_info import aleapp_version
+from gui.funcs import CheckList
+from gui.guiLayout import generate_layout
+from helpers.properties import props
+from helpers.version_info import aleapp_version
 
 window = sg.Window(f'iLEAPP version {aleapp_version}',
                    generate_layout(props.artifact_list))
 
 # save the window handle
 props.run_time_info('window_handle', window)
+
 
 class Handler(logging.StreamHandler):
     def __init__(self):

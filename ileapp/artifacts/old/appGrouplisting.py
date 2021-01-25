@@ -3,7 +3,7 @@ import plistlib
 import sys
 
 import biplist
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 from html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
 

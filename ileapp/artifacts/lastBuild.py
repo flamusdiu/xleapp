@@ -2,7 +2,7 @@ import datetime
 import plistlib
 
 from html_report.artifact_report import ArtifactHtmlReport
-from helpers.ilapfuncs import tsv
+from helpers import tsv
 
 from artifacts.Artifact import AbstractArtifact
 
@@ -23,27 +23,30 @@ class LastBuild(AbstractArtifact):
             for key, val in pl.items():
                 data_list.append((key, val))
                 if key == ("ProductVersion"):
+                    pass
                     # ilapfuncs.globalvars()
-                    artifacts.artGlobals.versionf = val
-                    logfunc(f"iOS version: {val}")
-                    logdevinfo(f"iOS version: {val}")
+                    # artifacts.artGlobals.versionf = val
+                    # logfunc(f"iOS version: {val}")
+                    # logdevinfo(f"iOS version: {val}")
 
                 if key == "ProductBuildVersion":
-                    logdevinfo(f"ProductBuildVersion: {val}")
+                    pass
+                    # logdevinfo(f"ProductBuildVersion: {val}")
 
                 if key == ("ProductName"):
-                    logfunc(f"Product: {val}")
-                    logdevinfo(f"Product: {val}")
+                    pass
+                    # logfunc(f"Product: {val}")
+                    # logdevinfo(f"Product: {val}")
 
         report = ArtifactHtmlReport('iOS Build')
-        report.start_artifact_report(report_folder, 'Build Information')
+        report.start_artifact_report(self.report_folder, 'Build Information')
         report.add_script()
         data_headers = ('Key', 'Values')
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
 
         tsvname = 'Last Build'
-        tsv(report_folder, data_headers, data_list, tsvname)
+        tsv(self.report_folder, data_headers, data_list, tsvname)
 
 
 class ITunesBackupInfo(AbstractArtifact):
@@ -67,22 +70,25 @@ class ITunesBackupInfo(AbstractArtifact):
                                'Last Backup Date', 'MEID', 'Phone Number',
                                'Product Name', 'Product Type',
                                'Product Version', 'Serial Number'):
-                        logdevinfo(f"{key}: {val}")
+                        pass
+                        # logdevinfo(f"{key}: {val}")
 
                     if key == ('Product Version'):
-                        artifacts.artGlobals.versionf = val
-                        logfunc(f"iOS version: {val}")
+                        pass
+                        # artifacts.artGlobals.versionf = val
+                        # logfunc(f"iOS version: {val}")
 
                 elif key == "Installed Applications":
                     data_list.append((key, ', '.join(val)))
         report = ArtifactHtmlReport('iTunes Backup')
 
-        report.start_artifact_report(report_folder,
-                                     'iTunes Backup Information')
+        report.start_artifact_report(
+            self.report_folder,
+            'iTunes Backup Information')
         report.add_script()
         data_headers = ('Key', 'Values')
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
 
         tsvname = 'iTunes Backup'
-        tsv(report_folder, data_headers, data_list, tsvname)
+        tsv(self.report_folder, data_headers, data_list, tsvname)

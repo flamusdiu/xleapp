@@ -1,5 +1,5 @@
 from html_report.artifact_report import ArtifactHtmlReport
-from tools.ilapfuncs import tsv
+from helpers import tsv
 
 import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.artGlobals.versionf
 

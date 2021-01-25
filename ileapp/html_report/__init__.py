@@ -11,6 +11,17 @@ import html_report.web_icons as web_icons
 
 Icon = web_icons.Icon
 
+def init():
+    """Setups the jinja2 and reporting module
+    """
+
+    # configures the template location
+    env = Environment(
+        loader=PackageLoader('html_report', '_templates'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
+    return env
+
 
 def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path):
     control = None
