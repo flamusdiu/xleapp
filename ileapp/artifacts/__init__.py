@@ -1,24 +1,24 @@
 import importlib
 import inspect
 import io
+import logging
 import os
-import pathlib
 import traceback
 from abc import ABC, abstractmethod
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict, defaultdict, namedtuple
+from pathlib import Path
 from textwrap import TextWrapper
-from time import gmtime, process_time, strftime
 
-import html_report
+import ileapp.html_report.artifact_report as html_report
 import prettytable
-from helpers import is_platform_windows
-from globals import props
-from helpers.search_files import (FileSeekerDir, FileSeekerItunes,
-                                  FileSeekerTar, FileSeekerZip)
-from html_report.artifact_report import ArtifactHtmlReport
-from html_report.web_icons import Icon
+from ileapp.globals import props
+from ileapp.helpers import is_platform_windows
+from ileapp.helpers.decorators import timer
+from ileapp.helpers.search_files import (FileSeekerDir, FileSeekerItunes,
+                                         FileSeekerTar, FileSeekerZip)
+from ileapp.html_report import Icon
 
-# from helpers.version_info import aleapp_version
+logger = logging.getLogger(__name__)
 
 # Setup named tuple to hold each artifact
 Artifact = namedtuple('Artifact', ['name', 'cls'])
@@ -31,17 +31,24 @@ class AbstractArtifact(ABC):
     """Abstract class for creating Artifacts
     """
 
+    _name = 'Unknown Artifact'
     _core_artifact = False
     _long_running_process = False
     _web_icon = Icon.ALERT_TRIANGLE
+    _category = 'None'
+    _report_headers = ('Key', 'Values')
+    _files_found = []
+    _description = ''
+    _generate_report = True
+    _props = None
 
-    def __init__(self, name):
-        self._name = name
-        self._category = 'None'
-        self._artifact_report = ArtifactHtmlReport()
+    def __init__(self, props):
+        self.html_report = html_report.ArtifactHtmlReport(self)
+        self._props = props
 
+    @timer
     @abstractmethod
-    def get(files_found, seeker):
+    def get(self, seeker):
         """Gets artifacts located in `files_found` params by the
         `seeker`. It saves should save the report in `report_folder`.
 
@@ -53,6 +60,10 @@ class AbstractArtifact(ABC):
             seeker (FileSeekerBase): object to search for files
         """
         print("Needs to implement AbastractArtifact's get() method!")
+
+    @property
+    def props(self):
+        return self._props
 
     @property
     def long_running_process(self):
@@ -91,6 +102,10 @@ class AbstractArtifact(ABC):
         tuple: Tuple containing search regex for
         location of files containing the Artifact.
         """
+        if isinstance(self._search_dirs, str):
+            return [self._search_dirs]
+        if isinstance(self._search_dirs, tuple):
+            return [*self._search_dirs]
         return self._search_dirs
 
     @property
@@ -107,35 +122,23 @@ class AbstractArtifact(ABC):
         return self._core_artifact
 
     @property
-    def artifact_report(self):
-        """Returns object for the artifact html report
-
-        Call `self.artifact_report.init()` and pass in report name
-        to set it.
-
-        Returns:
-            ArtifactHtmlReport: artifact html report object
-        """
-        return self._artifact_report
-
-    @artifact_report.setter
-    def artifact_report(self, artifact_report):
-        self.artifact_report = artifact_report
-
-    @property
     def report_folder(self):
         """Wrapper for the report folder object
         """
-        return self._props.run_time_info['report_folder']
+
+        return self.props.run_time_info['report_folder']
 
     @property
-    def file_found(self):
+    def files_found(self):
         """list: files or folders found for an artifact
         """
-        self._files_found
+        if (isinstance(self._files_found, list)
+                and len(self._files_found) == 1):
+            return self._files_found[0]
+        return self._files_found
 
-    @file_found.setter
-    def file_found(self, files):
+    @files_found.setter
+    def files_found(self, files):
         self._files_found = files
 
     @property
@@ -146,57 +149,94 @@ class AbstractArtifact(ABC):
 
     @data.setter
     def data(self, data):
+        self.html_report.data = data
         self._data = data
 
-    def process(self, files_found, seeker, report_folder_base):
-        """Processes artifact
+    @property
+    def report_headers(self):
+        return self._report_headers
 
-           1. Create the report folder for it
-           2. Fetch the method (function) and call it
-           3. Wrap processing function in a try..except block
+    @property
+    def process_time(self):
+        """Processing time of the artifact
+        """
+        self._process_time
+
+    @process_time.setter
+    def process_time(self, time):
+        self._process_time = time
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        self._description = description
+
+    @property
+    def generate_report(self):
+        return self._generate_report
+
+    @generate_report.setter
+    def generate_report(self, bool):
+        self._generate_report = bool
+
+    def report(self):
+        if self.generate_report is False:
+            logger.error(f'Report not generated for {self.name}! Artifact marked for no '
+                         f'report generation. Check artifact\'s \'generate_report\' attribute.')
+            return False
+        self.html_report.report(self.files_found)
+        return True
+
+    @classmethod
+    def open_file(props, file, func):
+        """Opens a file and saves the handel
 
         Args:
-            files_found (tuple): list of files found by
-                seeker
-            report_folder (str): location of the :obj:`report_folder`
-                to save report of artifact
-            seeker (FileSeekerBase): object to search for files
+            props (Props): global property object
+            file (str or Path): Path to file to open
+            func (function): Function to open file. Should accept a file path
+                and return a file handle.
+
+        Returns:
+            handle: file handle returned by function
         """
-        start_time = process_time()
-        slash = '\\' if is_platform_windows() else '/'
-        artifact_short_name = type(self).__name__
-        # logfunc(f'{self.report_section} [{artifact_short_name}] artifact'
-        #       f'executing')
-        report_folder = os.path.join(report_folder_base, self.name) + slash
-        try:
-            if os.path.isdir(report_folder):
-                pass
-            else:
-                os.makedirs(report_folder)
-        except Exception as ex:
-            pass
-            # logfunc(f'Error creating {self.name} report '
-            #       f'directory at path {report_folder}')
-            # logfunc(f'Reading {self.name} artifact failed!')
-            # logfunc(f'Error was {ex}')
-            return
-        try:
-            self.get(files_found, report_folder, seeker)
-        except Exception as ex:
-            pass
-            # logfunc(f'Reading {self.name} artifact had errors!')
-            # logfunc(f'Error was {ex}')
-            # logfunc(f'Exception Traceback: {traceback.format_exc()}')
-            return
+        file = Path(file)
 
-        end_time = process_time()
-        run_time_secs = end_time - start_time
-        # run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
-        # logfunc(f'{self.report_section} [{artifact_short_name}] artifact '
-        #       f'completed in time {run_time_secs} seconds')
+        if file.exists():
+            opened = func(file)
+
+            if opened:
+                props.run_time_info['open_files'].update(
+                    {
+                        'name': str(file),
+                        'handle': opened
+                    }
+                )
+        return opened
+
+    @classmethod
+    def close_file(props, file):
+        """Closes a file opened
+
+        Args:
+            props (Props): global property object
+            file (str or Path): file to be closed
+
+        Returns:
+            bool: returns success of closure
+        """
+        file = Path(file)
+
+        if str(file) in props.run_time_info['open_files']:
+            handle = props.run_time_info['open_files'][str(file)]
+            closed = handle.close()
+        return closed or False
 
 
-def get_list_of_artifacts(ordered=True):
+def get_list_of_artifacts(props, ordered=True):
     """Generates a List of Artifacts installed
 
     Args
@@ -207,7 +247,8 @@ def get_list_of_artifacts(ordered=True):
     Returns:
         OrderedDict or dict: dictionary of artifacts with short names as keys
     """
-    module_dir = pathlib.Path(importlib.util.find_spec(__name__).origin).parent
+    logger.debug('Generating artifact lists from file system...')
+    module_dir = Path(importlib.util.find_spec(__name__).origin).parent
     artifact_list = OrderedDict() if ordered else {}
 
     for it in module_dir.glob('*.py'):
@@ -216,12 +257,16 @@ def get_list_of_artifacts(ordered=True):
             module_name = f'{__name__}.{it.stem}'
             module = importlib.import_module(module_name)
             module_members = inspect.getmembers(module, inspect.isclass)
-            print(module_members)
             for name, cls in module_members:
                 if (not str(cls.__module__).endswith('Artifact')
-                        and str(cls.__module__).startswith(__name__)):
+                        and str(cls.__module__).startswith(__name__)
+                        and not inspect.isabstract(cls)):
 
-                    tmp_artifact = Artifact(name=cls().name, cls=cls())
+                    tmp_artifact_obj = cls(props)
+                    tmp_artifact = Artifact(
+                        name=tmp_artifact_obj.name,
+                        cls=tmp_artifact_obj
+                    )
                     artifact_list.update({name: tmp_artifact})
 
     # sort the artifact list
@@ -229,14 +274,15 @@ def get_list_of_artifacts(ordered=True):
     artifact_list.clear()
     artifact_list.update(tmp_artifact_list)
 
+    logger.debug(f'Artifacts loaded: { len(artifact_list) }')
     return artifact_list
 
 
 def generate_artifact_path_list():
     """Generates path file for usage with Autopsy
     """
-    print('Artifact path list generation started.')
-    print('')
+    logger.info('Artifact path list generation started.')
+
     with open('path_list.txt', 'w') as paths:
         regex_list = []
         for key, value in get_list_of_artifacts(ordered=True).items():
@@ -248,10 +294,10 @@ def generate_artifact_path_list():
                 regex_list.append(artifact.search_dirs)
         # Create a single list removing duplications
         ordered_regex_list = '\n'.join(set(regex_list))
-        print(ordered_regex_list)
+        logger.info(ordered_regex_list)
         paths.write(ordered_regex_list)
-        print('')
-        print('Artifact path list generation completed')
+
+        logger.info('Artifact path list generation completed')
 
 
 def generate_artifact_table():
@@ -263,154 +309,111 @@ def generate_artifact_table():
                           width=60)
     output_table = prettytable.PrettyTable(headers, align='l')
     output_table.hrules = prettytable.ALL
-    print('Artifact table generation started.')
-    print('')
-    with open('artifact_table.txt', 'w') as paths:
-        artifact_list = get_list_of_artifacts()
-        for key, val in artifact_list.items():
+    output_file = Path('artifact_table.txt')
+
+    logger.info('Artifact table generation started.')
+
+    with open(output_file, 'w') as paths:
+        for key, val in props.installed_artifacts.items():
             shortName = key
-            fullName = val['class'].name
-            searchRegex = val['class'].search_dirs
+            fullName = val.cls.name
+            searchRegex = val.cls.search_dirs
             if isinstance(searchRegex, tuple):
                 searchRegex = '\n'.join(searchRegex)
-            print(shortName)
             output_table.add_row([shortName,
                                   fullName,
                                   wrapper.fill(searchRegex)])
         paths.write(output_table.get_string(title='Artifact List',
                                             sortby='Short Name'))
-    print('')
-    print('Artifact table generation completed')
+    logger.info(f'Table saved to: {output_file}')
+    logger.info('Artifact table generation completed')
 
 
-def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio):  # noqa C901
-    """Processes all artifacts
-
-    Args:
-        search_list (dict): :obj:`dict` of Artifacts to process
-        extracttype (str): type of file to process
-        input_path (str): path to file
-        out_params (OutputParams): object with output parameters
-        ratio (int): progress bar percentage
-
-    Returns:
-        bool: Returns true/false on success/failure
-    """
-    start = process_time()
-
+@timer
+def crunch_artifacts(search_list, extracttype, input_path, output_folder):
     seeker = None
-    try:
-        if extracttype == 'fs':
-            seeker = FileSeekerDir(input_path)
 
-        elif extracttype in ('tar', 'gz'):
-            seeker = FileSeekerTar(input_path, out_params.temp_folder)
+    if extracttype == 'fs':
+        seeker = FileSeekerDir(input_path)
 
-        elif extracttype == 'zip':
-            seeker = FileSeekerZip(input_path, out_params.temp_folder)
+    elif extracttype in ('tar', 'gz'):
+        seeker = FileSeekerTar(input_path, props.run_time_info['temp_folder'])
 
-        elif extracttype == 'itunes':
-            seeker = FileSeekerItunes(input_path, out_params.temp_folder)
+    elif extracttype == 'zip':
+        seeker = FileSeekerZip(input_path, props.run_time_info['temp_folder'])
 
-        else:
-            # logfunc('Error on argument -o (input type)')
-            return False
-    except Exception as ex:  # noqa
-        # logfunc('Had an exception in Seeker - see details below.'
-        #        'Terminating Program!')
-        temp_file = io.StringIO()
-        traceback.print_exc(file=temp_file)
-        # logfunc(temp_file.getvalue())
-        temp_file.close()
-        exit(1)
+    elif extracttype == 'itunes':
+        seeker = FileSeekerItunes(input_path, props.run_time_info['temp_folder'])
 
-    # Now ready to run
-    # logfunc(f'Artifact categories to parse: {str(len(search_list))}')
-    # logfunc(f'File/Directory selected: {input_path}')
-    # logfunc('\n--------------------------------------------'
-    #       '------------------------------------------')
+    logger.debug(f'Extract type is {extracttype} ')
+    # Parse core artifacts first
+    crunch_core_artifacts(extracttype, seeker, input_path, output_folder)
 
-    # log = open(os.path.join(out_params.report_folder_base, 'Script Logs',
-    #           'ProcessedFilesLog.html'), 'w+', encoding='utf8')
-    # log.write(f'Extraction/Path selected: {input_path}<br><br>')
+    search_regexes = build_search_regex_list(search_list)
 
-    categories_searched = 0
-    # Special processing for iTunesBackup Info.plist as it is a
-    # seperate entity, not part of the Manifest.db. Seeker won't find it
-    if extracttype == 'itunes':
-        info_plist_path = os.path.join(input_path, 'Info.plist')
-        if os.path.exists(info_plist_path):
-            artifact = search_list['ITunesBackupInfo']
-            artifact.cls.process([info_plist_path],
-                                 seeker, out_params.report_folder_base)
-            # removing lastBuild as this takes its place
-            del search_list['lastBuild']
-        else:
-            pass
-            # logfunc('Info.plist not found for iTunes Backup!')
-            # log.write('Info.plist not found for iTunes Backup!')
-        categories_searched += 1
-        # GuiWindow.SetProgressBar(categories_searched * ratio)
+    for regex, artifacts in search_regexes.items():
+        found = seeker.search(regex)
 
-    # Search for the files per the arguments
-    for name, artifact in search_list.items():
-        search_regexes = []
-        if (isinstance(artifact.cls.search_dirs, list)
-                or isinstance(artifact.cls.search_dirs, tuple)):
-            search_regexes = artifact.cls.search_dirs
-        else:
-            search_regexes.append(artifact.cls.search_dirs)
-        files_found = []
-        for artifact_search_regex in search_regexes:
-            found = seeker.search(artifact_search_regex)
-            if not found:
-                pass
-                # logfunc()
-                # logfunc(f'No files found for {name} '
-                #        f'-> {artifact_search_regex}')
-                # log.write(f'No files found for {name} '
-                #          f'-> {artifact_search_regex}<br><br>')
-            else:
-                files_found.extend(found)
-        if files_found:
-            # logfunc()
-            artifact.cls.process(files_found, seeker,
-                                 out_params.report_folder_base)
-            for pathh in files_found:
-                if pathh.startswith('\\\\?\\'):
-                    pathh = pathh[4:]
-                # log.write(f'Files for {artifact_search_regex} located '
-                #          f'at {pathh}<br><br>')
-        categories_searched += 1
-        # GuiWindow.SetProgressBar(categories_searched * ratio)
-    # log.close()
+        if found:
+            logger.info(f'Files for {regex} located at {found}')
 
-    # logfunc('')
-    # logfunc('Processes completed.')
-    end = process_time()
-    run_time_secs = end - start
-    run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
-    # logfunc("Processing time = {}".format(run_time_HMS))
+        for name in artifacts:
+            artifact = props.installed_artifacts[name]
 
-    # logfunc('')
-    # logfunc('Report generation started.')
-    # remove the \\?\ prefix we added to input and output paths, so it does
-    # not reflect in report
-    if is_platform_windows():
-        if out_params.report_folder_base.startswith('\\\\?\\'):
-            out_params.report_folder_base = out_params.report_folder_base[4:]
-        if input_path.startswith('\\\\?\\'):
-            input_path = input_path[4:]
-    html_report.generate_report(out_params.report_folder_base, run_time_secs,
-                                run_time_HMS, extracttype, input_path)
-    # logfunc('Report generation Completed.')
-    # logfunc('')
-    # logfunc(f'Report location: {out_params.report_folder_base}')
+            if artifact.cls.core_artifact:
+                break
+
+            artifact.cls.files_found = found
+            logger.info(f'Artifact {artifact.cls.category}[{name}] processing...')
+            process_time = artifact.cls.get(seeker)
+            artifact.cls.process_time = process_time
+            logger.info(f'Artifact {artifact.cls.category}[{name}] finished in {artifact.cls.process_time}')
+
+            artifact.cls.report()
     return True
 
 
-def select_artifact(name):
-    selected = props.artifact_list.pop(name, None)
+def build_search_regex_list(search_list):
+    search_regexes = defaultdict(list)
+    for name in search_list:
+        artifact = props.installed_artifacts[name]
+        if ((isinstance(artifact.cls.search_dirs, list)
+                or isinstance(artifact.cls.search_dirs, tuple))
+                and artifact.cls.core_artifact is False):
+            for regex in artifact.cls.search_dirs:
+                search_regexes[regex].append(name)
+        else:
+            search_regexes[artifact.cls.search_dirs].append(name)
 
-    if selected is not None:
-        props.selected_artifacts.update(selected)
+    return search_regexes
+
+
+def crunch_core_artifacts(extracttype, seeker, input_path, output_folder):
+    for name, artifact in props.core_artifacts.items():
+        # Now ready to run
+        # Special processing for iTunesBackup Info.plist as it is a
+        # separate entity, not part of the Manifest.db. Seeker won't find it
+        if name == 'ITunesBackupInfo':
+            if extracttype == 'itunes':
+                info_plist_path = input_path / 'Info.plist'
+                if info_plist_path.exists():
+                    artifact.cls.process([info_plist_path],
+                                         seeker, output_folder)
+                else:
+                    logger.info('Info.plist not found for iTunes Backup!')
+                # GuiWindow.SetProgressBar(categories_searched * ratio)
+        else:
+            for regex in [*artifact.cls.search_dirs]:
+                found = seeker.search(regex)
+
+                if found:
+                    artifact.cls.files_found.extend(found)
+                    logger.info(f'Files for {regex} located at {found}')
+
+                    logger.info(f'Artifact {artifact.cls.category}[{name}] processing...')
+                    process_time = artifact.cls.get(seeker)
+                    artifact.cls.process_time = process_time
+                    logger.info(f'Artifact {artifact.cls.category}[{name}] finished in {artifact.cls.process_time}')
+
+                    if artifact.cls.report():
+                        logger.info(f'Report generated for {artifact.cls.category}[{name}]')

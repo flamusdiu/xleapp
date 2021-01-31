@@ -1,11 +1,14 @@
-aleapp_version = '1.8.2'
+__project__ = 'iLEAPP'
+__version__ = '1.8.2'
 
-# Contributors List
-# Format = [ Name, Blog-url, Twitter-handle, Github-url]
-# Leave blank if not available
-aleapp_contributors = [
+VERSION = f"{__project__} v{__version__}"
+
+__authors__ = [
     ['Alexis Brignoni', 'https://abrignoni.com', '@AlexisBrignoni', 'https://github.com/abrignoni'],
-    ['Yogesh Khatri', 'https://swiftforensics.com', '@SwiftForensics', 'https://github.com/ydkhatri'],
+    ['Yogesh Khatri', 'https://swiftforensics.com', '@SwiftForensics', 'https://github.com/ydkhatri']
+]
+
+__contributors__ = [
     ['Agam Dua', 'https://loopback.dev', '@loopbackdev', 'https://github.com/agamdua'],
     ['Sarah Edwards', 'https://www.mac4n6.com', '@iamevltwin', 'https://github.com/mac4n6'],
     ['Heather Mahalik', 'https://smarterforensics.com', '@HeatherMahalik', ''],

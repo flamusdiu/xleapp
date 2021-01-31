@@ -1,10 +1,15 @@
 import binascii
 import codecs
 import csv
+import functools
+import inspect
 import math
 import os
 import re
 import sqlite3
+import sys
+from pathlib import Path
+from time import time
 
 import simplekml
 
@@ -92,7 +97,7 @@ def timeline(report_folder, tlactivity, data_list, data_headers):
             """
             CREATE TABLE data(key TEXT, activity TEXT, datalist TEXT)
             """
-            )
+        )
         db.commit()
 
     a = 0
@@ -130,7 +135,7 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
             CREATE TABLE data(key TEXT, latitude TEXT,
             longitude TEXT, activity TEXT)
             """
-            )
+        )
         db.commit()
 
     kml = simplekml.Kml(open=1)
@@ -182,7 +187,7 @@ def generate_hexdump(data, char_per_row=5):
 
     ''' Generates offset column
     '''
-    offset_rows = math.ceil(len(data_hex)/(char_per_row * 2))
+    offset_rows = math.ceil(len(data_hex) / (char_per_row * 2))
     offsets = [i for i in range(0, len(data_hex), char_per_row)][:offset_rows]
     str_offset = '<br>'.join([str(hex(s)[2:]).zfill(4).upper()
                               for s in offsets])
@@ -220,3 +225,39 @@ def generate_hexdump(data, char_per_row=5):
     <td style="white-space:nowrap;">{str_ascii}</td>
     </tr></tbody></table>
     '''
+
+
+def ValidateInput(input_path, output_path, selected_artifacts, core_artifacts_only=False):
+    """
+    Returns tuple (success, extraction_type)
+    """
+
+    ext_type = ''
+
+    if input_path is None:
+        return None, 'No INPUT file or folder selected!'
+    else:
+        i_path = Path(input_path)  # input file/folder
+        if not i_path.exists():
+            return None, 'INPUT file/folder does not exist!'
+
+    if output_path is None:
+        return None, 'No OUTPUT folder selected!'
+    else:
+        o_path = Path(output_path)  # output folder
+        if not o_path.exists():
+            return None, 'OUTPUT does not exist!'
+
+    if len(selected_artifacts) == 0 and core_artifacts_only is False:
+        return None, 'No module selected for processing!'
+    elif (i_path.is_dir() and (i_path / "Manifest.db").exists()):
+        ext_type = 'itunes'
+    elif i_path.is_dir():
+        ext_type = 'fs'
+    else:  # must be an existing file then
+        ext_type = i_path.suffix[1:].lower()
+        if ext_type not in ['tar', 'zip', 'gz']:
+            return None, f'Input file is not a supported archive! \n {i_path}'
+
+        return ext_type, ''
+    return ext_type, ''

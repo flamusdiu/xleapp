@@ -3,7 +3,7 @@ import io
 import nska_deserialize as nd
 from helpers import tsv
 from helpers.db import open_sqlite_db_readonly
-from html_report import Icon
+from ileapp.html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
 
 from artifacts.Artifact import AbstractArtifact

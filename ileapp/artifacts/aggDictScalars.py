@@ -1,9 +1,6 @@
-from helpers import timeline, tsv
-from helpers.db import open_sqlite_db_readonly
-from html_report.artifact_report import ArtifactHtmlReport
-from html_report import Icon
-
-from artifacts.Artifact import AbstractArtifact
+from ileapp.artifacts import AbstractArtifact
+from ileapp.helpers.db import open_sqlite_db_readonly
+from ileapp.html_report import Icon
 
 
 class AggDictScalars(AbstractArtifact):
@@ -13,8 +10,8 @@ class AggDictScalars(AbstractArtifact):
     _category = 'Aggregate Dictionary'
     _web_icon = Icon.BOOK
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, props):
+        super().__init__(props)
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])
@@ -39,24 +36,4 @@ class AggDictScalars(AbstractArtifact):
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2]))
 
-            description = ''
-            report = ArtifactHtmlReport('Aggregate Dictionary Scalars')
-            report.start_artifact_report(
-                self.report_folder,
-                'Scalars',
-                description)
-            report.add_script()
-            data_headers = ('Day', 'Key', 'Value')
-            report.write_artifact_data_table(
-                data_headers,
-                data_list,
-                file_found)
-            report.end_artifact_report()
-
-            tsvname = 'Agg Dict Scalars'
-            tsv(report_folder, data_headers, data_list, tsvname)
-
-            tlactivity = 'Aggregate Dictionary Distributed Keys'
-            timeline(self.report_folder, tlactivity, data_list, data_headers)
-        else:
-           # logfunc("No Aggregate Dictionary Distributed Keys Data available")
+            self.data = data_list

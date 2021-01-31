@@ -1,7 +1,7 @@
 import datetime
 import plistlib
 
-from html_report import Icon
+from ileapp.html_report import Icon
 from html_report.artifact_report import ArtifactHtmlReport
 from helpers import timeline, tsv
 from helpers.db import open_sqlite_db_readonly

@@ -2,7 +2,7 @@ from enum import Enum
 
 """Enum for Feather.js icons
 """
-Icon = Enum('Icon', ((name.replace('-', '_').upper(), name) for name in [
+_Icon = Enum('Icon', ((name.replace('-', '_').upper(), name) for name in [
     'activity',
     'alert-triangle',
     'archive',

@@ -1,0 +1,80 @@
+{% extends "base.jinja" %}
+{% from 'macros.jinja' import contributor_html %}
+{% block head %}
+    {{ super() }}
+    {% block add_scripts %}{% endblock %}
+{% endblock %}
+{% block title %}{% endblock %}
+{% block report_data %}
+                <div class="card bg-white" style="padding: 20px;">
+                    <h2 class="card-title">Case Information</h2>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="case-tab" data-toggle="tab" href="#case" role="tab" aria-controls="case" aria-selected="true">Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="device-list-tab" data-toggle="tab" href="#device" role="tab" aria-controls="device" aria-selected="false">Device details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="run-log-tab" data-toggle="tab" href="#run" role="tab" aria-controls="run" aria-selected="false">Script run log</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="files-list-tab" data-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false">Processed files list</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="case" role="tabpanel" aria-labelledby="case-tab"><br />
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm" width=70%>
+                                <tbody>
+                                <tr>
+                                    <td>Extraction location</td>
+                                    <td>{{ device['extraction_location'] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Extraction type</td>
+                                    <td>{{ extraction_type }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Report directory</td>
+                                    <td>{{ report_directory }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Processing time</td>
+                                    <td>{{ processing_time }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="note note-primary mb-4">
+                            All dates and times are in UTC unless noted otherwise!
+                        </p>
+                        <div class="tab-pane fade" id="device" role="tabpanel" aria-labelledby="device-tab"><br /><br>
+                            {{device['device_info']}}
+                        </div>
+                        <div class="tab-pane fade text-monospace" id="run" role="tabpanel" aria-labelledby="script-run-tab">
+                            {# include_raw script_run_log #}
+                        </div>
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="profile-tab">
+                            {# include_raw processed_files_list #}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    {% include "thank_you.jinja" %}
+                </div>
+                <div class="alert alert-light mb-4 bg-white" style="border-style: none">
+                    <h4 class="text-center">iLEAPP Authors</h4>
+                    <ul class="list-group" style="max-width: 500px; margin:auto">
+                    {% for author in authors|sort %}
+                        {{ contributor_html(author) }}
+                    {% endfor %}
+                    </ul>
+                    <h4 class="text-center">iLEAPP Contributors</h4>
+                    <ul class="list-group" style="max-width: 500px; margin:auto">
+                    {% for contributor in contributors|sort %}
+                        {{ contributor_html(contributor) }}
+                    {% endfor %}
+                    <ul>
+                </div>
+{% endblock %}

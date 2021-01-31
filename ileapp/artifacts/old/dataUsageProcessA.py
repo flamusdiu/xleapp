@@ -1,6 +1,6 @@
 from helpers.db import open_sqlite_db_readonly
 from helpers import timeline, tsv
-from html_report import Icon
+from ileapp.html_report import Icon
 
 from artifacts.Artifact import AbstractArtifact
 

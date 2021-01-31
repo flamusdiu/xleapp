@@ -7,7 +7,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from helpers import tsv
 
 from artifacts.Artifact import AbstractArtifact
-from html_report import Icon
+from ileapp.html_report import Icon
 
 
 class DeviceActivator(AbstractArtifact):

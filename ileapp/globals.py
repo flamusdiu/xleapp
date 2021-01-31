@@ -1,37 +1,67 @@
 import datetime
-import os
+import logging
 from collections import ChainMap, defaultdict
 from pathlib import Path
+from ileapp import VERSION
 
-import artifacts
+import jinja2
 
 THUMBNAIL_ROOT = '**/Media/PhotoData/Thumbnails/**'
 MEDIA_ROOT = '**/Media'
 THUMB_SIZE = 256, 256
 
 
-class Props(object):
+class Device:
+    """Class to hold device information
+    """
+    def __init__(self, **kwargs):
+        for it in kwargs:
+            self.__dict__[it] = kwargs[it]
+
+
+class Props:
     """Global Properties class.
     """
     _core_artifacts = {}
     _artifact_list = {}
-    _selected_artifacts = {}
+    _selected_artifacts = []
     _run_time_info = defaultdict(lambda: None)
+    _logger = logging
+    _device_info = Device
 
-    def init(self):
-        self._artifact_list = artifacts.get_list_of_artifacts(ordered=False)
+    def init(self, artifacts):
+        """Initializes the global properties object
 
-        self._core_artifacts = {
-            [(name, artifact) for name, artifact in self._artifact_list.items()
-             if artifact.cls.core_artifact is True]
-        }
+            Run `props.init()` to initialize the artifacts
+            before attempting to use the artifact object.
+        """
+        self._artifact_list = (
+            artifacts.get_list_of_artifacts(self, ordered=False)
+        )
 
-        # Deletes core artifacts from main list
-        for name, artifact in self._core_artifacts:
+        for name, artifact in self._artifact_list.items():
+            if artifact.cls.core_artifact is True:
+                self._core_artifacts.update({name: artifact})
+
+        for name, artifact in self._core_artifacts.items():
             self._artifact_list.pop(name)
 
         self.run_time_info['progress_bar_total'] = (
             len(self.installed_artifacts))
+
+    @property
+    def version(self):
+        return VERSION
+
+    @property
+    def jinja(self):
+        """Primary Jinja2 environment
+        """
+        return self._jinja
+
+    @jinja.setter
+    def jinja(self, env):
+        self._jinja = env
 
     @property
     def core_artifacts(self):
@@ -45,15 +75,11 @@ class Props(object):
         """
         return self._core_artifacts
 
-
     @property
     def installed_artifacts(self):
         """List: list of strings of installed artifacts
         """
-        artifact_list = ChainMap(self.core_artifacts,
-                                 self.artifact_list,
-                                 self.selected_artifacts)
-        return sorted(list(artifact_list))
+        return ChainMap(self.core_artifacts, self.artifact_list)
 
     @property
     def selected_artifacts(self):
@@ -64,8 +90,15 @@ class Props(object):
     def select_artifact(self, name):
         """Adds an artifacts to be selected and run.
         """
-        artifact = self._artifact_list.pop(name)
-        self._selected_artifacts.update(artifact)
+        if name in list(self.artifact_list):
+            self._selected_artifacts.append(name)
+
+    def deselect_artifact(self, name):
+        """Adds an artifacts to be selected and run.
+        """
+        if (name in list(self.selected_artifacts)
+                and name not in list(self.core_artifacts)):
+            self._selected_artifacts.remove(name)
 
     def set_progress_bar(self, val):
         """Sets the progress bar for the GUI
@@ -80,7 +113,19 @@ class Props(object):
     def run_time_info(self):
         """defaultdict: returns program run state information
         """
-        return self.run_time_info
+        return self._run_time_info
+
+    @property
+    def artifact_list(self):
+        return self._artifact_list
+
+    @property
+    def device_info(self):
+        return self._device_info
+
+    @device_info.setter
+    def device_info(self, **kwargs):
+        self._device_info = Device(**kwargs)
 
     def set_output_folder(self, output_folder):
         """Sets and creates output folders for the reports
@@ -91,8 +136,9 @@ class Props(object):
         now = datetime.datetime.now()
         current_time = now.strftime('%Y-%m-%d_%A_%H%M%S')
 
-        report_folder_base = (Path(output_folder) /
-                              f'iLEAPP_Reports_{current_time}')
+        report_folder_base = (
+            Path(output_folder) / f'iLEAPP_Reports_{current_time}'
+        )
 
         self.run_time_info['report_folder_base'] = report_folder_base
 
@@ -102,8 +148,8 @@ class Props(object):
 
         self.run_time_info['log_folder'] = report_folder_base / 'Script Logs'
 
-        os.makedirs(os.path.join(report_folder_base, 'Script Logs'))
-        os.makedirs(temp_folder)
+        self.run_time_info['log_folder'].mkdir(parents=True, exist_ok=True)
+        self.run_time_info['temp_folder'].mkdir(parents=True, exist_ok=True)
 
 
 # Global Class

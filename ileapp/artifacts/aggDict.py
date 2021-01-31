@@ -1,9 +1,6 @@
-from helpers import timeline, tsv
-from helpers.db import open_sqlite_db_readonly
-from html_report import Icon
-from html_report.artifact_report import ArtifactHtmlReport
-
-from artifacts.Artifact import AbstractArtifact
+from ileapp.artifacts import AbstractArtifact
+from ileapp.helpers.db import open_sqlite_db_readonly
+from ileapp.html_report import Icon
 
 
 class AggDict(AbstractArtifact):
@@ -12,9 +9,11 @@ class AggDict(AbstractArtifact):
     _search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
     _category = 'Aggregate Dictionary'
     _web_icon = Icon.BOOK
+    _report_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
+                       'Distribution Values Table ID')
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, props):
+        super().__init__(props)
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])
@@ -42,23 +41,4 @@ class AggDict(AbstractArtifact):
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2], row[3], row[4]))
 
-            description = ''
-            report = ArtifactHtmlReport('Aggregate Dictionary Distributed '
-                                        'Keys')
-            report.start_artifact_report(report_folder, 'Distributed Keys',
-                                         description)
-            report.add_script()
-            data_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
-                            'Distribution Values Table ID')
-            report.write_artifact_data_table(data_headers, data_list,
-                                             file_found)
-            report.end_artifact_report()
-
-            tsvname = 'Agg Dict Dist Keys'
-            tsv(report_folder, data_headers, data_list, tsvname)
-
-            tlactivity = 'Aggregate Dictionary Distributed Keys'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            pass
-            # logfunc("No Aggregate Dictionary Distributed Keys Data available")
+        self.data = data_list

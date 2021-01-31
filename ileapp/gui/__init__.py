@@ -1,101 +1,92 @@
-import os
+import re
+import sys
+import traceback
 import webbrowser
+from pathlib import Path
 
-import artifacts
+import ileapp.artifacts as artifacts
+import ileapp.gui.guiWindow as guiWindow
 import PySimpleGUI as sg
-from helpers.properties import props
-from helpers.ilapfuncs import is_platform_windows
+from ileapp.globals import props
+from ileapp.gui.funcs import ValidateInput
+from ileapp.helpers import is_platform_windows
 
-from gui.funcs import ValidateInput
+num_of_artifacts = len(props.installed_artifacts)
+regex = re.compile(r'-Artifact(\w+)-')
 
-# sets theme for GUI
-sg.theme('DarkAmber')
-
-num_of_artifacts = len(props.artifact_list)
-
+# Select all artifacts
+props.selected_artifacts.update(props.artifact_list)
+props.artifact_list.clear()
 
 def main(): # noqa C901
-    window = props.run_time_info['window_handle']
+    window = guiWindow.window
     # Event Loop to process "events" and get the "values" of the inputs
     while True:
         event, values = window.read()
+
         if event in (None, 'Close'):   # if user closes window or clicks cancel
             break
 
-        if event == "SELECT ALL":
+        if regex.match(event):
+            match = regex.match(event)
+            name = match.group(1)
+            if values[event] is True:
+                props.select_artifact(name)
+            else:
+                props.deselect_artifact(name)
+
+        elif event == "SELECT ALL":
             # mark all modules
-            for name in props.artifact_list:
-                window[name].update(True)
+            for name in list(props.artifact_list):
+                window[f'-Artifact{name}-'].update(True)
+                props.select_artifact(name)
 
-            props.selected_artifacts.update(props.artifact_list)
-            props.artifact_list.clear()
-
-        if event == "DESELECT ALL":
+        elif event == "DESELECT ALL":
             # none modules
-            for name in props.artifact_list:
-                if window[name].metadata != 'LastBuild':
-                    window[name].update(False)  # lastBuild.py is REQUIRED
+            for name in list(props.selected_artifacts):
+                if (window[f'-Artifact{name}-'].metadata != '-LastBuild'
+                        or window[f'-Artifact{name}-'].metadata != 'ITunesBackupInfo'):
+                    window[f'-Artifact{name}-'].update(False)  # lastBuild.py is REQUIRED
+                    props.deselect_artifact(name)
 
-                props.artifact_list.update(props.selected_artifacts)
-                props.selected_artifacts.clear()
-
-        if event == 'Process':
+        elif event == 'Process':
             # check is selections made properly; if not we will return to input
             # form without exiting app altogether
-            is_valid, extracttype = ValidateInput(values, window)
-            if is_valid:
-                input_path = values[0]
-                output_folder = values[1]
+            extracttype, msg = ValidateInput(**values[:2], props.selected_artifact)
 
-                # ios file system extractions contain paths > 260 char, which
-                # causes problems. This fixes the problem by prefixing \\?\
-                # on each windows path.
-                if is_platform_windows():
-                    if input_path[1] == ':' and extracttype == 'fs':
-                        input_path = '\\\\?\\' + input_path.replace('/', '\\')
-                    if output_folder[1] == ':':
-                        output_folder = (
-                            '\\\\?\\'
-                            + output_folder.replace('/', '\\')
-                        )
+            if extracttype:
+                input_path = Path(values[0])
+                props.run_time_info['report_folder_base'] = Path(values[1])
 
-                for name, artifact in props.artifact_list.items():
-                    if window[name].Get():
-                        props.select_artifact(name)
-
-                    # no more selections allowed
-                    window[name].update(disabled=True)
+                for name in list(props.installed_artifacts):
+                    window[f'-Artifact{name}-'].update(disabled=True)
 
                 window['SELECT ALL'].update(disabled=True)
                 window['DESELECT ALL'].update(disabled=True)
 
-                out_params = props.output_parameters
                 crunch_successful = (
                     artifacts.crunch_artifacts(
                         props.selected_artifacts,
                         extracttype,
                         input_path,
-                        out_params,
+                        props.report_folder,
                         num_of_artifacts / len(props.selected_artifacts)
                     )
                 )
-                if crunch_successful:
-                    report_path = os.path.join(out_params.report_folder_base,
-                                               'index.html')
 
-                    if report_path.startswith('\\\\?\\'):  # windows
-                        report_path = report_path[4:]
-                    if report_path.startswith('\\\\'):  # UNC path
-                        report_path = report_path[2:]
-                    locationmessage = 'Report name: ' + report_path
+                if crunch_successful:
+                    report_path = props.report_folder / 'index.html'
+
+                    locationmessage = f'Report name: {report_path}'
                     sg.Popup('Processing completed', locationmessage)
-                    webbrowser.open_new_tab('file://' + report_path)
+                    webbrowser.open_new_tab(f'file://{report_path}')
                 else:
-                    log_path = out_params.screen_output_file_path
-                    if log_path.startswith('\\\\?\\'):  # windows
-                        log_path = log_path[4:]
-                    sg.Popup('Processing failed    :( ',
-                             f'See log for error details..\nLog file located '
-                             f'at {log_path}')
+                    log_path = props.run_time_info['log_folder']
+                    sg.popup_error('Processing failed    :( ',
+                                   f'See log for error details..\nLog file located '
+                                   f'at {log_path}')
                 break
+            elif msg:
+                sg.popup_error(msg)
+
     window.close()

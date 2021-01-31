@@ -1,16 +1,21 @@
 import fnmatch
+import logging
+import os
 import tarfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from shutil import copyfile
 from zipfile import ZipFile
 
-from helpers.db import open_sqlite_db_readonly
+from ileapp.helpers.db import open_sqlite_db_readonly
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class FileSeekerBase(ABC):
 
-    _all_files = any
+    _all_files = []
     _directory = Path()
 
     @abstractmethod
@@ -48,19 +53,29 @@ class FileSeekerBase(ABC):
 class FileSeekerDir(FileSeekerBase):
     def __init__(self, directory):
         self.directory = directory
-        logfunc('Building files listing...')
-        self.build_files_list(directory)
-        logfunc(f'File listing complete - {len(self._all_files)} files')
+        logger.info('Building files listing...')
+        subfolders, files = self.build_files_list(directory)
+        self.all_files.extend(subfolders)
+        self.all_files.extend(files)
+        logger.info(f'File listing complete - {len(self._all_files)} files')
 
-    def build_files_list(self, directory):
+    def build_files_list(self, dir):
         '''Populates all paths in directory into _all_files'''
 
-        directory = directory or self.directory
+        subfolders, files = [], []
 
-        try:
-            self.all_files = [file for file in Path(directory).rglob('**')]
-        except Exception as ex:
-            logfunc(f'Error reading {directory} ' + str(ex))
+        for f in os.scandir(dir):
+            if f.is_dir():
+                subfolders.append(f.path)
+            if f.is_file():
+                files.append(f.path)
+
+        for dir in list(subfolders):
+            sf, f = self.build_files_list(dir)
+            subfolders.extend(sf)
+            files.extend(f)
+
+        return subfolders, files
 
     def search(self, filepattern, return_on_first_hit=False):
         if return_on_first_hit:
@@ -68,47 +83,46 @@ class FileSeekerDir(FileSeekerBase):
                 if fnmatch.fnmatch(item, filepattern):
                     return [item]
             return []
-        return fnmatch.filter(self._all_files, filepattern)
+        return fnmatch.filter(self.all_files, filepattern)
+
+    def cleanup(self):
+        pass
 
 
 class FileSeekerItunes(FileSeekerBase):
     def __init__(self, directory, temp_folder):
-        FileSeekerBase.__init__(self)
+
         self.directory = directory
         self.temp_folder = temp_folder
 
-        logfunc('Building files listing...')
+        # logfunc('Building files listing...')
         self.build_files_list(directory)
-        logfunc(f'File listing complete - {len(self._all_files)} files')
+        # logfunc(f'File listing complete - {len(self._all_files)} files')
 
     def build_files_list(self, directory):
         '''Populates paths from Manifest.db files into _all_files'''
 
         directory = directory or self.directory
 
-        try:
-            db = open_sqlite_db_readonly(Path(directory) / "Manifest.db")
-            cursor = db.cursor()
-            cursor.execute(
-                """
-                SELECT
-                fileID,
-                relativePath
-                FROM
-                Files
-                WHERE
-                flags=1
-                """
-            )
-            all_rows = cursor.fetchall()
-            for row in all_rows:
-                hash_filename = row[0]
-                relative_path = row[1]
-                self._all_files[relative_path] = hash_filename
-            db.close()
-        except Exception as ex:
-            logfunc(f'Error opening Manifest.db from {directory}, ' + str(ex))
-            raise ex
+        db = open_sqlite_db_readonly(Path(directory) / "Manifest.db")
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            SELECT
+            fileID,
+            relativePath
+            FROM
+            Files
+            WHERE
+            flags=1
+            """
+        )
+        all_rows = cursor.fetchall()
+        for row in all_rows:
+            hash_filename = row[0]
+            relative_path = row[1]
+            self._all_files[relative_path] = hash_filename
+        db.close()
 
     def search(self, filepattern, return_on_first_hit=False):
         pathlist = []
@@ -120,12 +134,9 @@ class FileSeekerItunes(FileSeekerBase):
             )
             temp_location = Path(self.temp_folder) / relative_path
 
-            try:
-                temp_location.mkdir(parents=True, exist_ok=True)
-                copyfile(original_location, temp_location)
-                pathlist.append(temp_location)
-            except Exception as ex:
-                logfunc(f'Could not copy {original_location} to {temp_location} ' + str(ex))
+            temp_location.mkdir(parents=True, exist_ok=True)
+            copyfile(original_location, temp_location)
+            pathlist.append(temp_location)
 
         return pathlist
 
@@ -141,25 +152,29 @@ class FileSeekerTar(FileSeekerBase):
         pathlist = []
         for member in self.tar_file.getmembers():
             if fnmatch.fnmatch(member.name, filepattern):
-                try:
-                    full_path = Path(self.temp_folder) / member.name
-                    if member.isdir():
-                        full_path.mkdir(parents=True, exist_ok=True)
-                    else:
-                        if not full_path.parent.exists():
-                            full_path.parent.mkdir(parents=True, exist_ok=True)
-                        with open(full_path, "wb") as fout:
-                            fout.write(tarfile.ExFileObject(self.tar_file,
-                                                            member).read())
-                            fout.close()
-                        os.utime(full_path, (member.mtime, member.mtime))
-                    pathlist.append(full_path)
-                except Exception as ex:
-                    logfunc(f'Could not write file to filesystem, path was {member.name} ' + str(ex))
+
+                full_path = Path(self.temp_folder) / member.name
+                if member.isdir():
+                    full_path.mkdir(parents=True, exist_ok=True)
+                else:
+                    if not full_path.parent.exists():
+                        full_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(full_path, "wb") as fout:
+                        fout.write(tarfile.ExFileObject(self.tar_file,
+                                                        member).read())
+                        fout.close()
+                    os.utime(full_path, (member.mtime, member.mtime))
+                pathlist.append(full_path)
+
         return pathlist
 
     def cleanup(self):
         self.tar_file.close()
+
+    def build_files_list(self):
+        """Tar files doe not build file list.
+        """
+        pass
 
 
 class FileSeekerZip(FileSeekerBase):
@@ -180,7 +195,7 @@ class FileSeekerZip(FileSeekerBase):
                     pathlist.append(extracted_path)
                 except Exception as ex:
                     member = member.lstrip("/")
-                    logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
+                    # logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
         return pathlist
 
     def cleanup(self):

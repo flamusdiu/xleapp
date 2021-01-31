@@ -1,9 +1,6 @@
-from helpers import tsv
-from helpers.db import open_sqlite_db_readonly
-from html_report import Icon
-from html_report.artifact_report import ArtifactHtmlReport
-
-from artifacts.Artifact import AbstractArtifact
+from ileapp.artifacts import AbstractArtifact
+from ileapp.helpers.db import open_sqlite_db_readonly
+from ileapp.html_report import Icon
 
 
 class AggDictPasscodeType(AbstractArtifact):
@@ -13,8 +10,8 @@ class AggDictPasscodeType(AbstractArtifact):
     _category = 'Aggregate Dictionary'
     _web_icon = Icon.BOOK
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, props):
+        super().__init__(props)
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])
@@ -48,19 +45,4 @@ class AggDictPasscodeType(AbstractArtifact):
             for row in all_rows:
                 data_list.append((row[0], row[1], row[2]))
 
-            description = ''
-            report = ArtifactHtmlReport('Aggregate Dictionary Passcode Type')
-            report.start_artifact_report(
-                self.report_folder,
-                'Passcode Type',
-                description)
-            report.add_script()
-            data_headers = ('Day', 'Key', 'Value')
-            report.write_artifact_data_table(
-                data_headers,
-                data_list,
-                file_found)
-            report.end_artifact_report()
-
-            tsvname = 'Agg Dict Dictionary Passcode Type'
-            tsv(self.report_folder, data_headers, data_list, tsvname)
+            self.data = data_list
