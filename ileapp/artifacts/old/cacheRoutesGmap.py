@@ -7,7 +7,7 @@ from helpers import tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class CacheRoutesGmap(AbstractArtifact):
+class CacheRoutesGmap(ab.AbstractArtifact):
 
     _name = 'Google Maps Cache Routes'
     _search_dirs = ('**/Library/Application Support/CachedRoutes/*.plist')

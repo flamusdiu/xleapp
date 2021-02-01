@@ -1,5 +1,4 @@
 from ileapp.helpers import tsv
-from ileapp.helpers.decorators import template
 import logging
 
 logger = logging.getLogger(__name__)
@@ -8,6 +7,7 @@ logger = logging.getLogger(__name__)
 class ArtifactHtmlReport:
 
     def __init__(self, artifact):
+        self.artifact = artifact
         self.name = artifact.name
         self.category = artifact.category
         self.description = artifact.description
@@ -23,7 +23,6 @@ class ArtifactHtmlReport:
     def data(self, data):
         self._data = data
 
-    @template
     def generate_report(self, files_found, template=None, jinja=None):
         template = jinja.get_template('report_base.jinja', None)
         return template.render(

@@ -10,7 +10,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class VoiceTriggers (AbstractArtifact):
+class VoiceTriggers (ab.AbstractArtifact):
     _name = 'Voice Triggers'
     _search_dirs = ('**/td/audio/*.json', '**/td/audio/*.wav')
     _category = 'Voice-Triggers'

@@ -8,7 +8,7 @@ from ileapp.html_report import Icon
 from artifacts.Artifact import AbstractArtifact
 
 
-class CellularWireless(AbstractArtifact):
+class CellularWireless(ab.AbstractArtifact):
 
     _name = 'Cellular Wireless'
     _search_dirs = ('*wireless/Library/Preferences/com.apple.*')

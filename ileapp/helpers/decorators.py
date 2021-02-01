@@ -2,6 +2,7 @@ import functools
 import time
 import ileapp.globals
 
+
 # timer function
 def timer(func):
     """Print the runtime of the decorated function"""
@@ -23,7 +24,7 @@ def template(func):
     """
     @functools.wraps(func)
     def wrapper_template(*args, **kwargs):
-        jinja = ileapp.globals.props.jinja
+        jinja = ileapp.globals.jinja
         kwargs['jinja'] = jinja
         value = func(*args, **kwargs)
         return value

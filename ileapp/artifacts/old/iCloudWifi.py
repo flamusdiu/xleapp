@@ -8,7 +8,7 @@ from helpers import is_platform_windows,   tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class ICloudWifi(AbstractArtifact):
+class ICloudWifi(ab.AbstractArtifact):
 
     _name = 'iCloud Wifi Networks'
     _search_dirs = ('**/com.apple.wifid.plist')

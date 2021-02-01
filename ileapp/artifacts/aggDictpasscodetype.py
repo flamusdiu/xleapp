@@ -1,17 +1,17 @@
-from ileapp.artifacts import AbstractArtifact
+from dataclasses import dataclass
+
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
-class AggDictPasscodeType(AbstractArtifact):
+@dataclass
+class AggDictPasscodeType(ab.AbstractArtifact):
 
-    _name = 'Aggregate Dictionary Passcode Type'
-    _search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
-    _category = 'Aggregate Dictionary'
-    _web_icon = Icon.BOOK
-
-    def __init__(self, props):
-        super().__init__(props)
+    name = 'Aggregate Dictionary Passcode Type'
+    search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
+    category = 'Aggregate Dictionary'
+    web_icon = Icon.BOOK
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])

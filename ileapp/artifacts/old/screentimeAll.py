@@ -7,7 +7,7 @@ import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.
 from artifacts.Artifact import AbstractArtifact
 
 
-class ScreentimeAll (AbstractArtifact):
+class ScreentimeAll (ab.AbstractArtifact):
 
     _name = 'Screentime Timed Items'
     _search_dirs = ('**/RMAdminStore-Local.sqlite')

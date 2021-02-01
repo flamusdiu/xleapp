@@ -10,7 +10,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class TileAppDisc (AbstractArtifact):
+class TileAppDisc (ab.AbstractArtifact):
     _name = 'Tile App Discovered Tiles'
     _search_dirs = ('*/private/var/mobile/Containers/Shared/AppGroup/*/com.thetileapp.tile-DiscoveredTileDB.sqlite*')
     _category = 'Accounts'

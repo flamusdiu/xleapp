@@ -6,7 +6,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class DataUsageA(AbstractArtifact):
+class DataUsageA(ab.AbstractArtifact):
 
     _name = 'Data Usage'
     _search_dirs = ('**/DataUsage.sqlite')

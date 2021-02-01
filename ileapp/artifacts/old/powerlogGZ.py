@@ -15,7 +15,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class PowerLogGZ (AbstractArtifact):
+class PowerLogGZ (ab.AbstractArtifact):
     _name = 'Power Log GZ'
     _search_dirs = ('**/Library/BatteryLife/Archives/powerlog_*.PLSQL.gz')
     _category = "Power Log Backups"

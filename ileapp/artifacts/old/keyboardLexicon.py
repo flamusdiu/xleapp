@@ -7,7 +7,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class KeyboardLexicon(AbstractArtifact):
+class KeyboardLexicon(ab.AbstractArtifact):
 
     _name = 'Keyboard Dynamic Lexicon'
     _search_dirs = ('*/private/var/mobile/Library/Keyboard/*-dynamic.lm/dynamic-lexicon.dat')

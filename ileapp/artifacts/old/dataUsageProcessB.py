@@ -6,7 +6,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class DataUsageProcessB(AbstractArtifact):
+class DataUsageProcessB(ab.AbstractArtifact):
 
     _name = 'Data Usage Process'
     _search_dirs = ('**/DataUsage.sqlite')

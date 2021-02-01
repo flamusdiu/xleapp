@@ -10,7 +10,7 @@ from helpers import(is_platform_windows, kmlgen,
 from artifacts.Artifact import AbstractArtifact
 
 
-class TileAppDB (AbstractArtifact):
+class TileAppDB (ab.AbstractArtifact):
     _name = 'Tile App DB Info & Geolocation'
     _search_dirs = ('*private/var/mobile/Containers/Shared/AppGroup/*/com.thetileapp.tile-TileNetworkDB.sqlite*')
     _category = 'Locations'

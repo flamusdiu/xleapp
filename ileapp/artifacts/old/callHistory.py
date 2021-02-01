@@ -6,7 +6,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class CallHistory(AbstractArtifact):
+class CallHistory(ab.AbstractArtifact):
 
     _name = 'Call Logs'
     _search_dirs = ('**/CallHistory.storedata')

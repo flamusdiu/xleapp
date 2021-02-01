@@ -8,7 +8,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppleMapsApplication(AbstractArtifact):
+class AppleMapsApplication(ab.AbstractArtifact):
     _name = 'Apple Maps Application'
     _search_dirs = ('**/iTunesMetadata.plist', '**/BundleMetadata.plist')
     _category = 'Locations'

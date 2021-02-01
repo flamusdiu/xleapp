@@ -8,7 +8,7 @@ from helpers import is_platform_windows,   tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class ICloudSharedAlbums(AbstractArtifact):
+class ICloudSharedAlbums(ab.AbstractArtifact):
 
     _name = 'iCloud Shared Owner Info'
     _search_dirs = ('*/private/var/mobile/Media/PhotoData/PhotoCloudSharingData/*')

@@ -12,7 +12,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class RoutineDLocations(AbstractArtifact):
+class RoutineDLocations(ab.AbstractArtifact):
     _name = 'RoutineD ZRTCLLOCATIONMO'
     _search_dirs = ('**/com.apple.routined/Cache.sqlite*')
     _category = 'Locations'

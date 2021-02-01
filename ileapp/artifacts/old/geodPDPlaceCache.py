@@ -5,7 +5,7 @@ from helpers import( open_sqlite_db_readonly, strings,
 from artifacts.Artifact import AbstractArtifact
 
 
-class GeodPDPlaceCache(AbstractArtifact):
+class GeodPDPlaceCache(ab.AbstractArtifact):
 
     _name = 'PD Place Cache'
     _search_dirs = ('**/PDPlaceCache.db')

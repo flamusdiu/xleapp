@@ -10,7 +10,7 @@ from artifacts.Artifact import AbstractArtifact
 from ileapp.html_report import Icon
 
 
-class DeviceActivator(AbstractArtifact):
+class DeviceActivator(ab.AbstractArtifact):
 
     _name = 'iOS Device Activator Data'
     _search_dirs = ('*private/var/mobile/Library/Logs/mobileactivationd/ucrt_oob_request.txt')

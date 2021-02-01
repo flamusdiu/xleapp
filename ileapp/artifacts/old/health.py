@@ -9,7 +9,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class Health(AbstractArtifact):
+class Health(ab.AbstractArtifact):
 
     _name = 'Health Data'
     _search_dirs = ('**/healthdb_secure.sqlite')

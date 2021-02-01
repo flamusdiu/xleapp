@@ -8,7 +8,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppleMapsGroup(AbstractArtifact):
+class AppleMapsGroup(ab.AbstractArtifact):
     _name = 'Apple Maps Group'
     _search_dirs = ( '**/Shared/AppGroup/*/Library/Preferences/group.com.apple.Maps.plist')
     _category = 'Locations'

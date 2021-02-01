@@ -5,7 +5,7 @@ from ileapp.html_report import Icon
 from artifacts.Artifact import AbstractArtifact
 
 
-class DataUsageB(AbstractArtifact):
+class DataUsageB(ab.AbstractArtifact):
 
     _name = 'Data Usage'
     _search_dirs = ('**/DataUsage-watch.sqlite')

@@ -8,7 +8,7 @@ import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.
 from artifacts.Artifact import AbstractArtifact
 
 
-class InteractionCContacts(AbstractArtifact):
+class InteractionCContacts(ab.AbstractArtifact):
 
     _name = 'Contacts'
     _search_dirs = ('**/interactionC.db')

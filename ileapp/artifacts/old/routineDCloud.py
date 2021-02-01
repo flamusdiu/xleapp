@@ -8,7 +8,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class RoutineDCloud (AbstractArtifact):
+class RoutineDCloud (ab.AbstractArtifact):
     _name = 'RoutineD Cloud'
     _search_dirs = ('**/Library/Caches/com.apple.routined/Cloud-V2.sqlite*')
     _category = 'Locations'

@@ -1,20 +1,20 @@
-from ileapp.artifacts import AbstractArtifact
+from dataclasses import dataclass
+
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
-class AddressBook(AbstractArtifact):
+@dataclass
+class AddressBook(ab.AbstractArtifact):
 
-    _name = 'Address Book'
-    _search_dirs = ('**/AddressBook.sqlitedb')
-    _category = 'Address Book'
-    _web_icon = Icon.BOOK_OPEN
-    _report_headers = ('Contact ID', 'Contact Number', 'First Name',
-                       'Middle Name', 'Last Name', 'Creation Date',
-                       'Modification Date', 'Storage Place')
-
-    def __init__(self, props):
-        super().__init__(props)
+    name = 'Address Book'
+    search_dirs = ('**/AddressBook.sqlitedb')
+    category = 'Address Book'
+    web_icon = Icon.BOOK_OPEN
+    report_headers = ('Contact ID', 'Contact Number', 'First Name',
+                      'Middle Name', 'Last Name', 'Creation Date',
+                      'Modification Date', 'Storage Place')
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])

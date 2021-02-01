@@ -8,7 +8,7 @@ from helpers import logfunc
 
 from artifacts.Artifact import AbstractArtifact
 
-class NotificationsXI (AbstractArtifact):
+class NotificationsXI (ab.AbstractArtifact):
     _name = 'iOS Notifications'
     _search_dirs = ('*PushStore*')
     _report_section = 'Notifications'

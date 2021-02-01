@@ -12,7 +12,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class SafariBookmarks (AbstractArtifact):
+class SafariBookmarks (ab.AbstractArtifact):
     _name = 'Safari Browser Bookmarks'
     _search_dirs = ('**/Safari/Bookmarks.db')
     _category = 'Safari Browser'

@@ -4,7 +4,7 @@ from helpers import tsv, timeline, open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class Notes (AbstractArtifact):
+class Notes (ab.AbstractArtifact):
 
     _name = 'Notes'
     _search_dirs = ('*/NoteStore.sqlite')

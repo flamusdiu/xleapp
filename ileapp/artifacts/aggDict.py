@@ -1,19 +1,19 @@
-from ileapp.artifacts import AbstractArtifact
+from dataclasses import dataclass
+
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
-class AggDict(AbstractArtifact):
+@dataclass
+class AggDict(ab.AbstractArtifact):
 
-    _name = 'Aggregate Dictionary'
-    _search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
-    _category = 'Aggregate Dictionary'
-    _web_icon = Icon.BOOK
-    _report_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
+    name = 'Aggregate Dictionary'
+    search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')
+    category = 'Aggregate Dictionary'
+    web_icon = Icon.BOOK
+    report_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
                        'Distribution Values Table ID')
-
-    def __init__(self, props):
-        super().__init__(props)
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])

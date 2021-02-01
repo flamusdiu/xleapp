@@ -6,7 +6,7 @@ import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.
 from artifacts.Artifact import AbstractArtifact
 
 
-class DHCPHotspotClients(AbstractArtifact):
+class DHCPHotspotClients(ab.AbstractArtifact):
 
     _name = 'DHCP Hotspot Clients'
     _search_dirs = ('**/private/var/db/dhcpd_leases*')

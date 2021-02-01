@@ -9,7 +9,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class ApplicationState(AbstractArtifact):
+class ApplicationState(ab.AbstractArtifact):
 
     _name = 'Application State'
     _search_dirs = ('**/applicationState.db')

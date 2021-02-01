@@ -1,26 +1,25 @@
 import datetime
 import pathlib
 import re
+from dataclasses import dataclass
 
-from ileapp.artifacts import AbstractArtifact
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.html_report import Icon
 
 
-class AppConduit(AbstractArtifact):
+@dataclass
+class AppConduit(ab.AbstractArtifact):
 
-    _name = 'App Conduit'
-    _search_dirs = ('**/AppConduit.log.*')
-    _category = 'App Conduit'
-    _web_icon = Icon.ACTIVITY
-    _report_headers = [('Device ID', 'Device type and version',
-                        'Device extra information'),
-                       ('Time',
-                        'Device interaction',
-                        'Device ID',
-                        'Log File Name')]
-
-    def __init__(self, props):
-        super().__init__(props)
+    name = 'App Conduit'
+    search_dirs = ('**/AppConduit.log.*')
+    category = 'App Conduit'
+    web_icon = Icon.ACTIVITY
+    report_headers = [('Device ID', 'Device type and version',
+                       'Device extra information'),
+                      ('Time',
+                       'Device interaction',
+                       'Device ID',
+                       'Log File Name')]
 
     def get(self, files_found, seeker):
         data_list = []

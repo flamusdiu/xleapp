@@ -1,19 +1,20 @@
-from ileapp.artifacts import AbstractArtifact
+from dataclasses import dataclass
+
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
-class Accounts(AbstractArtifact):
+@dataclass
+class Accounts(ab.AbstractArtifact):
 
-    _name = 'Accounts'
-    _search_dirs = ("**/Accounts3.sqlite")
-    _category = 'Accounts'
-    _web_icon = Icon.USER
-    _report_headers = ('Timestamp', 'Account Desc.', 'Username',
-                       'Description', 'Identifier', 'Bundle ID')
-
-    def __init__(self, props):
-        super().__init__(props)
+    def __post_init__(self):
+        self.name = 'Accounts'
+        self.search_dirs = '**/Accounts3.sqlite'
+        self.category = 'Accounts'
+        self.web_icon = Icon.USER
+        self.report_headers = ('Timestamp', 'Account Desc.', 'Username',
+                               'Description', 'Identifier', 'Bundle ID')
 
     def get(self, files_found, seeker):
         file_found = str(files_found[0])

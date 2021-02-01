@@ -9,7 +9,7 @@ from helpers import  timeline, tsv, kmlgen, is_platform_windows, open_sqlite_db_
 
 from artifacts.Artifact import AbstractArtifact
 
-class RoutineDLocationsLocal (AbstractArtifact):
+class RoutineDLocationsLocal (ab.AbstractArtifact):
 
     _name = 'RoutineD Locations Entry'
     _search_dirs = ('**/private/var/mobile/Library/Caches/com.apple.routined/Local.sqlite*')

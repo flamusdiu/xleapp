@@ -11,7 +11,7 @@ from helpers import tsv, timeline, is_platform_windows, open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class SafariHistory (AbstractArtifact):
+class SafariHistory (ab.AbstractArtifact):
     _name = 'Safari History'
     _search_dirs = ('**/Safari/History.db')
     _category = 'Safari Browser'

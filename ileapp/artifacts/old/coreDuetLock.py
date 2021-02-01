@@ -6,7 +6,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class CoreDuetLock(AbstractArtifact):
+class CoreDuetLock(ab.AbstractArtifact):
 
     _name = 'CoreDuet Lock State'
     _search_dirs = ('**/coreduetd.db')

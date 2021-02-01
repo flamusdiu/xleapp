@@ -17,7 +17,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class LocationDAllB(AbstractArtifact):
+class LocationDAllB(ab.AbstractArtifact):
 
     _name = 'App Harvest'
     _search_dirs = ('**/cache_encryptedB.db')

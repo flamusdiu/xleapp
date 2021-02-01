@@ -9,7 +9,7 @@ from helpers import tsv, timeline, is_platform_windows, open_sqlite_db_readonly
 
 from artifacts.Artifact import AbstractArtifact
 
-class FilesAppsSM(AbstractArtifact):
+class FilesAppsSM(ab.AbstractArtifact):
 
     _name = 'File Apps - Filenames'
     _search_dirs = ('*private/var/mobile/Containers/Shared/AppGroup/*/smartfolders.db*')

@@ -10,7 +10,7 @@ from helpers import(is_platform_windows, kmlgen,
 from artifacts.Artifact import AbstractArtifact
 
 
-class OoklaSpeedtestData (AbstractArtifact):
+class OoklaSpeedtestData (ab.AbstractArtifact):
     _name = 'Ooka Speedtest'
     _search_dirs = ('**/speedtest.sqlite*')
     _category = 'Applications'

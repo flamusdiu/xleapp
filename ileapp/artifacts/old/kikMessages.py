@@ -11,7 +11,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class KikMessages(AbstractArtifact):
+class KikMessages(ab.AbstractArtifact):
 
     _name = 'Kik Messages'
     _search_dirs = ('**/kik.sqlite*')

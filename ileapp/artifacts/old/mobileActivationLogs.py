@@ -9,7 +9,7 @@ from helpers import is_platform_windows,   tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class MobileActivationLogs(AbstractArtifact):
+class MobileActivationLogs(ab.AbstractArtifact):
     _name = 'Mobile Activation Logs'
     _search_dirs = ('**/mobileactivationd.log*')
     _category = 'Mobile Activation Logs'

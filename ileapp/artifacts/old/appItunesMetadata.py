@@ -12,7 +12,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppItunesMetadata(AbstractArtifact):
+class AppItunesMetadata(ab.AbstractArtifact):
 
     _name = "App iTunes Metadata"
     _search_dirs = ('**/iTunesMetadata.plist', '**/BundleMetadata.plist')

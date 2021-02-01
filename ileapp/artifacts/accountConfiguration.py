@@ -1,18 +1,17 @@
 import plistlib
+from dataclasses import dataclass
 
-from ileapp.artifacts import AbstractArtifact
+import ileapp.artifacts.helpers.AbstractArtifact as ab
 from ileapp.html_report import Icon
 
 
-class AccountConfiguration(AbstractArtifact):
+@dataclass
+class AccountConfiguration(ab.AbstractArtifact):
 
-    _name = 'Account Configuration'
-    _search_dirs = ('**/com.apple.accounts.exists.plist')
-    _category = 'Accounts'
-    _web_icon = Icon.USER
-
-    def __init__(self, props):
-        super().__init__(props)
+    name = 'Account Configuration'
+    search_dirs = ('**/com.apple.accounts.exists.plist')
+    category = 'Accounts'
+    web_icon = Icon.USER
 
     def get(self, seeker):
         data_list = []

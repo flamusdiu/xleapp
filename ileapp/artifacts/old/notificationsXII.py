@@ -8,7 +8,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class NotificationsXII(AbstractArtifact):
+class NotificationsXII(ab.AbstractArtifact):
     _name = 'iOS Notifications'
     _search_dirs = ('*private/var/mobile/Library/UserNotifications*')
     _category = 'Notifications'

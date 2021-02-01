@@ -11,7 +11,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class PhotosMetadata (AbstractArtifact):
+class PhotosMetadata (ab.AbstractArtifact):
     _name = 'Photos-sqlite Metadata'
     _search_dirs = ('**/Photos.sqlite')
     _category = 'Photos'

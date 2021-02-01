@@ -7,7 +7,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class PowerLogAll (AbstractArtifact):
+class PowerLogAll (ab.AbstractArtifact):
     _name = 'Powerlog WiFi Network Connections'
     _search_dirs = ('**/CurrentPowerlog.PLSQL')
     _category = 'WiFi Network Connections'

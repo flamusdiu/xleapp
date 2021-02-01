@@ -10,7 +10,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class CloudKitParticipants(AbstractArtifact):
+class CloudKitParticipants(ab.AbstractArtifact):
 
     _name = 'CloudKit Participants'
     _search_dirs = ('*NoteStore.sqlite*')

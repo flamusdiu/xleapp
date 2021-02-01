@@ -18,7 +18,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class KnowledgeC(AbstractArtifact):
+class KnowledgeC(ab.AbstractArtifact):
 
     _name = 'KnowledgeC'
     _search_dirs = ('**/CoreDuet/Knowledge/knowledgeC.db')

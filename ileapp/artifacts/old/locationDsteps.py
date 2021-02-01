@@ -17,7 +17,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class LocationDSteps(AbstractArtifact):
+class LocationDSteps(ab.AbstractArtifact):
     _name = 'LocationD Steps'
     _search_dirs = ('**/cache_encryptedC.db')
     _category ='Locations'

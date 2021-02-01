@@ -10,7 +10,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class IOSMail(AbstractArtifact):
+class IOSMail(ab.AbstractArtifact):
 
     _name = 'IOS Mail'
     _search_dirs = ('**/private/var/mobile/Library/Mail/* Index*')

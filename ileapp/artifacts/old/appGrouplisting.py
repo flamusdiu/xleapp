@@ -10,7 +10,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppGroupListing(AbstractArtifact):
+class AppGroupListing(ab.AbstractArtifact):
 
     _name = 'App Group Listing'
     _search_dirs = (('*/private/var/mobile/Containers/Shared/AppGroup/*/*'

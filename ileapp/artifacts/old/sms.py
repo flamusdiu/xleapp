@@ -11,7 +11,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class SMS (AbstractArtifact):
+class SMS (ab.AbstractArtifact):
     _name = 'SMS'
     _search_dirs = ('**/sms.db')
     _category = 'SMS & iMessage'

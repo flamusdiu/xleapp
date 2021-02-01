@@ -7,7 +7,7 @@ from helpers import is_platform_windows,   tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class MobileBackup(AbstractArtifact):
+class MobileBackup(ab.AbstractArtifact):
     _name = 'Mobile Backup'
     _search_dirs = ('*/Preferences/com.apple.MobileBackup.plist')
     _category = 'Mobile Backup'

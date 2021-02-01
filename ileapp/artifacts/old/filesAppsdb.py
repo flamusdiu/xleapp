@@ -8,7 +8,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class FilesAppsDB(AbstractArtifact):
+class FilesAppsDB(ab.AbstractArtifact):
 
     _name = 'Files App - iCloud Sync Names'
     _search_dirs = ('*private/var/mobile/Library/Application Support/CloudDocs/session/db/server.db*')

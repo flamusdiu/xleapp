@@ -8,7 +8,7 @@ from helpers import is_platform_windows,   tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class WebClips (AbstractArtifact):
+class WebClips (ab.AbstractArtifact):
     _name = 'Webclips'
     _search_dirs = ('*WebClips/*.webclip/*')
     _category = 'iOS Screens'

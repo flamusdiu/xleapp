@@ -6,7 +6,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class Calendar(AbstractArtifact):
+class Calendar(ab.AbstractArtifact):
 
     _name = 'Calendar List'
     _search_dirs = ('**/Calendar.sqlitedb')

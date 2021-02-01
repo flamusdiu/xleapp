@@ -8,7 +8,7 @@ from helpers import is_platform_windows,  logfunc
 from artifacts.Artifact import AbstractArtifact
 
 
-class IconsScreen(AbstractArtifact):
+class IconsScreen(ab.AbstractArtifact):
 
     _name = 'Apps per screen'
     _search_dirs = ('**/SpringBoard/IconState.plist')

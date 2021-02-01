@@ -12,7 +12,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class MediaLibrary(AbstractArtifact):
+class MediaLibrary(ab.AbstractArtifact):
 
     _name = 'Media Library'
     _search_dirs = ('**/Medialibrary.sqlitedb')

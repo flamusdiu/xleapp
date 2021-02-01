@@ -8,7 +8,7 @@ import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.
 from artifacts.Artifact import AbstractArtifact
 
 
-class RoutineDVehicleLocation(AbstractArtifact):
+class RoutineDVehicleLocation(ab.AbstractArtifact):
 
     _name = 'RoutineD Vehicle Location'
     _search_dirs = ('**/Local.sqlite')

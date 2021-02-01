@@ -8,7 +8,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class DiscordMessages(AbstractArtifact):
+class DiscordMessages(ab.AbstractArtifact):
 
     _name = 'Discord Messages'
     _search_dirs = ('*/com.hammerandchisel.discord/fsCachedData/*')

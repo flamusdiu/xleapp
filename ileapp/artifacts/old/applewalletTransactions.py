@@ -6,7 +6,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppleWalletTransactions(AbstractArtifact):
+class AppleWalletTransactions(ab.AbstractArtifact):
     _name = 'Apple Wallet Transaction'
     _search_dirs = ('**/passes23.sqlite')
     _category = 'Apple Wallet'

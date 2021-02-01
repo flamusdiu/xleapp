@@ -6,7 +6,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class DiscordAcct(AbstractArtifact):
+class DiscordAcct(ab.AbstractArtifact):
 
     _name = 'Discord Account'
     _search_dirs = ('*/var/mobile/Containers/Data/Application/*/Documents/mmkv/mmkv.default')

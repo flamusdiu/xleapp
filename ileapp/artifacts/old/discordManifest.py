@@ -8,7 +8,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class DiscordManifest(AbstractArtifact):
+class DiscordManifest(ab.AbstractArtifact):
 
     _name = 'Discord Manifest'
     _search_dirs = ('*/private/var/mobile/Containers/Data/Application/*/Documents/RCTAsyncLocalStorage_V1/manifest.json')

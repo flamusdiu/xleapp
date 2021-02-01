@@ -15,7 +15,7 @@ not_control_char_re = re.compile(f'[^{control_chars}]' + '{4,}')
 printable_chars_for_re = string.printable.replace('\\', '\\\\').replace('[', '\\[').replace(']', '\\]')
 ascii_chars_re = re.compile(f'[{printable_chars_for_re}]' + '{4,}')
 
-class WalStrings (AbstractArtifact):
+class WalStrings (ab.AbstractArtifact):
     _name = 'Strings - SQLite Journal & WAL'
     _search_dirs = ('**/*-wal', '**/*-journal')
     _category = 'SQLite Journaling'

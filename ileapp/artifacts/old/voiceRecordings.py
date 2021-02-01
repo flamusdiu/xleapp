@@ -10,7 +10,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class VoiceRecording (AbstractArtifact):
+class VoiceRecording (ab.AbstractArtifact):
     _name = 'Voice Recordings'
     _search_dirs = ('**/Recordings/*.composition/manifest.plist', '**/Recordings/*.m4a')
     _category = 'Voice-Recordings'

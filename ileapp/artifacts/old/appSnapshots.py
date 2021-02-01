@@ -13,7 +13,7 @@ from PIL import Image
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppSnapShots(AbstractArtifact):
+class AppSnapShots(ab.AbstractArtifact):
 
     _name = 'App Snap Shots'
     _search_dirs = ('**/Library/Caches/Snapshots/*',

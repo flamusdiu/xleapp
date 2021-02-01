@@ -6,7 +6,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class CoreDuetAireplane(AbstractArtifact):
+class CoreDuetAireplane(ab.AbstractArtifact):
 
     _name = 'CoreDuet Airplane Mode'
     _search_dirs = ('**/coreduetd.db')

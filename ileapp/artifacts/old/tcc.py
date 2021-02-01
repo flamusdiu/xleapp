@@ -7,7 +7,7 @@ import artifacts.artGlobals  # use to get iOS version -> iOSversion = artifacts.
 from artifacts.Artifact import AbstractArtifact
 
 
-class TCC (AbstractArtifact):
+class TCC (ab.AbstractArtifact):
 
     _name = 'TCC - Permissions'
     _search_dirs = ('*TCC.db*')

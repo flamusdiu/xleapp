@@ -13,7 +13,7 @@ from helpers import is_platform_windows,  timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class MobileInstall(AbstractArtifact):
+class MobileInstall(ab.AbstractArtifact):
     _name = 'Mobile Installation Logs'
     _search_dirs = ('**/mobile_installation.log.*')
     _category = 'Mobile Installation Logs'

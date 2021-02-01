@@ -12,7 +12,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class SafariTabs (AbstractArtifact):
+class SafariTabs (ab.AbstractArtifact):
     _name = 'Safari Tabs'
     _search_dirs = ('**/Safari/BrowserState.db')
     _category = 'Safari Browser'

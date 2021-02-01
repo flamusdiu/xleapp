@@ -1,20 +1,20 @@
 import datetime
 import plistlib
+from dataclasses import dataclass
 
-from ileapp.artifacts import AbstractArtifact
+from ileapp.artifacts.helpers.AbstractArtifact import (AbstractArtifact,
+                                                       core_artifact)
 
 
+@core_artifact
+@dataclass
 class LastBuild(AbstractArtifact):
 
-    _name = 'Last Build'
-    _search_dirs = '*LastBuildInfo.plist'
-    _category = 'IOS Build'
-    _core_artifact = True
-    _report_headers = ('Key', 'Values')
-    _generate_report = False
-
-    def __init__(self, props):
-        super().__init__(props)
+    def __post_init__(self):
+        self.name = 'Last Build'
+        self.search_dirs = '*LastBuildInfo.plist'
+        self.category = 'IOS Build'
+        self.generate_report = False
 
     def get(self, seeker):
         data_list = []
@@ -35,12 +35,13 @@ class LastBuild(AbstractArtifact):
         self.data = data_list
 
 
+@core_artifact
+@dataclass
 class ITunesBackupInfo(AbstractArtifact):
-    _name = 'iTunesBackup'
-    _search_dirs = '*LastBuildInfo.plist'
-    _category = 'IOS Build'
-    _core_artifact = True
-    _generate_report = False
+    name = 'iTunesBackup'
+    search_dirs = '*LastBuildInfo.plist'
+    category = 'IOS Build'
+    generate_report = False
 
     def get(self, seeker):
         data_list = []

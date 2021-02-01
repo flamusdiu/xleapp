@@ -8,7 +8,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class SafariRecentWebSearches (AbstractArtifact):
+class SafariRecentWebSearches (ab.AbstractArtifact):
     _name = 'Safari Recent WebSearches'
     _search_dirs = ('**/Library/Preferences/com.apple.mobilesafari.plist')
     _category = 'Safari Browser'

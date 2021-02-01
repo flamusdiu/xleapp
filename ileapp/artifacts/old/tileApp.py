@@ -12,7 +12,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class TileApp (AbstractArtifact):
+class TileApp (ab.AbstractArtifact):
     _name = 'Tile App Geolocation Logs'
     _search_dirs = ('*private/var/mobile/Containers/Data/Application/*/Library/log/com.thetileapp.tile*')
     _category = 'Locations'

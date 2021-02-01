@@ -6,7 +6,7 @@ from helpers import open_sqlite_db_readonly, timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class Reminders (AbstractArtifact):
+class Reminders (ab.AbstractArtifact):
     _name = 'Reminders'
     _search_dirs = ('**/Reminders/Container_v1/Stores/*.sqlite')
     _category = 'Reminders'

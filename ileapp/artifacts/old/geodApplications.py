@@ -13,7 +13,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class GeodApplication(AbstractArtifact):
+class GeodApplication(ab.AbstractArtifact):
 
     _name = 'GeoD Application'
     _search_dirs = '**/AP.db'

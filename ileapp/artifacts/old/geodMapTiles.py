@@ -11,7 +11,7 @@ from helpers import open_sqlite_db_readonly, timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class GeodMapTiles(AbstractArtifact):
+class GeodMapTiles(ab.AbstractArtifact):
 
     _name = 'GeoD Map Tiles'
     _search_dirs = ('**/MapTiles.sqlitedb')

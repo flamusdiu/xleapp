@@ -10,7 +10,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class CloudKitNotSharing(AbstractArtifact):
+class CloudKitNotSharing(ab.AbstractArtifact):
 
     _name = 'CloudKit Note Sharing'
     _search_dirs = ('*NoteStore.sqlite*')

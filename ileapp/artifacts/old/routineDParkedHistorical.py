@@ -15,7 +15,7 @@ import artifacts.artGlobals
 from artifacts.Artifact import AbstractArtifact
 
 
-class RoutineDParkedHistorical(AbstractArtifact):
+class RoutineDParkedHistorical(ab.AbstractArtifact):
     _name = 'RoutineD Parked Vehicle Historical'
     _search_dirs = ('**/Local.sqlite')
     _category = 'Locations'

@@ -4,7 +4,7 @@ from helpers import open_sqlite_db_readonly, timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class QueryPredictions(AbstractArtifact):
+class QueryPredictions(ab.AbstractArtifact):
     _name = 'Query Predictions'
     _search_dirs = ('**/query_predictions.db')
     _category = 'SMS & iMessage'

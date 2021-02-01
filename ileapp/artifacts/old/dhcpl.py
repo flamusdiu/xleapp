@@ -7,7 +7,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class DHCPReceivedList(AbstractArtifact):
+class DHCPReceivedList(ab.AbstractArtifact):
 
     _name = 'DHCP Received List'
     _search_dirs = ('**/private/var/db/dhcpclient/leases/en*')

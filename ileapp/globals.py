@@ -54,16 +54,6 @@ class Props:
         return VERSION
 
     @property
-    def jinja(self):
-        """Primary Jinja2 environment
-        """
-        return self._jinja
-
-    @jinja.setter
-    def jinja(self, env):
-        self._jinja = env
-
-    @property
     def core_artifacts(self):
         """Returns all mandatory artifacts
 
@@ -154,3 +144,4 @@ class Props:
 
 # Global Class
 props = Props()
+jinja = jinja2.Environment

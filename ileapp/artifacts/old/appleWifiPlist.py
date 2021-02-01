@@ -7,7 +7,7 @@ from html_report.artifact_report import ArtifactHtmlReport
 from artifacts.Artifact import AbstractArtifact
 
 
-class AppleWifiPlist(AbstractArtifact):
+class AppleWifiPlist(ab.AbstractArtifact):
 
     _name = 'Apple Wifi Plist'
     _search_dirs = ('**/com.apple.wifi.plist',

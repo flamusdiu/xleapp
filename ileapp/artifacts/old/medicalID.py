@@ -5,7 +5,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class MedicalID (AbstractArtifact):
+class MedicalID (ab.AbstractArtifact):
     _name = 'Medical ID'
     _search_dirs = ('*/private/var/mobile/Library/MedicalID/MedicalIDData.archive')
     _category = 'Medical ID'

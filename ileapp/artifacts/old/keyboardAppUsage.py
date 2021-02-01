@@ -6,7 +6,7 @@ from helpers import timeline, tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class KeyboardAppUsage (AbstractArtifact):
+class KeyboardAppUsage (ab.AbstractArtifact):
 
     _name = 'Keyboard Application Usage'
     _search_dirs = ('*/private/var/mobile/Library/Keyboard/app_usage_database.plist')

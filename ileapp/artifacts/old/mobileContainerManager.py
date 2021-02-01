@@ -8,7 +8,7 @@ from helpers import is_platform_windows,  tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class MobileContainerManger(AbstractArtifact):
+class MobileContainerManger(ab.AbstractArtifact):
     _name = 'Mobile Container Manager'
     _search_dirs = ('**/containermanagerd.log.*')
     _category = 'Mobile Container Manager'

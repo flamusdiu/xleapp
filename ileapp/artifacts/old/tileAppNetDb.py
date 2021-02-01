@@ -10,7 +10,7 @@ from helpers import(is_platform_windows,
 from artifacts.Artifact import AbstractArtifact
 
 
-class TitleAppNetDB (AbstractArtifact):
+class TitleAppNetDB (ab.AbstractArtifact):
     _name = 'Tile App Account Information'
     _search_dirs = ('*/private/var/mobile/Containers/Shared/AppGroup/*/com.thetileapp.tile-TileNetworkDB.sqlite*')
     _category = 'Accounts'

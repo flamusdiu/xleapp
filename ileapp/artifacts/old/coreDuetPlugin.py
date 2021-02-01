@@ -5,7 +5,7 @@ from ileapp.html_report import Icon
 from artifacts.Artifact import AbstractArtifact
 
 
-class CoreDuetPlugin(AbstractArtifact):
+class CoreDuetPlugin(ab.AbstractArtifact):
 
     _name = 'CoreDuet Plugged In'
     _search_dirs = ('**/coreduetd.db')

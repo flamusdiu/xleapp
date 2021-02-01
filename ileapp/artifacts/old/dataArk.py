@@ -7,7 +7,7 @@ from helpers import  tsv
 from artifacts.Artifact import AbstractArtifact
 
 
-class DataArk(AbstractArtifact):
+class DataArk(ab.AbstractArtifact):
 
     _name = 'Data Ark'
     _search_dirs = ('**/Library/Lockdown/data_ark.plist')

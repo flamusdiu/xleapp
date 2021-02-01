@@ -9,7 +9,7 @@ from helpers.db import open_sqlite_db_readonly
 from artifacts.Artifact import AbstractArtifact
 
 
-class BluetoothOther(AbstractArtifact):
+class BluetoothOther(ab.AbstractArtifact):
     _name = 'Bluetooth Other'
     _search_dirs = ('**/com.apple.MobileBluetooth.ledevices.other.db')
     _category = 'Bluetooth'
@@ -57,7 +57,7 @@ class BluetoothOther(AbstractArtifact):
         db.close()
 
 
-class BluetoothPaired (AbstractArtifact):
+class BluetoothPaired (ab.AbstractArtifact):
     _name = 'Bluetooth Paired LE'
     _search_dirs = ('**/com.apple.MobileBluetooth.ledevices.paired.db')
     _category = 'Bluetooth'
@@ -108,7 +108,7 @@ class BluetoothPaired (AbstractArtifact):
         db.close()
 
 
-class BluetoothPairedReg (AbstractArtifact):
+class BluetoothPairedReg (ab.AbstractArtifact):
     _name = 'Bluetooth Paired'
     _search_dirs = ('**/com.apple.MobileBluetooth.devices.plist')
     _category = 'Bluetooth'

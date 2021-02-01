@@ -5,7 +5,7 @@ from ileapp.html_report import Icon
 from artifacts.Artifact import AbstractArtifact
 
 
-class ConDev(AbstractArtifact):
+class ConDev(ab.AbstractArtifact):
 
     _name = 'Connected Devices'
     _search_dirs = ('**/iTunes_Control/iTunes/iTunesPrefs')
