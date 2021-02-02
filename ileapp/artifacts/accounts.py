@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-import ileapp.artifacts.helpers.AbstractArtifact as ab
+import ileapp.artifacts as artifacts
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
-
+@artifacts.long_running_process
 @dataclass
-class Accounts(ab.AbstractArtifact):
+class Accounts(artifacts.AbstractArtifact):
 
     def __post_init__(self):
         self.name = 'Accounts'

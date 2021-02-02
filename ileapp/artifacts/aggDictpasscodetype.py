@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-import ileapp.artifacts.helpers.AbstractArtifact as ab
+import ileapp.artifacts as artifacts
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
 @dataclass
-class AggDictPasscodeType(ab.AbstractArtifact):
+class AggDictPasscodeType(artifacts.AbstractArtifact):
 
     name = 'Aggregate Dictionary Passcode Type'
     search_dirs = ('*/AggregateDictionary/ADDataStore.sqlitedb')

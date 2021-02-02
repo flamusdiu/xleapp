@@ -1,12 +1,12 @@
 import plistlib
 from dataclasses import dataclass
 
-import ileapp.artifacts.helpers.AbstractArtifact as ab
+import ileapp.artifacts as artifacts
 from ileapp.html_report import Icon
 
 
 @dataclass
-class AccountConfiguration(ab.AbstractArtifact):
+class AccountConfiguration(artifacts.AbstractArtifact):
 
     name = 'Account Configuration'
     search_dirs = ('**/com.apple.accounts.exists.plist')

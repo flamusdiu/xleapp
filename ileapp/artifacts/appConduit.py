@@ -3,12 +3,12 @@ import pathlib
 import re
 from dataclasses import dataclass
 
-import ileapp.artifacts.helpers.AbstractArtifact as ab
+import ileapp.artifacts as artifacts
 from ileapp.html_report import Icon
 
 
 @dataclass
-class AppConduit(ab.AbstractArtifact):
+class AppConduit(artifacts.AbstractArtifact):
 
     name = 'App Conduit'
     search_dirs = ('**/AppConduit.log.*')

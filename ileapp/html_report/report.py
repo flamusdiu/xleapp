@@ -3,11 +3,10 @@ import shutil
 from collections import defaultdict, namedtuple
 from pathlib import Path
 from ileapp.helpers.decorators import template
-import ileapp.html_report as report
-import ileapp.html_report.web_icons as web_icons
+import html_report as report
 import jinja2
 from ileapp import __authors__, __contributors__
-from ileapp.html_report.templating import IncludeRawExtension
+from html_report.templating import IncludeRawExtension
 
 
 def init(props):
@@ -16,21 +15,9 @@ def init(props):
     Args:
         props (Props): global property module
     """
-    env = jinja2.Environment(
-        loader=jinja2.PackageLoader('ileapp.html_report', 'templates'),
-        autoescape=jinja2.select_autoescape(['html', 'xml']),
-        extensions=[IncludeRawExtension],
-        trim_blocks=True,
-        lstrip_blocks=True,
-    )
-    props.jinja = env
-    props.html_report = report
-
     copy_static_files(props.run_time_info['report_folder_base'])
 
-    index_html = generate_index(props)
-    index_file = props.run_time_info['report_folder_base'] / 'index.html'
-    index_file.write_text(index_html)
+)
 
 @template('index.jinja')
 def generate_index(props):

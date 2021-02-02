@@ -1,7 +1,7 @@
 import logging
 
 import PySimpleGUI as sg
-from ileapp.globals import props
+import ileapp.globals as g
 
 from ileapp.gui.funcs import CheckList
 
@@ -69,4 +69,4 @@ window = sg.Window(f'{props.version}',
                    generate_layout(props.installed_artifacts))
 
 # save the window handle
-props.run_time_info['window_handle'] = window
+g.run_time_info['window_handle'] = window

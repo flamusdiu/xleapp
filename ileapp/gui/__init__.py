@@ -11,12 +11,10 @@ from ileapp.globals import props
 from ileapp.gui.funcs import ValidateInput
 from ileapp.helpers import is_platform_windows
 
-num_of_artifacts = len(props.installed_artifacts)
+num_of_artifacts = len(artifacts.artifact_list)
 regex = re.compile(r'-Artifact(\w+)-')
 
-# Select all artifacts
-props.selected_artifacts.update(props.artifact_list)
-props.artifact_list.clear()
+artifacts.select(all_artifacts=True)
 
 def main(): # noqa C901
     window = guiWindow.window
@@ -30,10 +28,8 @@ def main(): # noqa C901
         if regex.match(event):
             match = regex.match(event)
             name = match.group(1)
-            if values[event] is True:
-                props.select_artifact(name)
-            else:
-                props.deselect_artifact(name)
+            if values[event]:
+                artifact.select(name)
 
         elif event == "SELECT ALL":
             # mark all modules

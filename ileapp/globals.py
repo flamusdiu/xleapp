@@ -10,6 +10,7 @@ THUMBNAIL_ROOT = '**/Media/PhotoData/Thumbnails/**'
 MEDIA_ROOT = '**/Media'
 THUMB_SIZE = 256, 256
 
+VERSION = VERSION
 
 class Device:
     """Class to hold device information
@@ -29,66 +30,6 @@ class Props:
     _logger = logging
     _device_info = Device
 
-    def init(self, artifacts):
-        """Initializes the global properties object
-
-            Run `props.init()` to initialize the artifacts
-            before attempting to use the artifact object.
-        """
-        self._artifact_list = (
-            artifacts.get_list_of_artifacts(self, ordered=False)
-        )
-
-        for name, artifact in self._artifact_list.items():
-            if artifact.cls.core_artifact is True:
-                self._core_artifacts.update({name: artifact})
-
-        for name, artifact in self._core_artifacts.items():
-            self._artifact_list.pop(name)
-
-        self.run_time_info['progress_bar_total'] = (
-            len(self.installed_artifacts))
-
-    @property
-    def version(self):
-        return VERSION
-
-    @property
-    def core_artifacts(self):
-        """Returns all mandatory artifacts
-
-        This artifacts ALWAYS run. No matter
-        which artifacts are selected.
-
-        Returns:
-            dict: list of artifacts
-        """
-        return self._core_artifacts
-
-    @property
-    def installed_artifacts(self):
-        """List: list of strings of installed artifacts
-        """
-        return ChainMap(self.core_artifacts, self.artifact_list)
-
-    @property
-    def selected_artifacts(self):
-        """dict: Selected artifacts to run
-        """
-        return self._selected_artifacts
-
-    def select_artifact(self, name):
-        """Adds an artifacts to be selected and run.
-        """
-        if name in list(self.artifact_list):
-            self._selected_artifacts.append(name)
-
-    def deselect_artifact(self, name):
-        """Adds an artifacts to be selected and run.
-        """
-        if (name in list(self.selected_artifacts)
-                and name not in list(self.core_artifacts)):
-            self._selected_artifacts.remove(name)
 
     def set_progress_bar(self, val):
         """Sets the progress bar for the GUI
@@ -105,9 +46,6 @@ class Props:
         """
         return self._run_time_info
 
-    @property
-    def artifact_list(self):
-        return self._artifact_list
 
     @property
     def device_info(self):

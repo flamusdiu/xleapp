@@ -2,13 +2,12 @@ import datetime
 import plistlib
 from dataclasses import dataclass
 
-from ileapp.artifacts.helpers.AbstractArtifact import (AbstractArtifact,
-                                                       core_artifact)
+import ileapp.artifacts as artifacts
 
 
-@core_artifact
+@artifacts.core_artifact
 @dataclass
-class LastBuild(AbstractArtifact):
+class LastBuild(artifacts.AbstractArtifact):
 
     def __post_init__(self):
         self.name = 'Last Build'
@@ -35,9 +34,9 @@ class LastBuild(AbstractArtifact):
         self.data = data_list
 
 
-@core_artifact
+@artifacts.core_artifact
 @dataclass
-class ITunesBackupInfo(AbstractArtifact):
+class ITunesBackupInfo(artifacts.AbstractArtifact):
     name = 'iTunesBackup'
     search_dirs = '*LastBuildInfo.plist'
     category = 'IOS Build'

@@ -4,7 +4,7 @@ import logging
 import ileapp.artifacts as artifacts
 import ileapp.html_report as report
 from ileapp import VERSION, __project__
-from ileapp.globals import props
+import ileapp.globals
 from ileapp.helpers import ValidateInput
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ def cli():
 
     installed_artifacts = {}
 
-    for name in props.installed_artifacts:
+    for name in artifacts.artifact_list:
         installed_artifacts.update({name.lower(): name})
 
     parser = argparse.ArgumentParser(
@@ -43,13 +43,10 @@ def cli():
 
     args = parser.parse_args()
 
-    # configuration the global properties
-    props.init(artifacts)
-
     if args.artifact is None:
         # If no artifacts selected then choose all of them.
-        [props.select_artifact(name) for name, artifact
-            in props.artifact_list.items()]
+        [artifact.select_artifact(name) for name, artifact
+            in artifacts.artifact_list.items()]
         core_artifacts_only = False
     else:
         args.artifact = [name.lower() for name in args.artifact]
@@ -59,7 +56,7 @@ def cli():
         for name in args.artifact:
             try:
                 if name.lower() != 'core':
-                    props.select_artifact(installed_artifacts[name.lower()])
+                    artifacts.select_artifact(installed_artifacts[name.lower()])
             except KeyError:
                 parser.error(f'Artifact ({name}) not installed or is unknown.')
 
@@ -78,18 +75,17 @@ def cli():
     extracttype, msg = ValidateInput(
         args.input_path,
         args.output_folder,
-        props.selected_artifacts,
+        artifacts.selected_artifacts,
         core_artifacts_only
     )
 
     if extracttype is None:
         parser.error(msg)
     else:
-        props.set_output_folder(output_folder)
-        report.init(props)
+        ileapp.helpers.set_output_folder(output_folder)
         logger.info('Processing {len(args.artifact)} artifacts...')
         artifacts.crunch_artifacts(
-            props.selected_artifacts,
+            artifacts.selected_artifacts,
             extracttype,
             input_path,
             output_folder

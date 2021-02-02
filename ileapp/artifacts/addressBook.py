@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-import ileapp.artifacts.helpers.AbstractArtifact as ab
+import ileapp.artifacts as artifacts
 from ileapp.helpers.db import open_sqlite_db_readonly
 from ileapp.html_report import Icon
 
 
 @dataclass
-class AddressBook(ab.AbstractArtifact):
+class AddressBook(artifacts.AbstractArtifact):
 
     name = 'Address Book'
     search_dirs = ('**/AddressBook.sqlitedb')
