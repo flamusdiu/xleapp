@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
 import pathlib
 
+
 def read(rel_path):
     here = pathlib.Path('.').parent.resolve()
-    return here.read_text(here / rel_path)
+    return (here / rel_path).read_text()
+
 
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
@@ -13,11 +15,12 @@ def get_version(rel_path):
             return line.split(delim)[1]
     raise RuntimeError("Unable to find version string.")
 
+
 long_description = read('README.md')
 
 setup(
     name='iLEAPP',
-    version=get_version("ileapp/"__init__.py"),
+    version=get_version("ileapp/__init__.py"),
     description="iOS Logs, Events, And Plists Parser",
     long_description=long_description,
     license='MIT',
@@ -30,7 +33,7 @@ setup(
         "Documentation": "https://github.com/abrignoni/iLEAPP/wiki",
         "Source": "https://github.com/abrignoni/iLEAPP"
     },
-    author='Alexis Brignoni, Yogesh Khatri'
+    author='Alexis Brignoni, Yogesh Khatri',
     package_dir={"": "ileapp"},
     packages=find_packages(
         where="ileapp",
@@ -41,6 +44,6 @@ setup(
             "ileap=ileapp.__main__:cli"
         },
     },
-    zip_safe: True,
+    zip_safe=True,
     python_requires='>=3.6'
 )

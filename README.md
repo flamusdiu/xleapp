@@ -8,14 +8,14 @@ Select parsing directly from a compressed .tar/.zip file, or a decompressed dire
 ## Features
 
 Parses:  
-⚙️ Mobile Installation Logs  
-⚙️ iOS 12 & 13 Notifications  
-⚙️ Build Info (iOS version, etc.)  
-⚙️ Wireless cellular service info (IMEI, number, etc.)  
-⚙️ Screen icons list by screen and in grid order.  
-⚙️ ApplicationState.db support for app bundle ID to data container GUID correlation.   
-⚙️ User and computer names that the iOS device connected to. Function updated by Jack Farley (@JackFarley248, http://farleyforensics.com/).  
-⚙️ KnowledgeC + Powerlog artifacts.
+&#9881; Mobile Installation Logs  
+&#9881; iOS 12 & 13 Notifications  
+&#9881; Build Info (iOS version, etc.)  
+&#9881; Wireless cellular service info (IMEI, number, etc.)  
+&#9881; Screen icons list by screen and in grid order.  
+&#9881; ApplicationState.db support for app bundle ID to data container GUID correlation.   
+&#9881; User and computer names that the iOS device connected to. Function updated by Jack Farley (@JackFarley248, http://farleyforensics.com/).  
+&#9881; KnowledgeC + Powerlog artifacts.
 And many, many more...
 
 

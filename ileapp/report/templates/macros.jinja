@@ -1,0 +1,41 @@
+{% macro table(data, headers=None, stripped=True, width=100) %}
+<div class='table-responsive'>
+    <table id="dtBasicExample" class="table {{ 'table-striped table-bordered' if stripped else 'table-bordered table-hover' }} table-xsm" cellspacing="0" width="{{ width }}%">
+        <thead>
+            {% if headers and headers|length > 0 %}
+            <tr>
+                {% for header in headers %}
+                    <th class="th-sm">{{ header }}</th>
+                {% endfor %}
+            </tr>
+            {% endif %}
+        </thead>
+        <tbody>
+                {% for row in data %}
+                    <tr>
+                        {% for field in row %}
+                        <td>{{ field }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}
+
+{% macro contributor_html(contributor) %}
+ <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+    <i class="fas fa-medal"></i>{{ contributor.name }}
+    <span>
+        {% if contributor.website|length %}
+        <a href="{{ contributor.website }}" target="_blank"><i class="fab fa-blogger-b fa-fw"></i></a>
+        {% endif %}
+        {% if contributor.twitter|length %}
+        &nbsp;<a href="https://twitter.com/{{ contributor.twitter }}" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+        {% endif %}
+        {% if contributor.github|length %}
+        &nbsp;<a href="{{ contributor.github }}" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+        {% endif %}
+    </span>
+</li>
+{% endmacro %}

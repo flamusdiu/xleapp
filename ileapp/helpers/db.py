@@ -1,4 +1,6 @@
 import sqlite3
+from ileapp.helpers.utils import is_platform_windows
+
 
 def open_sqlite_db_readonly(path):
     '''Opens an sqlite db in read-only mode, so original db
@@ -29,7 +31,7 @@ def does_column_exist_in_db(db, table_name, col_name):
             if row['name'].lower() == col_name:
                 return True
     except sqlite3.Error as ex:
-        logfunc(f"Query error, query={query} Error={str(ex)}")
+        # logfunc(f"Query error, query={query} Error={str(ex)}")
         pass
     return False
 
@@ -43,5 +45,6 @@ def does_table_exist(db, table_name):
         for row in cursor:
             return True
     except sqlite3.Error as ex:
-        logfunc(f"Query error, query={query} Error={str(ex)}")
+        # logfunc(f"Query error, query={query} Error={str(ex)}")
+        pass
     return False

@@ -3,31 +3,18 @@ import logging
 import logging.config
 from pathlib import Path
 
-import ileapp.globals as props
 import yaml
+from ileapp import __authors__, __project__, __version__
+import ileapp.globals as g
 
 
-class LoggingContext(object):
-    def __init__(self, logger, level=None, handler=None, close=True):
-        self.logger = logger
-        self.level = level
-        self.handler = handler
-        self.close = close
+class Filter:
+    def __init__(self, flow):
+        self.flow = flow
 
-    def __enter__(self):
-        if self.level is not None:
-            self.old_level = self.logger.level
-            self.logger.setLevel(self.level)
-        if self.handler:
-            self.logger.addHandler(self.handler)
-
-    def __exit__(self, et, ev, tb):
-        if self.level is not None:
-            self.logger.setLevel(self.old_level)
-        if self.handler:
-            self.logger.removeHandler(self.handler)
-        if self.handler and self.close:
-            self.handler.close()
+    def filter(self, record):
+        if record.flow == self.flow:
+            return True
 
 
 class FileHandlerWithHeader(logging.FileHandler):
@@ -46,15 +33,22 @@ class FileHandlerWithHeader(logging.FileHandler):
         logging.FileHandler.emit(self, record)
 
 
-logConfig = Path(importlib.util.find_spec(__name__).origin).parent / 'log_config.yaml'
-with open(logConfig, 'r') as file:
-    config = yaml.safe_load(file.read())
+def init_logging(log_folder, input_path, num_to_process, num_of_cateorgies):
+    logConfig = Path(importlib.util.find_spec(__name__).origin).parent / 'log_config.yaml'
+    with open(logConfig, 'r') as file:
+        config = yaml.safe_load(file.read())
 
-log_folder = Path(props.props.run_time_info['report_folder_base']) / 'Script Logs'
-if not log_folder.exists():
-    log_folder.mkdir(parents=True, exist_ok=True)
+    if not log_folder.exists():
+        log_folder.mkdir(parents=True, exist_ok=True)
 
-log_file = config['handlers']['info_file_handler']['filename']
-config['handlers']['info_file_handler']['filename'] = log_folder / log_file
+    info_log_file = config['handlers']['info_file_handler']['filename']
+    config['handlers']['info_file_handler']['filename'] = log_folder / info_log_file
+    config['handlers']['info_file_handler']['header'] = (
+        g.generate_program_header(input_path,
+                                  num_to_process, num_of_cateorgies)
+    )
 
-logging.config.dictConfig(config)
+    process_log_file = config['handlers']['process_file_handler']['filename']
+    config['handlers']['process_file_handler']['filename'] = log_folder / process_log_file
+
+    logging.config.dictConfig(config)

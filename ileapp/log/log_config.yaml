@@ -2,25 +2,47 @@ version: 1
 disable_existing_loggers: false
 
 formatters:
-  basic:
+  notime:
     format: '%(message)s'
+  basic:
+    format: '%(asctime)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M'
   standard:
     format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M'
   error:
     format: "%(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s"
+
+filters:
+  process_file:
+    (): ileapp.log.Filter
+    flow: 'process_file'
+  no_filter:
+    (): ileapp.log.Filter
+    flow: 'no_filter'
+
 
 handlers:
   console:
     class: logging.StreamHandler
     level: DEBUG
-    formatter: standard
+    formatter: notime
     stream: ext://sys.stdout
+    filters: [no_filter]
   info_file_handler:
-    class: logging.FileHandlerWithHeader
+    class: ileapp.log.FileHandlerWithHeader
     filename: ileapp.log
     level: INFO
     formatter: standard
     encoding: utf8
+    filters: [no_filter]
+  process_file_handler:
+    class: logging.FileHandler
+    filename: process_file.log
+    level: INFO
+    formatter: notime
+    encoding: utf8
+    filters: [process_file]
   debug_file_handler:
     class: logging.FileHandler
     level: DEBUG
@@ -28,12 +50,6 @@ handlers:
     filename: ileapp_debug.log
     encoding: utf8
 
-loggers:
-  sampleLogger:
-    level: DEBUG
-    handlers: [console]
-    propagate: no
-
 root:
   level: DEBUG
-  handlers: [console]
+  handlers: [console, info_file_handler, process_file_handler]
