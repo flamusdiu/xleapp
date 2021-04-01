@@ -16,12 +16,12 @@ class LastBuild(AbstractArtifact):
         self.category = 'IOS Build'
         self.generate_report = False
 
-    @Search('*LastBuildInfo.plist')
     @timed
+    @Search('*LastBuildInfo.plist')
     def process(self):
         data_list = []
         device_info = g.device
-        path, fp = self.found
+        fp = self.found
         pl = plistlib.load(fp)
         for key, val in pl.items():
             data_list.append((key, val))
@@ -40,14 +40,12 @@ class ITunesBackupInfo(AbstractArtifact):
         self.category = 'IOS Build'
         self.generate_report = False
 
-    @Search('*LastBuildInfo.plist')
     @timed
+    @Search('*LastBuildInfo.plist')
     def process(self):
         data_list = []
         device_info = g.device
         path, fp = self.found
-        print(self.found)
-        exit(0)
         pl = plistlib.load(fp)
         for key, val in pl.items():
             if (isinstance(val, str)

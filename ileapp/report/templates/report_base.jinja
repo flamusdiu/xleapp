@@ -1,6 +1,6 @@
 {% extends 'base.jinja' %}
 {% from 'macros.jinja' import table %}
-{% block title%}{{artifact.name}}{% endblock %}
+{% block title %}{{artifact.name}}{% endblock %}
 {% block report_data %}
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="display-5">{{artifact.report_title if artifact.report_title is defined else artifact.name}}</h1>
@@ -8,27 +8,31 @@
             </div>
             {% if artifact.processed %}
             <h6>Total number of entries: {{ artifact.html_report.data|length }}</h6>
+            {% if artifact.hide_html_report_path_table %}
             <p class="lead">{{ artifact.name }} located at:
                 {% set table_data = [] %}
-                {% if artifact.found is iterable and (artifact.found is not string and artifact.found is not mapping) %}
+                {% if artifact.regex is iterable and (artifact.found is not string and artifact.found is not mapping) %}
                     {% for item in artifact.found %}
-                        {% do table_data.append([item[0]]) %}
+                        {% do table_data.append([item]) %}
                     {% endfor %}
                 {% else %}
                     {% set table_data = [artifact.found[0]] %}
                 {% endif %}
                 {{ table(table_data, ["Paths"]) }}
             </p>
+            {% else %}
+            <p class="lead">Artifact's source file paths have been hidden and maybe shown in table below or not at all.</p>
+            {% endif %}
             {# Prints out each table of data #}
             {% if artifact.html_report.data is mapping %}
                 {% set count = namespace(value=0) %}
                 {% for table_data in artifact.html_report.data.items() %}
-                    {% set table_headers = artifact.report_headers[count] %}
-                    {{ table(table_data, table_headers) }}
+                    {% set table_headers = artifact.report_headers[count.value] %}
+                    {{ table(table_data[1], table_headers) }}
                     {% set count.value = count.value + 1 %}
                 {% endfor %}
             {% else %}
-                {{ table(artifact.html_report.data, headers) }}
+                {{ table(artifact.html_report.data, artifact.report_headers) }}
             {% endif %}
             {% else %}
             <h6> No files found for artifact!</h6>

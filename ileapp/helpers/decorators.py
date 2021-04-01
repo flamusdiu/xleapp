@@ -2,6 +2,7 @@ import functools
 import logging
 import time
 
+import ileapp.artifacts
 import ileapp.globals as g
 from ileapp.helpers.utils import get_abstract_artifact
 
@@ -63,28 +64,50 @@ def long_running_process(cls):
 
 class Search:
 
-    def __init__(self, *args):
-        self._search = [*args]
+    def __init__(self, *args,
+                 file_names_only: bool = False,
+                 return_on_first_hit: bool = True):
+        self.return_on_first_hit = return_on_first_hit
+        self.file_names_only = file_names_only
+        self.search = [*args]
 
     def __call__(self, func):
         def search_wrapper(cls) -> bool:
-            self.files = g.files
-            self.regex = g.regex
             self.seeker = g.seeker
+            self.files = g.seeker.file_handles
+            self.regex = g.seeker.regex
+            current_artifact_name = type(cls).__name__.lower()
 
-            files_found = []
-            for r in self._search:
-                self.regex[r] += 1
-                found = self.seeker.search(r)
+            for r in self.search:
+                results = []
+                print(self.regex, len(self.regex[r]) > 0)
+                if len(self.regex[r]) > 0:
+                    previous_artifact = list(self.regex[r])[0]
+                    previous_artifact_cls = ileapp.artifacts.services.get(previous_artifact)
+                    print(previous_artifact, previous_artifact_cls)
+                    for previous_regex, files in previous_artifact_cls.regex:
+                        if previous_regex == r:
+                            cls.found.extend([self.files[r]])
+                            cls.regex.append([r, files])
+                else:
+                    try:
+                        if self.return_on_first_hit:
+                            results = [next(self.seeker.search(r))]
+                        else:
+                            results = list(self.seeker.search(r))
+                    except StopIteration:
+                        results = None
 
-                for f in found:
-                    self.files[r] = f
+                    if results is not None:
+                        self.files.add(r, results, self.file_names_only)
+                        cls.found.extend([self.files[r]])
+                        cls.regex.append([r, results])
 
-                files_found.append((r, self.files.get(r)))
-                cls.regex.append([r, [f for f in found]])
+                self.regex[r].add(current_artifact_name)
 
-            cls.found = files_found
             if cls.processed is True:
+                if isinstance(cls.found[0], list) or len(cls.found) == 1:
+                    cls.found = cls.found[0]
                 return func(cls)
             return (0, False)
 

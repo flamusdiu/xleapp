@@ -10,7 +10,7 @@ from artifacts.Artifact import AbstractArtifact
 
 class AppleMapsApplication(ab.AbstractArtifact):
     _name = 'Apple Maps Application'
-    _search_dirs = ('**/iTunesMetadata.plist', '**/BundleMetadata.plist')
+    _search_dirs = ('**/Data/Application/*/Library/Preferences/com.apple.Maps.plist')
     _category = 'Locations'
     _web_icon = Icon.MAP_PIN
 

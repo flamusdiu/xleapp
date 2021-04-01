@@ -128,8 +128,7 @@ def cli():
 
         (report_folder,
          temp_folder,
-         log_folder,
-         temp_folder) = g.set_output_folder(output_folder)
+         log_folder) = g.set_output_folder(output_folder)
 
         g.report_folder = report_folder
 
@@ -140,10 +139,10 @@ def cli():
                 artifact_categories[artifact.category] = name
                 num_to_process += 1
         num_of_cateorgies = len(artifact_categories)
-        print(g.generate_program_header(input_path,
+        print(g.generate_program_header(input_path, report_folder,
                                         num_to_process, num_of_cateorgies))
 
-        init_logging(log_folder, input_path,
+        init_logging(log_folder, input_path, report_folder,
                      num_to_process, num_of_cateorgies)
         init_jinja(log_folder)
 
@@ -159,6 +158,7 @@ def cli():
 
         logger.info('Generating index file...', extra={'flow': 'no_filter'})
         html.generate_index(
+            artifact_list,
             report_folder,
             log_folder,
             extraction_type,

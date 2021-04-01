@@ -16,10 +16,10 @@ class AddressBook(AbstractArtifact):
                                'Middle Name', 'Last Name', 'Creation Date',
                                'Modification Date', 'Storage Place')
 
-    @Search('**/AddressBook.sqlitedb')
     @timed
+    @Search('**/AddressBook.sqlitedb')
     def process(self):
-        path, fp = self.found
+        fp = self.found
         cursor = fp.cursor()
         cursor.execute(
             '''

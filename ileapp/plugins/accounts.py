@@ -15,10 +15,10 @@ class Accounts(AbstractArtifact):
         self.report_headers = ('Timestamp', 'Account Desc.', 'Username',
                                'Description', 'Identifier', 'Bundle ID')
 
-    @Search('**/Accounts3.sqlite')
     @timed
+    @Search('**/Accounts3.sqlite', return_on_first_hit=True)
     def process(self):
-        path, fp = self.found
+        fp = self.found
         cursor = fp.cursor()
         cursor.execute(
             """

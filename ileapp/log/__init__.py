@@ -33,7 +33,11 @@ class FileHandlerWithHeader(logging.FileHandler):
         logging.FileHandler.emit(self, record)
 
 
-def init_logging(log_folder, input_path, num_to_process, num_of_cateorgies):
+def init_logging(log_folder,
+                 input_path,
+                 output_path,
+                 num_to_process: int,
+                 num_of_cateorgies: int):
     logConfig = Path(importlib.util.find_spec(__name__).origin).parent / 'log_config.yaml'
     with open(logConfig, 'r') as file:
         config = yaml.safe_load(file.read())
@@ -44,7 +48,7 @@ def init_logging(log_folder, input_path, num_to_process, num_of_cateorgies):
     info_log_file = config['handlers']['info_file_handler']['filename']
     config['handlers']['info_file_handler']['filename'] = log_folder / info_log_file
     config['handlers']['info_file_handler']['header'] = (
-        g.generate_program_header(input_path,
+        g.generate_program_header(input_path, output_path,
                                   num_to_process, num_of_cateorgies)
     )
 

@@ -23,8 +23,10 @@ class AppConduit(AbstractArtifact):
                                 'Device ID',
                                 'Log File Name')]
 
-    @Search('**/AppConduit.log.*')
     @timed
+    @Search('**/AppConduit.log.*',
+            file_names_only=True,
+            return_on_first_hit=False)
     def process(self):
         data_list = []
         device_type_and_info = []
@@ -38,23 +40,19 @@ class AppConduit(AbstractArtifact):
 
         date_filter = re.compile(reg_filter)
 
-        if isinstance(self.found, tuple):
-            files_found = [self.found]
-
         source_files = []
-        for file_found in files_found:
-            path, fp = file_found
-            fp = str(fp)
-            if fp.startswith('\\\\?\\'):
+        for fp in self.found:
+            if str(fp).startswith('\\\\?\\'):
                 file_name = pathlib.Path(fp[4:]).name
                 source_files.append(fp[4:])
             else:
                 file_name = pathlib.Path(fp).name
                 source_files.append(fp)
 
+            fp_found = open(fp, 'r', encoding='utf8')
             linecount = 0
 
-            for line in fp:
+            for line in fp_found:
                 linecount = linecount + 1
                 line_match = re.match(date_filter, line)
 

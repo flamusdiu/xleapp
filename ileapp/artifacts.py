@@ -8,6 +8,7 @@ from typing import Dict, List, Type
 
 import prettytable
 
+import ileapp.globals as g
 from ileapp.abstract import AbstractArtifact
 
 logger = logging.getLogger(__name__)
@@ -46,14 +47,14 @@ class ArtifactService(UserDict):
                          builder: ArtifactServiceBuilder
                          ) -> None:
         self._items = self._items + 1
-        self.data[key] = builder
+        self.data[key] = builder()
 
     def create(self, key: str) -> Type[AbstractArtifact]:
         builder = self.data.get(key)
         if not builder:
             raise ValueError(key)
 
-        return builder()
+        return builder
 
 
 def _build_artifact_list():
@@ -150,7 +151,7 @@ def _crunch_core_artifacts(artifacts,
                             extra={'flow': 'no_filter'})
             # GuiWindow.SetProgressBar(categories_searched * ratio)
         else:
-            _process_artifact(name, artifact)
+            _process_artifact(name, artifact)            
             _gen_report(name, artifact, report_folder)
 
 
@@ -159,14 +160,29 @@ def _process_artifact(name: str,
     logger.info(
         f'\n{artifact.category} [{name}] artifact '
         f'processing...', extra={'flow': 'no_filter'})
-    process_time, value = artifact.process()
+    process_time, _ = artifact.process()
 
     for regex, files_found in artifact.regex:
-        logger.info(
-            f'\nFiles for {regex} located at:', extra={'flow': 'process_file'}
-        )
-        [logger.info(f'\t{file}', extra={'flow': 'process_file'})
-            for file in files_found]
+        if files_found is None:
+            logger.info(
+                f'\tNo Files found for "{regex}"',
+                extra={'flow': 'process_file'}
+            )
+            logger.info(
+                f'\tNo Files found for "{regex}"',
+                extra={'flow': 'no_filter'}
+            )
+        else:
+            g.seeker.regex.processed(regex, name)
+            if len(g.seeker.regex[regex]) > 0:
+                logger.info(
+                    f'\nFiles for {regex} located at:',
+                    extra={'flow': 'process_file'}
+                )
+                for file in files_found:
+                    logger.info(
+                        f'\t{file}', extra={'flow': 'process_file'})
+                del g.seeker.file_handles[regex]
 
     artifact.process_time = process_time
     logger.info(
@@ -180,7 +196,7 @@ def _gen_report(name: str,
                 output_folder) -> None:
     if artifact.report(output_folder):
         logger.info(f'Report generated for '
-                    f'{artifact.category} [{name}]\n',
+                    f'{artifact.category} [{name}]',
                     extra={'flow': 'no_filter'})
 
 

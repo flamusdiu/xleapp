@@ -22,25 +22,14 @@ class AppGroupListing(AbstractArtifact):
         self.report_title = 'Bundle ID by AppGroup & PluginKit IDs'
         self.web_icon = Icon.PACKAGE
 
+    @timed
     @Search(
         '*/private/var/mobile/Containers/Shared/AppGroup/*/*.metadata.plist',
-        '**/PluginKitPlugin/*.metadata.plist')
-    @timed
+        '**/PluginKitPlugin/*.metadata.plist', return_on_first_hit=False)
     def process(self):
         data_list = []
-        files_found = self.found
 
-        print(files_found)
-        print(f'regex: {self.regex}')
-        exit(0)
-
-        if isinstance(self.found, tuple):
-            files_found = [self.found]
-
-        for file_found in files_found:
-            print(file_found)
-            exit(0)
-            path, fp = file_found
+        for fp in self.found:
             if sys.version_info >= (3, 9):
                 plist = plistlib.load(fp)
             else:
@@ -48,11 +37,11 @@ class AppGroupListing(AbstractArtifact):
 
             bundleid = plist['MCMMetadataIdentifier']
 
-            p = pathlib.Path(file_found)
+            p = pathlib.Path(fp)
             appgroupid = p.parent.name
-            fileloc = str(p.parents[1])
-            typedir = str(p.parents[1].name)
+            fileloc = p.parent
+            typedir = p.parents[1].name
 
             data_list.append((bundleid, typedir, appgroupid, fileloc))
 
-        self._data = data_list
+        self.data = data_list

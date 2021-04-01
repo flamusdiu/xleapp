@@ -1,10 +1,12 @@
 {% extends "base.jinja" %}
 {% from 'macros.jinja' import contributor_html, table %}
+{% from "nav_artifacts.jinja" import nav %}
 {% block head %}
     {{ super() }}
     {% block add_scripts %}{% endblock %}
 {% endblock %}
 {% block title %}{% endblock %}
+{% block navigation %}{{ nav(navigation) }}{% endblock %}
 {% block report_data %}
                 <div class="card bg-white" style="padding: 20px;">
                     <h2 class="card-title">Case Information</h2>
@@ -53,13 +55,13 @@
                 <div class="alert alert-light mb-4 bg-white" style="border-style: none">
                     <h4 class="text-center">iLEAPP Authors</h4>
                     <ul class="list-group" style="max-width: 500px; margin:auto">
-                    {% for author in artifact.html_report.authors|sort %}
+                    {% for author in artifact.html_report.authors|sort(attribute='name') %}
                         {{ contributor_html(author) }}
                     {% endfor %}
                     </ul>
                     <h4 class="text-center">iLEAPP Contributors</h4>
                     <ul class="list-group" style="max-width: 500px; margin:auto">
-                    {% for contributor in artifact.html_report.contributors|sort %}
+                    {% for contributor in artifact.html_report.contributors|sort(attribute='name') %}
                         {{ contributor_html(contributor) }}
                     {% endfor %}
                     <ul>

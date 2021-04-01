@@ -15,10 +15,10 @@ class AggDict(AbstractArtifact):
         self.report_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
                                'Distribution Values Table ID')
 
-    @Search('*/AggregateDictionary/ADDataStore.sqlitedb')
     @timed
+    @Search('*/AggregateDictionary/ADDataStore.sqlitedb')
     def process(self):
-        path, fp = self.found
+        fp = self.found
         cursor = fp.cursor()
 
         cursor.execute(

@@ -13,10 +13,10 @@ class AggDictPasscode(AbstractArtifact):
         self.category = 'Aggregate Dictionary'
         self.web_icon = Icon.BOOK
 
-    @Search('*/AggregateDictionary/ADDataStore.sqlitedb')
     @timed
+    @Search('*/AggregateDictionary/ADDataStore.sqlitedb')
     def process(self):
-        path, fp = self.found
+        fp = self.found
         cursor = fp.cursor()
 
         cursor.execute(

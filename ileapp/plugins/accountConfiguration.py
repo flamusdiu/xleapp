@@ -14,12 +14,12 @@ class AccountConfiguration(AbstractArtifact):
         self.category = 'Accounts'
         self.web_icon = Icon.USER
 
-    @Search('**/com.apple.accounts.exists.plist')
     @timed
+    @Search('**/com.apple.accounts.exists.plist')
     def process(self):
         data_list = []
 
-        path, fp = self.found
+        fp = self.found
         pl = plistlib.load(fp)
         for key, val in pl.items():
             data_list.append((key, val))

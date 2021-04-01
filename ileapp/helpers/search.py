@@ -1,15 +1,16 @@
 import fnmatch
 import logging
 import os
+import sqlite3
 import tarfile
 from abc import ABC, abstractmethod
-from typing import List, AnyStr, Tuple, Type
-from collections import UserDict
+from collections import UserDict, defaultdict
+from io import BufferedIOBase
 from pathlib import Path
 from shutil import copyfile
-from typing import Union
+from typing import AnyStr, List, Tuple, Type, Union
 from zipfile import ZipFile
-
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -19,15 +20,126 @@ FileList = List[AnyStr]
 SubFolders = List[AnyStr]
 
 
+class FileHandles(defaultdict):
+
+    def __init__(self, *args, **kwargs) -> None:
+        defaultdict.__init__(self, *args, **kwargs)
+        self.default_factory = set
+        self._items = 0
+
+    def __len__(self) -> int:
+        return self._items
+
+    def add(self,
+            regex: str,
+            files: List,
+            file_names_only: bool = False) -> None:
+
+        def update_item(regex, item):
+            items = defaultdict.__getitem__(self, regex)
+            if item not in items:
+                items.add(item)
+                defaultdict.__setitem__(self, regex, items)
+
+        if regex not in defaultdict.__dict__:
+            for file in files:
+                self._items += 1
+
+                '''If we have more then 10 files, then set only
+                file names instead of `FileIO` or
+                `sqlite3.connection` to save memory. Most artifacts
+                probably have less then 5 files they will read/use.
+                '''
+                if len(files) > 10 or file_names_only:
+                    update_item(regex, file)
+                    continue
+
+                p = Path(file)
+                db = sqlite3.Connection
+                file = BufferedIOBase
+
+                try:
+                    db = sqlite3.connect(f'file:{p}?mode=ro', uri=True)
+                    cursor = db.cursor()
+                    page_size, = (
+                        cursor.execute('PRAGMA page_size').fetchone())
+                    page_count, = (
+                        cursor.execute('PRAGMA page_count').fetchone())
+
+                    if page_size * page_count < 20480:  # less then 20 MB
+                        db_mem = sqlite3.connect(':memory:')
+                        db_copy = db.backup(db_mem)
+                        db.close()
+                        db = db_copy
+
+                    update_item(regex, db)
+                except (sqlite3.OperationalError, sqlite3.DatabaseError):
+                    fp = open(p, 'rb')
+                    update_item(regex, fp)
+                except FileNotFoundError:
+                    raise FileNotFoundError(f'File {p} was not found!')
+
+    def __getitem__(self, regex: str) -> Union[sqlite3.Connection, BufferedIOBase]:
+        try:
+            items = defaultdict.__getitem__(self, regex)
+            if len(items) == 1:
+                item = next(iter(items))
+                if isinstance(item, BufferedIOBase):
+                    item.seek(0)
+                return item
+            else:
+                items = list(items)
+                for item in items:
+                    if isinstance(item, BufferedIOBase):
+                        item.seek(0)
+                return items
+        except KeyError:
+            return KeyError(f'Regex {regex} has no files openned!')
+
+    def __delitem__(self, regex: str):
+        files = self.__dict__.pop(regex, None)
+        if files:
+            if isinstance(files, list):
+                for f in files:
+                    f.close()
+                    self._items -= 1
+            else:
+                files.close()
+                self._items -= 1
+            return True
+        return False
+
+@dataclass
+class ArtifactRegex:
+    name: str = field(init=True, default='')
+    processed: bool = field(init=False, default=False)
+
+
+class Regex(defaultdict):
+
+    def __setitem(self, regex: str, artifact_name: str):
+        self.__dict__[regex].add(ArtifactRegex(artifact_name))
+
+    def __getitem__(self, regex: str):
+        return defaultdict.__getitem__(self, regex)
+
+    def processed(self, regex: str, artifact_name: str):
+        for artifact in self[regex]:
+            if artifact.name == artifact_name:
+                artifact.processed = True
+
+
 class FileSeekerBase(ABC):
 
     _all_files = []
     _directory = Path()
+    _file_handles = FileHandles()
+    _regex = Regex()
 
     @abstractmethod
     def search(self,
                filepattern_to_search,
-               return_on_first_hit=False) -> List[AnyStr]:
+               return_on_first_hit=False) -> FileList:
         '''Returns a list of paths for files/folders that matched'''
         pass
 
@@ -58,6 +170,14 @@ class FileSeekerBase(ABC):
     def all_files(self, files: List[AnyStr]):
         self._all_files = files
 
+    @property
+    def file_handles(self) -> FileHandles:
+        return self._file_handles
+
+    @property
+    def regex(self) -> defaultdict(int):
+        return self._regex
+
 
 class FileSeekerDir(FileSeekerBase):
     def __init__(self, directory, temp_folder=None) -> None:
@@ -87,13 +207,9 @@ class FileSeekerDir(FileSeekerBase):
 
         return subfolders, files
 
-    def search(self, filepattern, return_on_first_hit=False) -> List[str]:
-        if return_on_first_hit:
-            for item in self._all_files:
-                if fnmatch.fnmatch(item, filepattern):
-                    return [item]
-            return []
-        return fnmatch.filter(self.all_files, filepattern)
+    def search(self, filepattern) -> List[str]:
+        for item in fnmatch.filter(self.all_files, filepattern):
+            yield item
 
     def cleanup(self):
         pass

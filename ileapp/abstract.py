@@ -1,11 +1,12 @@
 import logging
-from os import PathLike
-import sqlite3
+import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from io import FileIO
+from os import PathLike
 from typing import List, Union
+from pathlib import Path
 
+import ileapp.globals as g
 import ileapp.report.tsv as tsv
 from ileapp.report.templating import HtmlPage, Template
 from ileapp.report.webicons import Icon as Icon
@@ -29,32 +30,6 @@ class WebIcon:
             raise TypeError(
                 f"Got {type(value)} instead of {type(Icon)}! "
                 f"Error setting Web Icon on {str(obj)}!"
-            )
-
-
-class FilesFound:
-    """Descriptor ensuring 'found' type
-    """
-    def __set_name__(self, owner, name):
-        self.name = name
-
-    def __get__(self, obj, type=None) -> Union[List, str]:
-        if (obj.__dict__.get(self.name) is not None
-                and len(obj.__dict__.get(self.name)) == 1):
-            return obj.__dict__.get(self.name)[0]
-        return obj.__dict__.get(self.name) or []
-
-    def __set__(self, obj, value) -> None:
-        if (isinstance(value, tuple)
-                or isinstance(value, sqlite3.Connection)
-                or isinstance(value, FileIO)):
-            obj.__dict__[self.name] = [value]
-        elif isinstance(value, FilesFound) or isinstance(value, list):
-            obj.__dict__[self.name] = value
-        else:
-            raise TypeError(
-                f"Error setting files found! Expected list or str! "
-                f"Got {type(value)} instead!"
             )
 
 
@@ -156,67 +131,68 @@ class ArtifactHtmlReport(HtmlPage):
 @dataclass
 class _AbstractBase:
     """ Base class to set any properties for
-        `AbstractArtifact` Class. This properties do not
-        have a default value.
+    `AbstractArtifact` Class. This properties do not
+    have a default value.
 
-        Properties:
-            name (str): full name of the artifact
-            html_report (ArtifactHtmlReport): object holding options and
-                information for the html for each artifact.
+    Attributes:
+        name (str): full name of the artifact
+        html_report (ArtifactHtmlReport): object holding options and
+            information for the html for each artifact.
     """
     name: str = field(init=False)
 
 
 @dataclass
 class _AbstractArtifactDefaults:
-    """ Class to set defaults to any properies for the
-        `AbstractArtifact` class.
+    """ Class to set defaults to any properties for the
+    `AbstractArtifact` class.
 
-        Properties:
-            category (str): Category the artifact falls into. This also is used
-                for the area the artifacts appears under for the end report.
-                Default is None.
-            description (str): Short description of the artifact. Default is ''.
-            found (list[str]): list of files located from the artifact's
-                `process()` function
-            generate_report (bool): bool to mark if the artifact should product
-                a report. Some artifacts may product information used by other
-                artifacts and such may not need a generated report. This
-                supresses the report.
-            report_headers (list or tuple): headers for the report table during
-                report generation.
-            regex (list): search strings set by the `@Search()` decorator.
-            processed (bool): True or False if the artiface was properly
-                processed.
-            web_icon (Icon): FeatherJS icon used for the report navgation menu
+    Attributes core, long_running_process, and selected are used
+    to track artifacts internally for certain actions.
+
+    Attributes:
+        category (str): Category the artifact falls into. This also is used
+            for the area the artifacts appears under for the end report.
+            Default is None.
+        core (bool): artifacts require to always run. Default is False.
+        description (str): Short description of the artifact. Default is ''.
+        found (list[str]): list of files located from the artifact's
+            `process()` function
+        generate_report (bool): bool to mark if the artifact should product
+            a report. Some artifacts may product information used by other
+            artifacts and such may not need a generated report. This
+            suppresses the report.
+        hide_html_report_path_table (bool): bool to hide displaying paths
+            when then report is generated. Note: Any artifact processing 10
+            or more files will ignore this value.
+        long_running_process (bool): artifacts which takes an extremely
+            long time to run and should be deselected by default.
+            Default is False
+        report_headers (list or tuple): headers for the report table during
+            report generation.
+        regex (list): search strings set by the `@Search()` decorator.
+        processed (bool): True or False if the artifact was properly
+            processed.
+        selected: artifacts selected to be run. Default is False.
+        web_icon (Icon): FeatherJS icon used for the report navgation menu
     """
 
     category: str = field(init=False, default='None')
+    core: bool = field(init=False, default=False)
     data: List = field(init=False, default_factory=lambda: [])
     description: str = field(init=False, default='')
-    found: List = field(init=False, default=FilesFound())
+    found: List = field(init=False, default_factory=lambda: [])
     generate_report: bool = field(init=False, default=True)
+    hide_html_report_path_table: bool = field(init=False, default=False)
     html_report: ArtifactHtmlReport = (
         field(init=False, default=ArtifactHtmlReport()))
+    long_running_process: bool = field(init=False, default=False)
     report_headers: Union[List, tuple] = field(
         init=False, default=ReportHeaders())
     regex: list = field(init=False, default_factory=lambda: [])
     processed: bool = field(init=False, default=False)
-    web_icon: Icon = field(init=False, default=WebIcon())
-
-    """
-        These are used internally to track artifacts
-
-        Properties:
-            core (bool): artifacts require to always run. Default is False.
-            long_running_process (bool): artifacts which takes an extemely
-                long time to run and should be deselected by default.
-                Default is False
-            selected: artifacts selected to be run. Default is False.
-    """
-    core: bool = field(init=False, default=False)
-    long_running_process: bool = field(init=False, default=False)
     selected: bool = field(init=False, default=False)
+    web_icon: Icon = field(init=False, default=WebIcon())
 
 
 @dataclass
@@ -235,7 +211,11 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
     @property
     def processed(self) -> bool:
-        return len(self.found) > 0 and all(self.found)
+        try:
+            iter(self.found)
+            return len(self.found) > 0 and all(self.found)
+        except TypeError:
+            return bool(self.found)
 
     @property
     def processing_time(self) -> str:
@@ -258,7 +238,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         """
         if self.generate_report is False:
             if self.core:
-                logger.info('Report generation skipped for core artifacts!', 
+                logger.info('Report generation skipped for core artifacts!',
                             extra={'flow': 'no_filter'})
             else:
                 logger.info(f'Report not generated for "{self.name}"! Artifact '
@@ -275,3 +255,40 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         self.html_report.report(self.found)
 
         return True
+
+    def copyfile(self, input_file: Union[PathLike, str], output_file: str) -> None:
+        """Exports file to report folder
+
+        File will be located under report_folder\\export\\artifact_class
+
+        Args:
+            input_file (str): input file name/path
+            output_file (str): output file name
+        """
+        report_folder = g.report_folder
+        artifact_folder = type(self).__name__
+        output_folder = Path(report_folder / 'export' / artifact_folder)
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        shutil.copyfile(input_file, (output_folder / output_file))
+        logger.debug(f'File {input_file.base} copied to '
+                     f'{output_folder / output_file}')
+
+    def rmfile(self, input_file: Union[PathLike, str]) -> None:
+        """Removed file from report folder
+
+        Args:
+            input_file (Union[PathLike, str]): pathlike or str of file to
+                remove. Must be located in the artifact's export folder.
+        """
+        artifact_name = type(self).__name__
+        fp = Path(input_file)
+        if artifact_name in fp.parts:
+            try:
+                fp.unlink()
+            except OSError:
+                logger.warning(f'Attempting to delete "{fp}" failed! '
+                               'File was not found!')
+        else:
+            logger.warning(f'Artifact "{artifact_name}" attempted to '
+                           f'delete {fp} not located within its export folder.')
