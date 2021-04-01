@@ -63,7 +63,6 @@ def long_running_process(cls):
 
 
 class Search:
-
     def __init__(self, *args,
                  file_names_only: bool = False,
                  return_on_first_hit: bool = True):
@@ -80,11 +79,9 @@ class Search:
 
             for r in self.search:
                 results = []
-                print(self.regex, len(self.regex[r]) > 0)
                 if len(self.regex[r]) > 0:
                     previous_artifact = list(self.regex[r])[0]
                     previous_artifact_cls = ileapp.artifacts.services.get(previous_artifact)
-                    print(previous_artifact, previous_artifact_cls)
                     for previous_regex, files in previous_artifact_cls.regex:
                         if previous_regex == r:
                             cls.found.extend([self.files[r]])
