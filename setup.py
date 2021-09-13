@@ -41,7 +41,7 @@ setup(
     ),
     entry_points={
         "console_scripts": {
-            "ileap=ileapp.__main__:cli"
+            "ileapp=ileapp.__main__:cli"
         },
     },
     zip_safe=True,
