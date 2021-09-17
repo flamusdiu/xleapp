@@ -7,13 +7,18 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class Accounts(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Accounts'
         self.category = 'Accounts'
         self.web_icon = Icon.USER
-        self.report_headers = ('Timestamp', 'Account Desc.', 'Username',
-                               'Description', 'Identifier', 'Bundle ID')
+        self.report_headers = (
+            'Timestamp',
+            'Account Desc.',
+            'Username',
+            'Description',
+            'Identifier',
+            'Bundle ID',
+        )
 
     @timed
     @Search('**/Accounts3.sqlite', return_on_first_hit=True)
@@ -39,6 +44,5 @@ class Accounts(AbstractArtifact):
         if usageentries > 0:
             data_list = []
             for row in all_rows:
-                data_list.append((row[0], row[1], row[2],
-                                  row[3], row[4], row[5]))
+                data_list.append((row[0], row[1], row[2], row[3], row[4], row[5]))
             self.data = data_list

@@ -1,6 +1,8 @@
 {% extends 'base.jinja' %}
 {% from 'macros.jinja' import table %}
+{% from "nav_artifacts.jinja" import nav %}
 {% block title %}{{artifact.name}}{% endblock %}
+{% block navigation %}{{ nav(navigation) }}{% endblock %}
 {% block report_data %}
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="display-5">{{artifact.report_title if artifact.report_title is defined else artifact.name}}</h1>

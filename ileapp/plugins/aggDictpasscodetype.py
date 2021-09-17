@@ -7,7 +7,6 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class AggDictPasscodeType(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Aggregate Dictionary Passcode Type'
         self.category = 'Aggregate Dictionary'

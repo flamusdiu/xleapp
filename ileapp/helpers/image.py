@@ -1,6 +1,6 @@
 import shutil
 import os
-import ileapp.globals as g
+import ileapp.ilapglobals as g
 import sqlite3
 import simplekml
 from PIL import Image
@@ -14,17 +14,18 @@ def generate_thumbnail(imDirectory, imFilename, seeker, report_folder):
     thumb = f'{g.thumbnail_root}/{imDirectory}/{imFilename}'
     thumblist = seeker.search(f'{thumb}/**.JPG', return_on_first_hit=True)
     thumbname = imDirectory.replace('/', '_') + '_' + imFilename + '.JPG'
-    pathToThumb = (
-        os.path.join(os.path.basename(os.path.abspath(report_folder)),
-                     thumbname))
+    pathToThumb = os.path.join(
+        os.path.basename(os.path.abspath(report_folder)), thumbname
+    )
     htmlThumbTag = '<img src="{0}"></img>'.format(pathToThumb)
     if thumblist:
         shutil.copyfile(thumblist[0], os.path.join(report_folder, thumbname))
     else:
         # recreate thumbnail from image
         # TODO: handle videos and HEIC
-        files = seeker.search(f'{g.media_root}/{imDirectory}/{imFilename}',
-                              return_on_first_hit=True)
+        files = seeker.search(
+            f'{g.media_root}/{imDirectory}/{imFilename}', return_on_first_hit=True
+        )
         if files:
             try:
                 im = Image.open(files[0])
@@ -63,7 +64,7 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
     kml = simplekml.Kml(open=1)
 
     a = 0
-    length = (len(data_list))
+    length = len(data_list)
     while a < length:
         modifiedDict = dict(zip(data_headers, data_list[a]))
         times = modifiedDict['Timestamp']
@@ -74,8 +75,9 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
             pnt.name = times
             pnt.description = f"Timestamp: {times} - {kmlactivity}"
             pnt.coords = [(lon, lat)]
-            cursor.execute("INSERT INTO data VALUES(?,?,?,?)",
-                           (times, lat, lon, kmlactivity))
+            cursor.execute(
+                "INSERT INTO data VALUES(?,?,?,?)", (times, lat, lon, kmlactivity)
+            )
         a += 1
     db.commit()
     db.close()

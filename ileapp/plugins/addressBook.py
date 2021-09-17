@@ -7,14 +7,20 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class AddressBook(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Address Book'
         self.category = 'Address Book'
         self.web_icon = Icon.BOOK_OPEN
-        self.report_headers = ('Contact ID', 'Contact Number', 'First Name',
-                               'Middle Name', 'Last Name', 'Creation Date',
-                               'Modification Date', 'Storage Place')
+        self.report_headers = (
+            'Contact ID',
+            'Contact Number',
+            'First Name',
+            'Middle Name',
+            'Last Name',
+            'Creation Date',
+            'Modification Date',
+            'Storage Place',
+        )
 
     @timed
     @Search('**/AddressBook.sqlitedb')
@@ -46,6 +52,7 @@ class AddressBook(AbstractArtifact):
                 an = str(row[0])
                 an = an.replace("b'", "")
                 an = an.replace("'", "")
-                data_list.append((an, row[1], row[2], row[3], row[4],
-                                  row[5], row[6], row[7]))
+                data_list.append(
+                    (an, row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+                )
             self.data = data_list

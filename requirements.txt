@@ -13,4 +13,5 @@ prettytable
 pyinstaller
 pyliblzfse
 PySimpleGUI==4.34.0
+pyyaml
 simplekml

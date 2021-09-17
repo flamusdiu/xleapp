@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 from ileapp import __authors__, __project__, __version__
-import ileapp.globals as g
+import ileapp.ilapglobals as g
 
 
 class Filter:
@@ -33,12 +33,12 @@ class FileHandlerWithHeader(logging.FileHandler):
         logging.FileHandler.emit(self, record)
 
 
-def init_logging(log_folder,
-                 input_path,
-                 output_path,
-                 num_to_process: int,
-                 num_of_cateorgies: int):
-    logConfig = Path(importlib.util.find_spec(__name__).origin).parent / 'log_config.yaml'
+def init_logging(
+    log_folder, input_path, output_path, num_to_process: int, num_of_cateorgies: int
+):
+    logConfig = (
+        Path(importlib.util.find_spec(__name__).origin).parent / 'log_config.yaml'
+    )
     with open(logConfig, 'r') as file:
         config = yaml.safe_load(file.read())
 
@@ -47,12 +47,13 @@ def init_logging(log_folder,
 
     info_log_file = config['handlers']['info_file_handler']['filename']
     config['handlers']['info_file_handler']['filename'] = log_folder / info_log_file
-    config['handlers']['info_file_handler']['header'] = (
-        g.generate_program_header(input_path, output_path,
-                                  num_to_process, num_of_cateorgies)
+    config['handlers']['info_file_handler']['header'] = g.generate_program_header(
+        input_path, output_path, num_to_process, num_of_cateorgies
     )
 
     process_log_file = config['handlers']['process_file_handler']['filename']
-    config['handlers']['process_file_handler']['filename'] = log_folder / process_log_file
+    config['handlers']['process_file_handler']['filename'] = (
+        log_folder / process_log_file
+    )
 
     logging.config.dictConfig(config)

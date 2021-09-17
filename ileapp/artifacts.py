@@ -8,27 +8,27 @@ from typing import Dict, List, Type
 
 import prettytable
 
-import ileapp.globals as g
+import ileapp.ilapglobals as g
 from ileapp.abstract import AbstractArtifact
+from ileapp.helpers.decorators import timed
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     'generate_artifact_table',
     'generate_artifact_path_list',
+    'generate_report',
     'crunch_artifacts',
     'select',
     'services',
-    'installed'
+    'installed',
 ]
 
 
 class ArtifactServiceBuilder:
     _instance: Type[AbstractArtifact] = None
 
-    def __call__(self,
-                 artifact: Type[AbstractArtifact]
-                 ) -> Type[AbstractArtifact]:
+    def __call__(self, artifact: Type[AbstractArtifact]) -> Type[AbstractArtifact]:
         if not self._instance:
             self._instance = artifact
         return self._instance
@@ -42,10 +42,7 @@ class ArtifactService(UserDict):
     def __len__(self) -> int:
         return self._items
 
-    def register_builder(self,
-                         key: str,
-                         builder: ArtifactServiceBuilder
-                         ) -> None:
+    def register_builder(self, key: str, builder: ArtifactServiceBuilder) -> None:
         self._items = self._items + 1
         self.data[key] = builder()
 
@@ -67,12 +64,12 @@ def _build_artifact_list():
     artifacts = ArtifactService()
     installed = []
 
-    logger.debug('Generating artifact lists from file system...',
-                 extra={'flow': 'no_filter'})
-    module_dir = Path(
-        importlib.util.find_spec(__name__).origin).parent / 'plugins'
+    logger.debug(
+        'Generating artifact lists from file system...', extra={'flow': 'no_filter'}
+    )
+    module_dir = Path(importlib.util.find_spec(__name__).origin).parent / 'plugins'
     for it in module_dir.glob('*.py'):
-        if (it.suffix == '.py' and it.stem not in ['__init__']):
+        if it.suffix == '.py' and it.stem not in ['__init__']:
             module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
             module = importlib.import_module(module_name, inspect.isfunction)
             module_members = inspect.getmembers(module, inspect.isclass)
@@ -80,13 +77,12 @@ def _build_artifact_list():
                 # check MRO (Method Resolution Order) for
                 # AbstractArtifact classes. Also, insure
                 # we do not get an abstract class.
-                if (len(set([str(name).find('AbstractArtifact')
-                             for name in cls.mro()]) - set([-1])) != 0
-                        and not inspect.isabstract(cls)):
+                if len(
+                    set([str(name).find('AbstractArtifact') for name in cls.mro()])
+                    - set([-1])
+                ) != 0 and not inspect.isabstract(cls):
                     builder = ArtifactServiceBuilder()
-                    artifacts.register_builder(
-                        name.lower(),
-                        builder(cls))
+                    artifacts.register_builder(name.lower(), builder(cls))
                     installed.append(name.lower())
 
     logger.debug(f'Artifacts loaded: {len(artifacts)}')
@@ -97,10 +93,8 @@ services, installed = _build_artifact_list()
 
 
 def crunch_artifacts(
-        artifact_list,
-        input_path,
-        report_folder_base,
-        temp_folder) -> bool:
+    artifact_list, input_path, report_folder_base, temp_folder
+) -> bool:
 
     core_artifacts = {}
     selected_artifacts = {}
@@ -112,104 +106,68 @@ def crunch_artifacts(
             selected_artifacts.update({name: artifact})
 
     if len(core_artifacts) > 0:
-        _crunch_core_artifacts(
-            core_artifacts,
-            input_path,
-            report_folder_base)
+        for name, artifact in core_artifacts.items():
+            # Now ready to run
+            # Special processing for iTunesBackup Info.plist as it is a
+            # separate entity, not part of the Manifest.db. Seeker won't find it
+            if name == 'ITunesBackupInfo':
+                info_plist_path = Path(input_path) / 'Info.plist'
+                if info_plist_path.exists():
+                    _process_artifact(name, artifact)
+                else:
+                    logger.info(
+                        'Info.plist not found for iTunes Backup!',
+                        extra={'flow': 'no_filter'},
+                    )
+                # GuiWindow.SetProgressBar(categories_searched * ratio)
+            else:
+                _process_artifact(name, artifact)
 
     if len(selected_artifacts) > 0:
-        _crunch_selected_artifacts(
-            selected_artifacts,
-            report_folder_base
+        for name, artifact in selected_artifacts.items():
+            _process_artifact(name, artifact)
+
+
+def _process_artifact(name: str, artifact: Type[AbstractArtifact]) -> None:
+    logger.info(
+        f'\n{artifact.category} [{name}] artifact ' f'processing...',
+        extra={'flow': 'no_filter'},
+    )
+
+    # Removed the "Search" decorator around the function and add the timed function when
+    # processing each artifacts
+    process_time, _ = artifact.process()
+    artifact.process_time = process_time
+
+    logger.info(
+        f'{artifact.category} [{name}] artifact ' f'finished in {process_time:.2f}s',
+        extra={'flow': 'no_filter'},
+    )
+
+
+def generate_report(name: str, artifact: Type[AbstractArtifact], output_folder) -> None:
+    if artifact.report(output_folder):
+        logger.info(
+            f'\t-> {artifact.category} [{name}]',
+            extra={'flow': 'no_filter'},
         )
 
 
-def _crunch_selected_artifacts(
-        artifacts,
-        report_folder_base) -> bool:
-
-    for name, artifact in artifacts.items():
-        _process_artifact(name, artifact)
-        _gen_report(name, artifact, report_folder_base)
-
-
-def _crunch_core_artifacts(artifacts,
-                           input_path,
-                           report_folder):
-
-    for name, artifact in artifacts.items():
-        # Now ready to run
-        # Special processing for iTunesBackup Info.plist as it is a
-        # separate entity, not part of the Manifest.db. Seeker won't find it
-        if name == 'ITunesBackupInfo':
-            info_plist_path = Path(input_path) / 'Info.plist'
-            if info_plist_path.exists():
-                _process_artifact(name, artifact)
-                _gen_report(name, artifact, report_folder)
-            else:
-                logger.info('Info.plist not found for iTunes Backup!',
-                            extra={'flow': 'no_filter'})
-            # GuiWindow.SetProgressBar(categories_searched * ratio)
-        else:
-            _process_artifact(name, artifact)            
-            _gen_report(name, artifact, report_folder)
-
-
-def _process_artifact(name: str,
-                      artifact: Type[AbstractArtifact]) -> None:
-    logger.info(
-        f'\n{artifact.category} [{name}] artifact '
-        f'processing...', extra={'flow': 'no_filter'})
-    process_time, _ = artifact.process()
-
-    for regex, files_found in artifact.regex:
-        if files_found is None:
-            logger.info(
-                f'\tNo Files found for "{regex}"',
-                extra={'flow': 'process_file'}
-            )
-            logger.info(
-                f'\tNo Files found for "{regex}"',
-                extra={'flow': 'no_filter'}
-            )
-        else:
-            g.seeker.regex.processed(regex, name)
-            if len(g.seeker.regex[regex]) > 0:
-                logger.info(
-                    f'\nFiles for {regex} located at:',
-                    extra={'flow': 'process_file'}
-                )
-                for file in files_found:
-                    logger.info(
-                        f'\t{file}', extra={'flow': 'process_file'})
-                del g.seeker.file_handles[regex]
-
-    artifact.process_time = process_time
-    logger.info(
-        f'{artifact.category} [{name}] artifact '
-        f'finished in {process_time:.2f}s',
-        extra={'flow': 'no_filter'})
-
-
-def _gen_report(name: str,
-                artifact: Type[AbstractArtifact],
-                output_folder) -> None:
-    if artifact.report(output_folder):
-        logger.info(f'Report generated for '
-                    f'{artifact.category} [{name}]',
-                    extra={'flow': 'no_filter'})
-
-
 def selected(artifacts: Dict[str, object]) -> List:
-    return [(name, artifact) for name, artifact
-            in artifacts.items() if (artifact.selected or artifact.core)]
+    return [
+        (name, artifact)
+        for name, artifact in artifacts.items()
+        if (artifact.selected or artifact.core)
+    ]
 
 
-def select(artifacts: List[AbstractArtifact],
-           name: str = None,
-           all_artifacts: bool = False,
-           long_running_process: bool = False,
-           reset: bool = False) -> None:
+def select(
+    artifacts: List[AbstractArtifact],
+    artifact_name: str = None,
+    all_artifacts: bool = False,
+    long_running_process: bool = False,
+    reset: bool = False,
+) -> None:
     """Toggles if an artifact should be run
 
        Core artifacts cannot be toggled. `all_artifacts` will not select any
@@ -228,32 +186,24 @@ def select(artifacts: List[AbstractArtifact],
         reset (bool, optional): clears the select flags on non-core artifacts.
             Defaults to True.
     """
-    if reset:
-        # resets all artifacts to be not selected
+    if artifact_name:
+        selected = not artifacts.get(artifact_name).selected
+        artifacts.get(artifact_name).selected = selected
+    else:
         for name, artifact in artifacts.items():
-            selected = artifact.selected
-            lrp = artifact.long_running_process
-            core = artifact.core
-            if not core:
-                artifact.selected = False
-    elif name is None and all_artifacts:
-        for name, artifact in artifacts.items():
-            selected = artifact.selected
-            lrp = artifact.long_running_process
-            core = artifact.core
-            if lrp and not core:
-                if long_running_process:
-                    artifact.selected = not selected
-            elif not core:
-                artifact.selected = not selected
-    elif not artifacts.get(name).core:
-        selected = artifacts.get(name).selected
-        artifacts.get(name).selected = not selected
+            if reset:
+                if not artifact.core:
+                    artifact.selected = False
+            elif all_artifacts:
+                if artifact.long_running_process and not artifact.core:
+                    if long_running_process:
+                        artifact.selected = False
+                elif not artifact.core:
+                    artifact.selected = not artifact.selected
 
 
 def generate_artifact_path_list(artifacts):
-    """Generates path file for usage with Autopsy
-    """
+    """Generates path file for usage with Autopsy"""
     logger.info('Artifact path list generation started.')
 
     with open('path_list.txt', 'w') as paths:
@@ -272,12 +222,9 @@ def generate_artifact_path_list(artifacts):
 
 
 def generate_artifact_table(artifacts) -> None:
-    """Generates artifact list table.
-    """
+    """Generates artifact list table."""
     headers = ["Short Name", "Full Name", "Search Regex"]
-    wrapper = TextWrapper(expand_tabs=False,
-                          replace_whitespace=False,
-                          width=60)
+    wrapper = TextWrapper(expand_tabs=False, replace_whitespace=False, width=60)
     output_table = prettytable.PrettyTable(headers, align='l')
     output_table.hrules = prettytable.ALL
     output_file = Path('artifact_table.txt')
@@ -291,11 +238,7 @@ def generate_artifact_table(artifacts) -> None:
             searchRegex = val.cls.search_dirs
             if isinstance(searchRegex, tuple):
                 searchRegex = '\n'.join(searchRegex)
-            output_table.add_row([shortName,
-                                  fullName,
-                                  wrapper.fill(searchRegex)])
-        paths.write(output_table.get_string(title='Artifact List',
-                                            sortby='Short Name'))
+            output_table.add_row([shortName, fullName, wrapper.fill(searchRegex)])
+        paths.write(output_table.get_string(title='Artifact List', sortby='Short Name'))
     logger.info(f'Table saved to: {output_file}', extra={'flow': 'no_flter'})
-    logger.info('Artifact table generation completed',
-                extra={'flow': 'no_filter'})
+    logger.info('Artifact table generation completed', extra={'flow': 'no_filter'})

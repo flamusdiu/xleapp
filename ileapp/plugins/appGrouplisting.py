@@ -11,12 +11,13 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class AppGroupListing(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'App Group Listing'
-        self.description = ('List can included once installed but not present '
-                            'apps. Each file is named .com.apple.mobile_'
-                            'container_manager.metadata.plist')
+        self.description = (
+            'List can included once installed but not present '
+            'apps. Each file is named .com.apple.mobile_'
+            'container_manager.metadata.plist'
+        )
         self.category = 'Installed Apps'
         self.report_headers = ('Bundle ID', 'Type', 'Directory GUID', 'Path')
         self.report_title = 'Bundle ID by AppGroup & PluginKit IDs'
@@ -25,7 +26,8 @@ class AppGroupListing(AbstractArtifact):
     @timed
     @Search(
         '*/private/var/mobile/Containers/Shared/AppGroup/*/*.metadata.plist',
-        '**/PluginKitPlugin/*.metadata.plist', return_on_first_hit=False)
+        '**/PluginKitPlugin/*.metadata.plist',
+    )
     def process(self):
         data_list = []
 
@@ -37,7 +39,7 @@ class AppGroupListing(AbstractArtifact):
 
             bundleid = plist['MCMMetadataIdentifier']
 
-            p = pathlib.Path(fp)
+            p = pathlib.Path(fp.name)
             appgroupid = p.parent.name
             fileloc = p.parent
             typedir = p.parents[1].name

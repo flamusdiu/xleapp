@@ -6,7 +6,7 @@ from pathlib import Path
 import PySimpleGUI as sg
 
 import ileapp.artifacts as artifacts
-import ileapp.globals as g
+import ileapp.ilapglobals as g
 from ileapp.artifacts import artifact_list
 from ileapp.helpers import ValidateInput
 
@@ -32,8 +32,16 @@ def CheckList(artifact, disable=False):
     if obj.core_artifact is True:
         disable = True
         dstate = True
-    return [sg.Checkbox(mtxt, default=dstate, key=f'-Artifact{artifact}-',
-            metadata='{artifact}', disabled=disable, enable_events=True)]
+    return [
+        sg.Checkbox(
+            mtxt,
+            default=dstate,
+            key=f'-Artifact{artifact}-',
+            metadata='{artifact}',
+            disabled=disable,
+            enable_events=True,
+        )
+    ]
 
 
 class Handler(logging.StreamHandler):
@@ -58,55 +66,68 @@ def set_progress_bar(val):
 
 
 def generate_layout(artifact_list):
-    mlist = [CheckList(artifact) for artifact
-             in sorted(list(artifact_list))]
+    mlist = [CheckList(artifact) for artifact in sorted(list(artifact_list))]
     normal_font = ("Helvetica", 12)
 
-    layout = [[sg.Text('iOS Logs, Events, And Plists Parser',
-               font=("Helvetica", 22))],
-              [sg.Text('https://github.com/abrignoni/iLEAPP',
-               font=("Helvetica", 14))],
-              [sg.Frame(layout=[
-                        [sg.Input(size=(97, 1)),
-                         sg.FileBrowse(
-                             font=normal_font,
-                             button_text='Browse File',
-                             key='-INPUTFILEBROWSE-'),
-                         sg.FolderBrowse(
-                             font=normal_font,
-                             button_text='Browse Folder',
-                             target=(sg.ThisRow, -2),
-                             key='-INPUTFOLDERBROWSE-')]
-                        ],
-                        title=('Select the file type or directory of the'
-                               'target iOS full file system extraction'
-                               'for parsing:'))
-               ],
-              [sg.Frame(layout=[
-                        [sg.Input(size=(112, 1)),
-                         sg.FolderBrowse(
+    layout = [
+        [sg.Text('iOS Logs, Events, And Plists Parser', font=("Helvetica", 22))],
+        [sg.Text('https://github.com/abrignoni/iLEAPP', font=("Helvetica", 14))],
+        [
+            sg.Frame(
+                layout=[
+                    [
+                        sg.Input(size=(97, 1)),
+                        sg.FileBrowse(
                             font=normal_font,
-                            button_text='Browse Folder')]
-                        ],
-                        title='Select Output Folder:')],
-              [sg.Text('Available Modules')],
-              [sg.Button('SELECT ALL'), sg.Button('DESELECT ALL')],
-              [sg.Column(mlist, size=(300, 310), scrollable=True),
-               sg.Output(size=(85, 20))],
-              [sg.ProgressBar(
-                  max_value=g.run_time_info['progress_bar_total'],
-                  orientation='h', size=(86, 7), key='-PROGRESSBAR-',
-                  bar_color=('Red', 'White'))],
-              [sg.Submit('Process', font=normal_font),
-               sg.Button('Close', font=normal_font)]]
+                            button_text='Browse File',
+                            key='-INPUTFILEBROWSE-',
+                        ),
+                        sg.FolderBrowse(
+                            font=normal_font,
+                            button_text='Browse Folder',
+                            target=(sg.ThisRow, -2),
+                            key='-INPUTFOLDERBROWSE-',
+                        ),
+                    ]
+                ],
+                title=(
+                    'Select the file type or directory of the'
+                    'target iOS full file system extraction'
+                    'for parsing:'
+                ),
+            )
+        ],
+        [
+            sg.Frame(
+                layout=[
+                    [
+                        sg.Input(size=(112, 1)),
+                        sg.FolderBrowse(font=normal_font, button_text='Browse Folder'),
+                    ]
+                ],
+                title='Select Output Folder:',
+            )
+        ],
+        [sg.Text('Available Modules')],
+        [sg.Button('SELECT ALL'), sg.Button('DESELECT ALL')],
+        [sg.Column(mlist, size=(300, 310), scrollable=True), sg.Output(size=(85, 20))],
+        [
+            sg.ProgressBar(
+                max_value=g.run_time_info['progress_bar_total'],
+                orientation='h',
+                size=(86, 7),
+                key='-PROGRESSBAR-',
+                bar_color=('Red', 'White'),
+            )
+        ],
+        [sg.Submit('Process', font=normal_font), sg.Button('Close', font=normal_font)],
+    ]
     return layout
 
 
 def _process(input_path: str, output_path: str) -> bool:
     extracttype, msg = ValidateInput(
-        input_path,
-        output_path,
-        artifacts.selected_artifact()
+        input_path, output_path, artifacts.selected_artifact()
     )
 
     if extracttype:
@@ -119,14 +140,12 @@ def _process(input_path: str, output_path: str) -> bool:
         window['SELECT ALL'].update(disabled=True)
         window['DESELECT ALL'].update(disabled=True)
 
-        crunch_successful = (
-            artifacts.crunch_artifacts(
-                artifact_list.selected_artifacts(),
-                extracttype,
-                input_path,
-                g.run_time_info['report_folder'],
-                num_of_artifacts / len(artifacts.selected_artifacts())
-            )
+        crunch_successful = artifacts.crunch_artifacts(
+            artifact_list.selected_artifacts(),
+            extracttype,
+            input_path,
+            g.run_time_info['report_folder'],
+            num_of_artifacts / len(artifacts.selected_artifacts()),
         )
 
         return crunch_successful
@@ -134,12 +153,11 @@ def _process(input_path: str, output_path: str) -> bool:
 
 def main(artifact_list):
     # Event Loop to process "events" and get the "values" of the inputs
-    core_artifacts = set([name for name, artifact
-                          in artifact_list if artifact.core])
+    core_artifacts = set([name for name, artifact in artifact_list if artifact.core])
     while True:
         event, values = window.read()
 
-        if event in (None, 'Close'):   # if user closes window or clicks cancel
+        if event in (None, 'Close'):  # if user closes window or clicks cancel
             break
 
         if regex.match(event):
@@ -169,19 +187,19 @@ def main(artifact_list):
             crunch_successful = _process(**values[:2])
 
             if crunch_successful:
-                report_path = (
-                    g.run_time_info['report_folder'] / 'index.html'
-                )
+                report_path = g.run_time_info['report_folder'] / 'index.html'
 
                 locationmessage = f'Report name: {report_path}'
                 sg.Popup('Processing completed', locationmessage)
                 webbrowser.open_new_tab(f'file://{report_path}')
             else:
                 log_path = g.run_time_info['log_folder']
-                sg.popup_error('Processing failed    :( ',
-                               f'See log for error details..'
-                               f'\nLog file located '
-                               f'at {log_path}')
+                sg.popup_error(
+                    'Processing failed    :( ',
+                    f'See log for error details..'
+                    f'\nLog file located '
+                    f'at {log_path}',
+                )
                 break
 
     window.close()
@@ -190,8 +208,7 @@ def main(artifact_list):
 # sets theme for GUI
 sg.theme('DarkAmber')
 
-window = sg.Window(f'{g.VERSION}',
-                   generate_layout(artifact_list))
+window = sg.Window(f'{g.VERSION}', generate_layout(artifact_list))
 
 # save the window handle
 g.run_time_info['window_handle'] = window

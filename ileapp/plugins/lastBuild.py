@@ -2,7 +2,7 @@ import datetime
 import plistlib
 from dataclasses import dataclass
 
-import ileapp.globals as g
+import ileapp.ilapglobals as g
 from ileapp.abstract import AbstractArtifact
 from ileapp.helpers.decorators import Search, core_artifact, timed
 
@@ -10,7 +10,6 @@ from ileapp.helpers.decorators import Search, core_artifact, timed
 @core_artifact
 @dataclass
 class LastBuild(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Last Build'
         self.category = 'IOS Build'
@@ -25,9 +24,7 @@ class LastBuild(AbstractArtifact):
         pl = plistlib.load(fp)
         for key, val in pl.items():
             data_list.append((key, val))
-            if key in ['ProductVersion',
-                       'ProductBuildVersion',
-                       'ProductName']:
+            if key in ['ProductVersion', 'ProductBuildVersion', 'ProductName']:
                 device_info.update({key: val})
         self.data = data_list
 
@@ -48,15 +45,26 @@ class ITunesBackupInfo(AbstractArtifact):
         path, fp = self.found
         pl = plistlib.load(fp)
         for key, val in pl.items():
-            if (isinstance(val, str)
-                    or isinstance(val, int)
-                    or isinstance(val, datetime.datetime)):
+            if (
+                isinstance(val, str)
+                or isinstance(val, int)
+                or isinstance(val, datetime.datetime)
+            ):
 
                 data_list.append((key, val))
-                if key in ('Build Version', 'Device Name', 'ICCID', 'IMEI',
-                           'Last Backup Date', 'MEID', 'Phone Number',
-                           'Product Name', 'Product Type',
-                           'Product Version', 'Serial Number'):
+                if key in (
+                    'Build Version',
+                    'Device Name',
+                    'ICCID',
+                    'IMEI',
+                    'Last Backup Date',
+                    'MEID',
+                    'Phone Number',
+                    'Product Name',
+                    'Product Type',
+                    'Product Version',
+                    'Serial Number',
+                ):
                     device_info.update({key: val})
 
             elif key == "Installed Applications":

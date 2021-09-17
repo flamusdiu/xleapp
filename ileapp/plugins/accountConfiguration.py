@@ -8,7 +8,6 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class AccountConfiguration(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Account Configuration'
         self.category = 'Accounts'

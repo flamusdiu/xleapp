@@ -7,13 +7,17 @@ from ileapp.report.webicons import Icon
 
 @dataclass
 class AggDict(AbstractArtifact):
-
     def __post_init__(self):
         self.name = 'Aggregate Dictionary'
         self.category = 'Aggregate Dictionary'
         self.web_icon = Icon.BOOK
-        self.report_headers = ('Day', 'Key', 'Value', 'Seconds in Day Offset',
-                               'Distribution Values Table ID')
+        self.report_headers = (
+            'Day',
+            'Key',
+            'Value',
+            'Seconds in Day Offset',
+            'Distribution Values Table ID',
+        )
 
     @timed
     @Search('*/AggregateDictionary/ADDataStore.sqlitedb')
