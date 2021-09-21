@@ -19,7 +19,7 @@ class SMS (ab.AbstractArtifact):
     def get(self, files_found, seeker):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
-        sms_df = pd.read_sql_query('''
+        sms_df = pd.read_sql_query("""
         SELECT
         CASE
             WHEN LENGTH(MESSAGE.DATE)=18 THEN DATETIME(MESSAGE.DATE/1000000000+978307200,'UNIXEPOCH')
@@ -51,7 +51,7 @@ class SMS (ab.AbstractArtifact):
         LEFT OUTER JOIN MESSAGE_ATTACHMENT_JOIN ON MESSAGE.ROWID = MESSAGE_ATTACHMENT_JOIN.MESSAGE_ID
         LEFT OUTER JOIN ATTACHMENT ON MESSAGE_ATTACHMENT_JOIN.ATTACHMENT_ID = ATTACHMENT.ROWID
         LEFT OUTER JOIN HANDLE ON MESSAGE.HANDLE_ID = HANDLE.ROWID
-        ''', db)
+        """, db)
 
         usageentries = sms_df.shape[0]
         if usageentries > 0:

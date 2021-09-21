@@ -28,7 +28,7 @@ class AddressBook(AbstractArtifact):
         fp = self.found
         cursor = fp.cursor()
         cursor.execute(
-            '''
+            """
             SELECT
             ABPerson.ROWID,
             VALUE,
@@ -41,7 +41,7 @@ class AddressBook(AbstractArtifact):
             FROM ABPerson
             LEFT OUTER JOIN ABMultiValue ON ABPerson.ROWID = ABMultiValue.RECORD_ID
             LEFT OUTER JOIN ABStore ON ABPerson.STOREID = ABStore.ROWID
-            '''
+            """,
         )
 
         all_rows = cursor.fetchall()
@@ -53,6 +53,15 @@ class AddressBook(AbstractArtifact):
                 an = an.replace("b'", "")
                 an = an.replace("'", "")
                 data_list.append(
-                    (an, row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+                    (
+                        an,
+                        row[1],
+                        row[2],
+                        row[3],
+                        row[4],
+                        row[5],
+                        row[6],
+                        row[7],
+                    ),
                 )
             self.data = data_list

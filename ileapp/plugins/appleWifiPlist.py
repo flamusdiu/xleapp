@@ -24,7 +24,34 @@ class KnownNetwork:
     last_auto_joined: str = ''
     enabled: str = ''
     wnpmd: str = ''
-    file: str = ''
+    plist: str = ''
+
+    def __init__(self, network: dict) -> None:
+
+        self.ssid = str(network.get('SSID_STR', ''))
+        self.bssid = str(network.get('BSSID', ''))
+        self.net_usage = str(network.get('networkUsage', ''))
+        self.country_code = str(
+            network.get('80211D_IE', {}).get('IE_KEY_80211D_COUNTRY_CODE', ''),
+        )
+        self.last_updated = str(network.get('lastUpdated', ''))
+        self.wnpmd = str(
+            network.get('WiFiNetworkPasswordModificationDate', ''),
+        )
+        self.enabled = network.get('enabled', '')
+
+        wps_prob_resp_ie = network.get('WPS_PROB_RESP_IE', '')
+        if bool(wps_prob_resp_ie):
+            self.device_name = wps_prob_resp_ie.get('IE_KEY_WPS_DEV_NAME', '')
+            self.manufacturer = wps_prob_resp_ie.get('IE_KEY_WPS_MANUFACTURER', '')
+            self.serial_number = wps_prob_resp_ie.get('IE_KEY_WPS_SERIAL_NUM', '')
+            self.model_name = wps_prob_resp_ie.get(
+                'IE_KEY_WPS_MODEL_NAME',
+                '',
+            )
+
+    def attributes(self) -> list[str]:
+        return [val for _, val in self.__dict__.items()]
 
 
 @dataclass
@@ -39,7 +66,45 @@ class ScannedNetwork:
     private_mac_valid = ''
     in_known_networks = ''
     last_auto_joined: str = ''
-    file: str = ''
+    plist: str = ''
+
+    def __init__(self, network: dict) -> None:
+        self.ssid = str(network.get('SSID_STR', ''))
+        self.bssid = str(network.get('BSSID', ''))
+        self.last_updated = str(network.get('lastUpdated', ''))
+        self.last_joined = str(network.get('lastJoined', ''))
+        self.added_at = str(network.get('addedAt', ''))
+        self.in_known_networks = str(
+            network.get(
+                'PresentInKnownNetworks',
+                '',
+            ),
+        )
+
+        private_mac_address = network.get('PRIVATE_MAC_ADDRESS', '')
+        if bool(private_mac_address):
+            self.private_mac_in_use = str(
+                _bytes_to_mac_address(
+                    private_mac_address.get('PRIVATE_MAC_ADDRESS_IN_USE', ''),
+                ),
+            )
+            self.private_mac_value = getattr(
+                str(
+                    _bytes_to_mac_address(
+                        private_mac_address.get('PRIVATE_MAC_ADDRESS_VALUE', ''),
+                    ),
+                ),
+                '',
+            )
+            self.private_mac_valid = getattr(
+                str(
+                    private_mac_address.get('PRIVATE_MAC_ADDRESS_VALID', ''),
+                ),
+                '',
+            )
+
+    def attributes(self) -> list[str]:
+        return [val for _, val in self.__dict__.items()]
 
 
 def hexify_byte(byte_to_convert):
@@ -112,65 +177,9 @@ class AppleWifiKnownNetworks(AbstractArtifact):
             known_networks = []
             try:
                 for known_network in deserialized['List of known networks']:
-                    network = KnownNetwork()
-
-                    if 'SSID_STR' in known_network:
-                        network.ssid = str(known_network['SSID_STR'])
-
-                    if 'BSSID' in known_network:
-                        network.bssid = str(known_network['BSSID'])
-
-                    if 'networkUsage' in known_network:
-                        network.net_usage = str(known_network['networkUsage'])
-
-                    if '80211D_IE' in known_network:
-                        if 'IE_KEY_80211D_COUNTRY_CODE' in known_network['80211D_IE']:
-                            network.country_code = str(
-                                known_network['80211D_IE']['IE_KEY_80211D_COUNTRY_CODE']
-                            )
-
-                    if 'lastUpdated' in known_network:
-                        network.last_updated = str(known_network['lastUpdated'])
-
-                    if 'lastAutoJoined' in known_network:
-                        network.last_auto_joined = str(known_network['lastAutoJoined'])
-
-                    if 'lastJoined' in known_network:
-                        network.last_joined = str(known_network['lastJoined'])
-
-                    if 'WiFiNetworkPasswordModificationDate' in known_network:
-                        network.wnpmd = str(
-                            known_network['WiFiNetworkPasswordModificationDate']
-                        )
-
-                    if 'enabled' in known_network:
-                        network.enabled = str(known_network['enabled'])
-
-                    if 'WPS_PROB_RESP_IE' in known_network:
-
-                        if 'IE_KEY_WPS_DEV_NAME' in known_network['WPS_PROB_RESP_IE']:
-                            network.device_name = known_network['WPS_PROB_RESP_IE'][
-                                'IE_KEY_WPS_DEV_NAME'
-                            ]
-                        if (
-                            'IE_KEY_WPS_MANUFACTURER'
-                            in known_network['WPS_PROB_RESP_IE']
-                        ):
-                            network.manufacturer = known_network['WPS_PROB_RESP_IE'][
-                                'IE_KEY_WPS_MANUFACTURER'
-                            ]
-                        if 'IE_KEY_WPS_SERIAL_NUM' in known_network['WPS_PROB_RESP_IE']:
-                            network.serial_number = known_network['WPS_PROB_RESP_IE'][
-                                'IE_KEY_WPS_SERIAL_NUM'
-                            ]
-                        if 'IE_KEY_WPS_MODEL_NAME' in known_network['WPS_PROB_RESP_IE']:
-                            network.model_name = known_network['WPS_PROB_RESP_IE'][
-                                'IE_KEY_WPS_MODEL_NAME'
-                            ]
-
-                    network.file = fp.name
-                    network_attributes = [val for attr, val in network.__dict__.items()]
-                    known_networks.append(network_attributes)
+                    network = KnownNetwork(known_network)
+                    network.plist = fp.name
+                    known_networks.append(network.attributes())
             except KeyError:
                 logger.info('No networks found in plist.', extra={'flow': 'no_filter'})
 
@@ -217,64 +226,9 @@ class AppleWifiScannedPrivate(AbstractArtifact):
                 for scanned_network in deserialzied[
                     'List of scanned networks with private mac'
                 ]:
-                    network = ScannedNetwork()
-
-                    if 'SSID_STR' in scanned_network:
-                        network.ssid = str(scanned_network['SSID_STR'])
-
-                    if 'BSSID' in scanned_network:
-                        network.bssid = str(scanned_network['BSSID'])
-
-                    if 'lastUpdated' in scanned_network:
-                        network.last_updated = str(scanned_network['lastUpdated'])
-
-                    if 'lastJoined' in scanned_network:
-                        network.last_joined = str(scanned_network['lastJoined'])
-
-                    if 'addedAt' in scanned_network:
-                        network.added_at = str(scanned_network['addedAt'])
-
-                    if 'PresentInKnownNetworks' in scanned_network:
-                        network.in_known_networks = str(
-                            scanned_network['PresentInKnownNetworks']
-                        )
-
-                    if 'PRIVATE_MAC_ADDRESS' in scanned_network:
-                        if (
-                            'PRIVATE_MAC_ADDRESS_IN_USE'
-                            in scanned_network['PRIVATE_MAC_ADDRESS']
-                        ):
-                            network.private_mac_in_use = str(
-                                _bytes_to_mac_address(
-                                    scanned_network['PRIVATE_MAC_ADDRESS'][
-                                        'PRIVATE_MAC_ADDRESS_IN_USE'
-                                    ]
-                                )
-                            )
-                        if (
-                            'PRIVATE_MAC_ADDRESS_VALUE'
-                            in scanned_network['PRIVATE_MAC_ADDRESS']
-                        ):
-                            network.private_mac_value = str(
-                                _bytes_to_mac_address(
-                                    scanned_network['PRIVATE_MAC_ADDRESS'][
-                                        'PRIVATE_MAC_ADDRESS_VALUE'
-                                    ]
-                                )
-                            )
-                        if (
-                            'PRIVATE_MAC_ADDRESS_VALID'
-                            in scanned_network['PRIVATE_MAC_ADDRESS']
-                        ):
-                            network.private_mac_valid = str(
-                                scanned_network['PRIVATE_MAC_ADDRESS'][
-                                    'PRIVATE_MAC_ADDRESS_VALID'
-                                ]
-                            )
-
-                    network.file = fp.name
-                    network_attributes = [val for attr, val in network.__dict__.items()]
-                    scanned_networks.append(network_attributes)
+                    network = ScannedNetwork(scanned_network)
+                    network.plist = fp.name
+                    scanned_networks.append(network.attributes())
             except KeyError:
                 logger.info(
                     'No private networks scanned in plist file.',

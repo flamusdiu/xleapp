@@ -27,11 +27,11 @@ class FilesAppsDB(ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT *
         FROM
         DEVICES
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -56,14 +56,14 @@ class FilesAppsDB(ab.AbstractArtifact):
             logfunc('No Files App - iCloud Sync Names data available')
 
 
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         item_birthtime,
         item_filename,
         version_mtime
         FROM
         server_items
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

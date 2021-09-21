@@ -27,7 +27,7 @@ class AggDictPasscode(AbstractArtifact):
             from
             scalars
             where key like 'com.apple.passcode.numpasscode%'
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

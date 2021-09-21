@@ -7,10 +7,10 @@ from PIL import Image
 
 
 def generate_thumbnail(imDirectory, imFilename, seeker, report_folder):
-    '''
+    """
     searching for thumbnails, copy it to report folder and return tag  to
     insert in html
-    '''
+    """
     thumb = f'{g.thumbnail_root}/{imDirectory}/{imFilename}'
     thumblist = seeker.search(f'{thumb}/**.JPG', return_on_first_hit=True)
     thumbname = imDirectory.replace('/', '_') + '_' + imFilename + '.JPG'
@@ -45,8 +45,8 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
         latlongdb = os.path.join(kml_report_folder, '_latlong.db')
         db = sqlite3.connect(latlongdb)
         cursor = db.cursor()
-        cursor.execute('''PRAGMA synchronous = EXTRA''')
-        cursor.execute('''PRAGMA journal_mode = WAL''')
+        cursor.execute("""PRAGMA synchronous = EXTRA""")
+        cursor.execute("""PRAGMA journal_mode = WAL""")
         db.commit()
     else:
         os.makedirs(kml_report_folder)

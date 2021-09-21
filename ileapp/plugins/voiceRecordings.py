@@ -58,7 +58,7 @@ class VoiceRecording(AbstractArtifact):
                         pl['RCSavedRecordingTitle'],
                         pl['RCComposedAVURL'].split('//')[1],
                         audio,
-                    )
+                    ),
                 )
 
         self.data = data_list

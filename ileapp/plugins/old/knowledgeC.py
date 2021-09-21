@@ -80,7 +80,7 @@ class KnowledgeC(ab.AbstractArtifact):
                 logfunc('No data available in Inferred Motion')
 
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
             select
             datetime(zobject.zcreationdate+978307200,'unixepoch'),
             case zobject.zstartdayofweek
@@ -106,7 +106,7 @@ class KnowledgeC(ab.AbstractArtifact):
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
             order by 'entry creation'
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -130,7 +130,7 @@ class KnowledgeC(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -161,10 +161,10 @@ class KnowledgeC(ab.AbstractArtifact):
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
-            ''')
+            """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -188,7 +188,7 @@ class KnowledgeC(ab.AbstractArtifact):
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -231,7 +231,7 @@ class KnowledgeC(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -265,10 +265,10 @@ class KnowledgeC(ab.AbstractArtifact):
             where
             zstreamname = "/app/activity"
             and (zvaluestring = "com.apple.mobilecal" or zvaluestring = "com.apple.ical")
-            ''')
+            """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -296,7 +296,7 @@ class KnowledgeC(ab.AbstractArtifact):
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
             and (zvaluestring = 'com.apple.mobilecal' or zvaluestring = 'com.apple.ical')
-                        ''')
+                        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -340,7 +340,7 @@ class KnowledgeC(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -370,10 +370,10 @@ class KnowledgeC(ab.AbstractArtifact):
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
             and (zobject.zvaluestring = 'com.apple.mobilesafari' or zobject.zvaluestring = 'com.apple.safari')
-                ''')
+                """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -400,7 +400,7 @@ class KnowledgeC(ab.AbstractArtifact):
             and zobject.zsource = zsource.z_pk
             and zstreamname = '/app/activity'
             and (zobject.zvaluestring = 'com.apple.mobilesafari' or zobject.zvaluestring = 'com.apple.safari')
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -900,7 +900,7 @@ class KnowledgeC(ab.AbstractArtifact):
                 intentv["C_Z_PK" + pkvplist] = intententverb
 
                 cleancount = cleancount + 1
-            '''
+            """
             h = open(outpath + "/StrucMetadata.html", "w")
             h.write("<html><body>")
             h.write(
@@ -912,7 +912,7 @@ class KnowledgeC(ab.AbstractArtifact):
                 "<style> table, td {border: 1px solid black; border-collapse: collapse;}tr:nth-child(even) {background-color: # f2f2f2;} .table th { background: # 888888; color: # ffffff}.table.sticky th{ position:sticky; top: 0; }</style>"
             )
             h.write("<br/>")
-            '''
+            """
             for filename in glob.glob(outpath + "/clean/*" + extension):
                 p = open(filename, "rb")
                 cfilename = os.path.basename(filename)
@@ -1020,7 +1020,7 @@ class KnowledgeC(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1040,7 +1040,7 @@ class KnowledgeC(ab.AbstractArtifact):
             datetime(zobject.zcreationdate+978307200,'unixepoch')
             from zobject
             where zstreamname is '/app/inFocus'
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -1067,7 +1067,7 @@ class KnowledgeC(ab.AbstractArtifact):
             logfunc('No data available in Application in Focus')
 
         if version.parse(iOSversion) >= version.parse("12"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1089,9 +1089,9 @@ class KnowledgeC(ab.AbstractArtifact):
             zobject, zstructuredmetadata
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and zstreamname = '/app/install'
-                ''')
+                """)
         else:
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1111,7 +1111,7 @@ class KnowledgeC(ab.AbstractArtifact):
             zobject, zstructuredmetadata
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and zstreamname = "/app/install"
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -1330,7 +1330,7 @@ class KnowledgeC(ab.AbstractArtifact):
                 logfunc('No data available in Media Playing')
 
         if version.parse(iOSversion) >= version.parse("12"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1357,7 +1357,7 @@ class KnowledgeC(ab.AbstractArtifact):
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and zstreamname = '/app/activity'
             and (zobject.zvaluestring = 'com.apple.mobilenotes' or zobject.zvaluestring = 'com.apple.Notes')
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
@@ -1486,7 +1486,7 @@ class KnowledgeC(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1510,10 +1510,10 @@ class KnowledgeC(ab.AbstractArtifact):
             where zobject.zstructuredmetadata = zstructuredmetadata.z_pk
             and  zobject.zsource = zsource.z_pk
             and zstreamname = '/safari/history'
-            ''')
+            """)
         elif version.parse(iOSversion) == version.parse("11"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zobject.zstartdate+978307200,'unixepoch'),
             datetime(zobject.zenddate+978307200,'unixepoch'),
@@ -1534,7 +1534,7 @@ class KnowledgeC(ab.AbstractArtifact):
             zobject, zsource
             where zobject.zsource = zsource.z_pk
             and zstreamname = '/safari/history'
-            ''')
+            """)
         else:
             logfunc("Unsupported version for KnowledgC Safari iOS " + iOSversion)
             return ()

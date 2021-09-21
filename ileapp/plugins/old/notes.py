@@ -15,7 +15,7 @@ class Notes (ab.AbstractArtifact):
         for file_found in files_found:
             db = open_sqlite_db_readonly(file_found)
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
                 SELECT
                 DATETIME(TabA.ZCREATIONDATE1+978307200,'UNIXEPOCH'),
                 TabA.ZTITLE1,
@@ -43,7 +43,7 @@ class Notes (ab.AbstractArtifact):
                 INNER JOIN ZICCLOUDSYNCINGOBJECT TabC on TabA.ZACCOUNT3 = TabC.Z_PK
                 LEFT JOIN ZICCLOUDSYNCINGOBJECT TabD on TabA.Z_PK = TabD.ZNOTE
                 WHERE TabA.ZTITLE1 <> ''
-                ''')
+                """)
 
             all_rows = cursor.fetchall()
         if len(all_rows) > 0:

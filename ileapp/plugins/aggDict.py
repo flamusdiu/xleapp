@@ -36,7 +36,7 @@ class AggDict(AbstractArtifact):
             from
             distributionkeys, distributionvalues
             where distributionkeys.rowid = distributionvalues.distributionid
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

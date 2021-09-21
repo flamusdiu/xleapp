@@ -42,7 +42,7 @@ class GeodMapTiles(AbstractArtifact):
             SELECT datetime(access_times.timestamp, 'unixepoch') as timestamp, key_a, key_b, key_c, key_d, tileset, data, size, etag
             FROM data
             INNER JOIN access_times on data.rowid = access_times.data_pk
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()
@@ -64,11 +64,11 @@ class GeodMapTiles(AbstractArtifact):
                         img_html = f'<img src="data:image/jpeg;base64, {img_base64}" alt="Map Tile" />'
                         data_parsed = img_html
                     elif len(data) >= 4 and data[:4] == b'TCOL':
-                        vmp4_places, tcol_places = ParseTCOL(data)
+                        vmp4_places, tcol_places = parsetcol(data)
                         vmp4_places = ", ".join(vmp4_places)
                         tcol_places = ", ".join(tcol_places)
                     elif len(data) >= 4 and data[:4] == b'VMP4':
-                        vmp4_places = ParseVMP4(data)
+                        vmp4_places = parsevmp4(data)
                         vmp4_places = ", ".join(vmp4_places)
                 # else:
                 # header_bytes = data[:28]
@@ -86,12 +86,12 @@ class GeodMapTiles(AbstractArtifact):
                         get_hex(row['key_b']),
                         get_hex(row['key_c']),
                         get_hex(row['key_d']),
-                    )
+                    ),
                 )
             self.data = data_list
 
 
-def ReadVLOC(data):
+def readvloc(data) -> list:
     names = []
     total_len = len(data)
     pos = 8
@@ -103,7 +103,8 @@ def ReadVLOC(data):
         end_pos = data[pos + skip_len :].find(b'\0')
         if end_pos >= 0:
             name = data[pos + skip_len : pos + skip_len + end_pos].decode(
-                'utf8', 'ignore'
+                'utf8',
+                'ignore',
             )
             if name:
                 names.append(name)
@@ -113,8 +114,7 @@ def ReadVLOC(data):
     return names
 
 
-def ParseTCOL(data):
-    '''returns tuple (VMP4 places, VLOC places)'''
+def parsetcol(data) -> tuple:
     tcol_places = []
     data_size = len(data)
     if data_size >= 8:
@@ -123,21 +123,20 @@ def ParseTCOL(data):
         if tcol_compressed_data:
             try:
                 tcol_places = gzip.decompress(tcol_compressed_data)
-                # print("VLOC ->", tcol_places)
             except (OSError, EOFError, zlib.error) as ex:
                 logging.error(
-                    f'Gzip decompression error from ParseTCOL() - {str(ex)}',
+                    f'Gzip decompression error from parsetcol() - {str(ex)}',
                     extra={'flow': 'no_filter'},
                 )
                 tcol_places = ''
-        vmp4_places = ParseVMP4(data[8:tcol_data_offset])
-        return vmp4_places, ReadVLOC(tcol_places)
+        vmp4_places = parsevmp4(data[8:tcol_data_offset])
+        return vmp4_places, readvloc(tcol_places)
 
 
-def ParseVMP4(data):
+def parsevmp4(data):
     num_items = struct.unpack('<H', data[6:8])[0]
     pos = 8
-    for x in range(num_items):
+    for _item in range(num_items):
         item_type, offset, size = struct.unpack("<HII", data[pos : pos + 10])
         if item_type == 10:
             item_data = data[offset : offset + size]
@@ -147,12 +146,11 @@ def ParseVMP4(data):
                     places_data = zlib.decompress(compressed_data)
                 except zlib.error as ex:
                     logging.error(
-                        f'Zlib decompression error from ParseVMP4() - {str(ex)}'
+                        f'Zlib decompression error from parsevmp4() - {str(ex)}',
                     )
                     places_data = ''
             else:
                 places_data = item_data[1:]
-            # print("VMP4 ->", places_data.rstrip(b'\0').split(b'\0'))
             return [
                 x.decode('UTF8', 'ignore')
                 for x in places_data.rstrip(b'\0').split(b'\0')

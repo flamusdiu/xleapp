@@ -24,7 +24,7 @@ class TileAppDB (ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         datetime(ZTIMESTAMP,'unixepoch','31 years'),
         ZNAME,
@@ -39,7 +39,7 @@ class TileAppDB (ab.AbstractArtifact):
         ZIS_LOST,
         datetime(ZLAST_LOST_TILE_COMMUNITY_CONNECTION,'unixepoch','31 years')
         FROM ZTILENTITY_NODE INNER JOIN ZTILENTITY_TILESTATE ON ZTILENTITY_NODE.ZTILE_STATE = ZTILENTITY_TILESTATE.Z_PK
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

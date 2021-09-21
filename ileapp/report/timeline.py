@@ -32,27 +32,29 @@ class TimelineDBManager:
         cursor.execute(
             """
             CREATE TABLE data(key TEXT, activity TEXT, datalist TEXT)
-            """
+            """,
         )
         db.commit()
 
 
 def save(tlactivity: str, data_list: List, data_headers: List[str]) -> None:
-    with _timelineDB as db:
-        db.execute('''PRAGMA synchronous = EXTRA''')
-        db.execute('''PRAGMA journal_mode = WAL''')
+    with _timelinedb as db:
+        db.execute("""PRAGMA synchronous = EXTRA""")
+        db.execute("""PRAGMA journal_mode = WAL""")
 
         for row in data_list:
-            modifiedList = list(map(lambda x, y: x.upper() + ': ' + str(y),
-                                data_headers, row))
-            db.executemany("INSERT INTO data VALUES(?,?,?)",
-                           [(str(row[0]), tlactivity.upper(),
-                             str(modifiedList))])
+            modifiedlist = list(
+                map(lambda x, y: x.upper() + ': ' + str(y), data_headers, row),
+            )
+            db.executemany(
+                "INSERT INTO data VALUES(?,?,?)",
+                [(str(row[0]), tlactivity.upper(), str(modifiedlist))],
+            )
 
 
-''' Creates the Timeline DB object used by
+""" Creates the Timeline DB object used by
     the timeline.save() function to create the db
     when it is first accesssed (if it does not exists)
     then uses this object to execute each set of values.
-'''
-_timelineDB = TimelineDBManager()
+"""
+_timelinedb = TimelineDBManager()

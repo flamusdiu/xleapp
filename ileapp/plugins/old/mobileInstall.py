@@ -562,7 +562,7 @@ class MobileInstall(ab.AbstractArtifact):
         logfunc(f"Total historical app reports: {historicalcount}")
         logfunc(f"Total system state events: {sysstatecount}")
 
-        '''
+        """
         data_headers_reboots = ('Timestamp (Local Time)', 'Description')
         tsv_data_headers = ('Timestamp (Local Time)', 'Action', 'Bundle ID', 'Path')
 
@@ -577,10 +577,10 @@ class MobileInstall(ab.AbstractArtifact):
 
         tlactivity = 'Mobile Installation Logs - History'
         timeline(report_folder, tlactivity, tsv_tml_data_list, tsv_data_headers)
-        '''
+        """
 
 
-'''
+"""
 
     x = 0
     data_list =[]
@@ -610,7 +610,7 @@ class MobileInstall(ab.AbstractArtifact):
     data_headers = ('Report', 'Location')
     report.write_artifact_data_table(data_headers, data_list, location, html_escape=False)
     report.end_artifact_report()
-'''
+"""
 def month_converter(month):
     months = [
         "Jan",

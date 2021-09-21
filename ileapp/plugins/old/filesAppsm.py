@@ -24,11 +24,11 @@ class FilesAppsSM(ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT *
         FROM
         FILENAMES
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

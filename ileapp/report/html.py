@@ -28,7 +28,10 @@ def generate_index(
     nav = templating.generate_nav(report_folder, artifacts.selected(artifact_list))
 
     index_page = templating.Index(
-        report_folder, log_folder, extraction_type, processing_time
+        report_folder,
+        log_folder,
+        extraction_type,
+        processing_time,
     )
     index_page.navigation = nav
     index_file = report_folder / 'index.html'

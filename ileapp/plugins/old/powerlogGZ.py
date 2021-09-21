@@ -57,7 +57,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                     cursor = db.cursor()
 
                 if version.parse(iOSversion) >= version.parse("9"):
-                    cursor.execute('''
+                    cursor.execute("""
                     select
                     datetime(timestamp, 'unixepoch'),
                     datetime(timestamplogged, 'unixepoch'),
@@ -70,7 +70,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                     pid
                     from
                     plaudioagent_eventpoint_audioapp
-                    ''')
+                    """)
 
                     all_rows = cursor.fetchall()
                     usageentries = len(all_rows)
@@ -81,7 +81,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         logfunc('No data available in Powerlog Audio Routing via app')
 
                 if version.parse(iOSversion) >= version.parse("10"):
-                    cursor.execute('''
+                    cursor.execute("""
                     select
                     datetime(timestamp, 'unixepoch'),
                     bulletinbundleid,
@@ -90,7 +90,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                     posttype
                     from
                     plspringboardagent_aggregate_sbbulletins_aggregate
-                    ''')
+                    """)
                     all_rows = cursor.fetchall()
                     usageentries = len(all_rows)
                     if usageentries > 0:
@@ -100,7 +100,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         logfunc('No data available in Aggregate Bulletins')
 
                 if version.parse(iOSversion) >= version.parse("10"):
-                        cursor.execute('''
+                        cursor.execute("""
                         select
                         datetime(timestamp, 'unixepoch'),
                         notificationbundleid,
@@ -108,7 +108,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         notificationtype
                         from
                         plspringboardagent_aggregate_sbnotifications_aggregate
-                        ''')
+                        """)
                         all_rows = cursor.fetchall()
                         usageentries = len(all_rows)
                         if usageentries > 0:
@@ -119,7 +119,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                             logfunc('No data available in Aggregate Notifications')
 
             if version.parse(iOSversion) >= version.parse("9"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(timestamp, 'unixepoch'),
                 appname,
@@ -134,7 +134,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                 end
                 from
                 plapplicationagent_eventnone_allapps
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
@@ -145,7 +145,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                     logfunc('No data available in Powerlog App Info')
 
             if version.parse(iOSversion) >= version.parse("11"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(timestamp, 'unixepoch'),
                 datetime(start, 'unixepoch'),
@@ -155,7 +155,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                 haserror
                 from
                 plxpcagent_eventpoint_mobilebackupevents
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
@@ -226,7 +226,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         data_list7.append((row[0],row[1],row[2],row[3]))
 
             if version.parse(iOSversion) >= version.parse("10"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(timestamp, 'unixepoch'),
                 build,
@@ -235,16 +235,16 @@ class PowerLogGZ (ab.AbstractArtifact):
                 pairingid
                 from
                 plconfigagent_eventnone_paireddeviceconfig
-                ''')
+                """)
             else:
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(timestamp, 'unixepoch'),
                 build,
                 device
                 from
                 plconfigagent_eventnone_paireddeviceconfig
-                ''')
+                """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -257,7 +257,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         data_list11.append((row[0],row[1],row[2]))
 
             if version.parse(iOSversion) >= version.parse("9"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(tts + system, 'unixepoch'),
                 bundleid,
@@ -298,7 +298,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                 group by
                 torchid
                 )
-                ''')
+                """)
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
                 if usageentries > 0:
@@ -306,7 +306,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                         data_list15.append((row[0],row[1],row[2],row[3],row[4],row[5]))
 
             if version.parse(iOSversion) >= version.parse("9"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(wifipropts + system, 'unixepoch') ,
                 currentssid,
@@ -342,7 +342,7 @@ class PowerLogGZ (ab.AbstractArtifact):
                 group by
                 wifiorotsid
                 )
-                ''')
+                """)
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
                 if usageentries > 0:

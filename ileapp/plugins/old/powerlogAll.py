@@ -19,7 +19,7 @@ class PowerLogAll (ab.AbstractArtifact):
         iOSversion = artifacts.artGlobals.versionf
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             datetime(timestamplogged, 'unixepoch'),
@@ -32,7 +32,7 @@ class PowerLogAll (ab.AbstractArtifact):
             pid
             from
             plaudioagent_eventpoint_audioapp
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -59,7 +59,7 @@ class PowerLogAll (ab.AbstractArtifact):
                 logfunc('No data available in Airdop Connection Info')
 
         if version.parse(iOSversion) >= version.parse("10"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             bulletinbundleid,
@@ -68,7 +68,7 @@ class PowerLogAll (ab.AbstractArtifact):
             posttype
             from
             plspringboardagent_aggregate_sbbulletins_aggregate
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
@@ -92,7 +92,7 @@ class PowerLogAll (ab.AbstractArtifact):
                 logfunc('No data available in Aggregate Bulletins')
 
         if version.parse(iOSversion) >= version.parse("10"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             notificationbundleid,
@@ -101,7 +101,7 @@ class PowerLogAll (ab.AbstractArtifact):
             notificationtype
             from
             plspringboardagent_aggregate_sbnotifications_aggregate
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
@@ -126,7 +126,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             appname,
@@ -141,7 +141,7 @@ class PowerLogAll (ab.AbstractArtifact):
             end
             from
             plapplicationagent_eventnone_allapps
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -169,7 +169,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             appname,
@@ -184,7 +184,7 @@ class PowerLogAll (ab.AbstractArtifact):
             end
             from
             plapplicationagent_eventnone_allapps
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -212,7 +212,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("11"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             datetime(start, 'unixepoch'),
@@ -222,7 +222,7 @@ class PowerLogAll (ab.AbstractArtifact):
             haserror
             from
             plxpcagent_eventpoint_mobilebackupevents
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -357,7 +357,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("10"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             build,
@@ -366,17 +366,17 @@ class PowerLogAll (ab.AbstractArtifact):
             pairingid
             from
             plconfigagent_eventnone_paireddeviceconfig
-            ''')
+            """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(timestamp, 'unixepoch'),
             build,
             device
             from
             plconfigagent_eventnone_paireddeviceconfig
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -421,7 +421,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(tts + system, 'unixepoch'),
             bundleid,
@@ -462,7 +462,7 @@ class PowerLogAll (ab.AbstractArtifact):
             group by
             torchid
             )
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
@@ -487,7 +487,7 @@ class PowerLogAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(wifipropts + system, 'unixepoch') ,
             currentssid,
@@ -523,7 +523,7 @@ class PowerLogAll (ab.AbstractArtifact):
             group by
             wifiorotsid
             )
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:

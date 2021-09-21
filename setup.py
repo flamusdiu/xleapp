@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages
 import pathlib
+
+from setuptools import find_packages, setup
 
 
 def read(rel_path):
@@ -10,7 +11,6 @@ def read(rel_path):
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith('__version__'):
-            # __version__ = "0.9"
             delim = '"' if '"' in line else "'"
             return line.split(delim)[1]
     raise RuntimeError("Unable to find version string.")
@@ -24,26 +24,22 @@ setup(
     description="iOS Logs, Events, And Plists Parser",
     long_description=long_description,
     license='MIT',
-    classifiers=[
-
-    ],
+    classifiers=[],
     url='https://github.com/abrignoni/iLEAPP',
     keywords='',
     project_urls={
         "Documentation": "https://github.com/abrignoni/iLEAPP/wiki",
-        "Source": "https://github.com/abrignoni/iLEAPP"
+        "Source": "https://github.com/abrignoni/iLEAPP",
     },
     author='Alexis Brignoni, Yogesh Khatri',
     package_dir={"": "ileapp"},
     packages=find_packages(
         where="ileapp",
-        exclude=["contrib", "docs", "tests*", "tasks"]
+        exclude=["contrib", "docs", "tests*", "tasks"],
     ),
     entry_points={
-        "console_scripts": {
-            "ileapp=ileapp.__main__:cli"
-        },
+        "console_scripts": {"ileapp=ileapp.__main__:cli"},
     },
     zip_safe=True,
-    python_requires='>=3.6'
+    python_requires='>=3.9',
 )

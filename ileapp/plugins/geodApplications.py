@@ -22,7 +22,7 @@ class GeodApplication(AbstractArtifact):
             """
             SELECT count_type, app_id, createtime
             FROM mkcount
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

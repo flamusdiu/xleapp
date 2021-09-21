@@ -22,7 +22,7 @@ class Health(ab.AbstractArtifact):
         iOSversion = artifacts.artGlobals.versionf
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(samples.start_date + 978307200, 'unixepoch'),
             datetime(samples.end_date + 978307200, 'unixepoch'),
@@ -55,7 +55,7 @@ class Health(ab.AbstractArtifact):
             and metadata_keys.rowid = metadata_values.key_id
             and  workouts.data_id = samples.data_id
             and workouts.activity_type not null and key is "_HKPrivateWorkoutAverageHeartRate"
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -253,7 +253,7 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(samples.start_date + 978307200, 'unixepoch'),
             datetime(samples.end_date + 978307200, 'unixepoch'),
@@ -263,7 +263,7 @@ class Health(ab.AbstractArtifact):
             samples, quantity_samples
             where samples.data_type = 75
             and samples.data_id = quantity_samples.data_id
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -289,7 +289,7 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             SELECT
             datetime(SAMPLES.START_DATE + 978307200, 'unixepoch'),
             datetime(SAMPLES.END_DATE + 978307200, 'unixepoch'),
@@ -301,7 +301,7 @@ class Health(ab.AbstractArtifact):
                 AND SAMPLES.DATA_ID = QUANTITY_SAMPLES.DATA_ID
                 AND SAMPLES.DATA_ID = OBJECTS.DATA_ID
                 AND OBJECTS.PROVENANCE = data_provenances.ROWID
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -357,7 +357,7 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             SELECT
             DATETIME(SAMPLES.START_DATE + 978307200, 'UNIXEPOCH'),
             QUANTITY,
@@ -367,7 +367,7 @@ class Health(ab.AbstractArtifact):
             WHERE SAMPLES.DATA_TYPE = 3
             AND "DATE" IS  NOT NULL
             and SAMPLES.DATA_ID = QUANTITY_SAMPLES.DATA_ID
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -393,7 +393,7 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(samples.start_date + 978307200, 'unixepoch'),
             datetime(samples.end_date + 978307200, 'unixepoch'),
@@ -427,7 +427,7 @@ class Health(ab.AbstractArtifact):
             and metadata_keys.rowid = metadata_values.key_id
             and  workouts.data_id = samples.data_id
             and workouts.activity_type not null and (key is null or key is  "HKIndoorWorkout")
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -456,14 +456,14 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             SELECT
             DATETIME(SAMPLES.START_DATE + 978307200, 'UNIXEPOCH'),
             DATETIME(SAMPLES.END_DATE + 978307200, 'UNIXEPOCH'),
             cast(ROUND(QUANTITY) as int)
             FROM SAMPLES, QUANTITY_SAMPLES
             WHERE SAMPLES.DATA_TYPE = 172 AND SAMPLES.DATA_ID = QUANTITY_SAMPLES.DATA_ID
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -489,14 +489,14 @@ class Health(ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             SELECT
             DATETIME(SAMPLES.START_DATE + 978307200, 'UNIXEPOCH'),
             DATETIME(SAMPLES.END_DATE + 978307200, 'UNIXEPOCH'),
             (SAMPLES.END_DATE - SAMPLES.START_DATE)
             FROM SAMPLES
             WHERE SAMPLES.DATA_TYPE = 63
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)

@@ -92,7 +92,7 @@ class AppSnapShots(ab.AbstractArtifact):
 
 
 def save_ktx_to_png_if_valid(ktx_path, save_to_path):
-    '''Excludes all white or all black blank images'''
+    """Excludes all white or all black blank images"""
 
     with open(ktx_path, 'rb') as f:
         ktx = ktxparser.KTX_reader()

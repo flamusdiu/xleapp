@@ -20,13 +20,13 @@ class TCC (ab.AbstractArtifact):
         iOSversion = artifacts.artGlobals.versionf
         if version.parse(iOSversion) >= version.parse("9"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select client,
             service,
             datetime(last_modified,'unixepoch')
             from access
             order by client
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -43,13 +43,13 @@ class TCC (ab.AbstractArtifact):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_escape=False)
                 report.end_artifact_report()
 
-                '''
+                """
                 tsvname = 'InteractionC Contacts'
                 tsv(report_folder, data_headers, data_list, tsvname)
 
                 tlactivity = 'InteractonC Contacts'
                 timeline(report_folder, tlactivity, data_list, data_headers)
-                '''
+                """
             else:
                 logfunc('No data available in TCC database.')
 

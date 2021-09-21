@@ -27,7 +27,7 @@ class AggDictScalars(AbstractArtifact):
             value
             from
             scalars
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

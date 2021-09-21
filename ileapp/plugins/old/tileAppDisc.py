@@ -24,13 +24,13 @@ class TileAppDisc (ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         datetime(ZLAST_MODIFIED_TIMESTAMP,'unixepoch','31 years'),
         ZTILE_UUID
         FROM
         ZTILENTITY_DISCOVEREDTILE
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

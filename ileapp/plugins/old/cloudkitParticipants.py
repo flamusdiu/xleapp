@@ -32,13 +32,13 @@ class CloudKitParticipants(ab.AbstractArtifact):
             if file_found.endswith('NoteStore.sqlite'):
                 db = open_sqlite_db_readonly(file_found)
                 cursor = db.cursor()
-                cursor.execute('''
+                cursor.execute("""
                 SELECT Z_PK, ZSERVERSHAREDATA
                 FROM
                 ZICCLOUDSYNCINGOBJECT
                 WHERE
                 ZSERVERSHAREDATA NOT NULL
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 for row in all_rows:

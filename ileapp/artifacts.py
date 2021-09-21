@@ -8,9 +8,7 @@ from typing import Dict, List, Type
 
 import prettytable
 
-import ileapp.ilapglobals as g
 from ileapp.abstract import AbstractArtifact
-from ileapp.helpers.decorators import timed
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +63,8 @@ def _build_artifact_list():
     installed = []
 
     logger.debug(
-        'Generating artifact lists from file system...', extra={'flow': 'no_filter'}
+        'Generating artifact lists from file system...',
+        extra={'flow': 'no_filter'},
     )
     module_dir = Path(importlib.util.find_spec(__name__).origin).parent / 'plugins'
     for it in module_dir.glob('*.py'):
@@ -77,10 +76,14 @@ def _build_artifact_list():
                 # check MRO (Method Resolution Order) for
                 # AbstractArtifact classes. Also, insure
                 # we do not get an abstract class.
-                if len(
-                    set([str(name).find('AbstractArtifact') for name in cls.mro()])
-                    - set([-1])
-                ) != 0 and not inspect.isabstract(cls):
+                if (
+                    len(
+                        {str(name).find('AbstractArtifact') for name in cls.mro()}
+                        - {-1},
+                    )
+                    != 0
+                    and not inspect.isabstract(cls)
+                ):
                     builder = ArtifactServiceBuilder()
                     artifacts.register_builder(name.lower(), builder(cls))
                     installed.append(name.lower())
@@ -93,7 +96,8 @@ services, installed = _build_artifact_list()
 
 
 def crunch_artifacts(
-    artifact_list, input_path, report_folder_base, temp_folder
+    artifact_list,
+    input_path,
 ) -> bool:
 
     core_artifacts = {}
@@ -119,7 +123,7 @@ def crunch_artifacts(
                         'Info.plist not found for iTunes Backup!',
                         extra={'flow': 'no_filter'},
                     )
-                # GuiWindow.SetProgressBar(categories_searched * ratio)
+                # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
             else:
                 _process_artifact(name, artifact)
 
@@ -134,13 +138,11 @@ def _process_artifact(name: str, artifact: Type[AbstractArtifact]) -> None:
         extra={'flow': 'no_filter'},
     )
 
-    # Removed the "Search" decorator around the function and add the timed function when
-    # processing each artifacts
-    process_time, _ = artifact.process()
-    artifact.process_time = process_time
+    artifact.process_time, _ = artifact.process()
 
     logger.info(
-        f'{artifact.category} [{name}] artifact ' f'finished in {process_time:.2f}s',
+        f'{artifact.category} [{name}] artifact '
+        f'finished in {artifact.process_time:.2f}s',
         extra={'flow': 'no_filter'},
     )
 
@@ -178,19 +180,19 @@ def select(
 
     Args:
         artifacts(List[object]): installed list of artifacts
-        name (str, optional): short name of the artifact. Defaults to None.
-        all_artifacts (bool, optional): bool to select all artifacts.
+        artifact_name (str): short name of the artifact. Defaults to None.
+        all_artifacts (bool): bool to select all artifacts.
             Defaults to False.
-        long_running_process (bool, optional): used with `all_artifacts`
+        long_running_process (bool): used with `all_artifacts`
             to select long running processes. Defaults to False.
-        reset (bool, optional): clears the select flags on non-core artifacts.
+        reset (bool): clears the select flags on non-core artifacts.
             Defaults to True.
     """
     if artifact_name:
         selected = not artifacts.get(artifact_name).selected
         artifacts.get(artifact_name).selected = selected
     else:
-        for name, artifact in artifacts.items():
+        for _, artifact in artifacts.items():
             if reset:
                 if not artifact.core:
                     artifact.selected = False
@@ -202,8 +204,12 @@ def select(
                     artifact.selected = not artifact.selected
 
 
-def generate_artifact_path_list(artifacts):
-    """Generates path file for usage with Autopsy"""
+def generate_artifact_path_list(artifacts) -> None:
+    """Generates path file for usage with Autopsy
+
+    Args:
+        artifacts(list): List of artifacts to get regex from.
+    """
     logger.info('Artifact path list generation started.')
 
     with open('path_list.txt', 'w') as paths:
@@ -222,7 +228,11 @@ def generate_artifact_path_list(artifacts):
 
 
 def generate_artifact_table(artifacts) -> None:
-    """Generates artifact list table."""
+    """Generates artifact list table.
+
+    Args:
+        artifacts(list): List of artifacts to get regex from.
+    """
     headers = ["Short Name", "Full Name", "Search Regex"]
     wrapper = TextWrapper(expand_tabs=False, replace_whitespace=False, width=60)
     output_table = prettytable.PrettyTable(headers, align='l')
@@ -232,13 +242,13 @@ def generate_artifact_table(artifacts) -> None:
     logger.info('Artifact table generation started.')
 
     with open(output_file, 'w') as paths:
-        for key, val in artifacts:
-            shortName = key
-            fullName = val.cls.name
-            searchRegex = val.cls.search_dirs
-            if isinstance(searchRegex, tuple):
-                searchRegex = '\n'.join(searchRegex)
-            output_table.add_row([shortName, fullName, wrapper.fill(searchRegex)])
+        for key, value in artifacts:
+            short_name = key
+            full_name = value.cls.name
+            search_regex = value.cls.search_dirs
+            if isinstance(search_regex, tuple):
+                search_regex = '\n'.join(search_regex)
+            output_table.add_row([short_name, full_name, wrapper.fill(search_regex)])
         paths.write(output_table.get_string(title='Artifact List', sortby='Short Name'))
     logger.info(f'Table saved to: {output_file}', extra={'flow': 'no_flter'})
     logger.info('Artifact table generation completed', extra={'flow': 'no_filter'})

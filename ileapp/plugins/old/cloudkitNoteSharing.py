@@ -27,13 +27,13 @@ class CloudKitNotSharing(ab.AbstractArtifact):
             if file_found.endswith('NoteStore.sqlite'):
                 db = open_sqlite_db_readonly(file_found)
                 cursor = db.cursor()
-                cursor.execute('''
+                cursor.execute("""
                 select z_pk, zserverrecorddata
                 from
                 ziccloudsyncingobject
                 where
                 zserverrecorddata not null
-                ''')
+                """)
 
                 note_data = []
                 all_rows = cursor.fetchall()

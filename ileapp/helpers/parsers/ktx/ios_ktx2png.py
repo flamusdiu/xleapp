@@ -67,7 +67,7 @@ class KTX_reader:
         self.aapl_is_compressed = False
     
     def validate_header(self, f):
-        '''Reads header and validates version
+        """Reads header and validates version
 
             Arguments
             ---------
@@ -76,7 +76,7 @@ class KTX_reader:
             Returns
             -------
             Bool : True if file can be parsed else False
-        '''
+        """
         f.seek(0)
         header = f.read(0x40)
         if len(header) < 0x40:
@@ -114,7 +114,7 @@ class KTX_reader:
         return False
 
     def parse_aapl_file(self, f):
-        '''Returns True if HEAD was found and header items could be read'''
+        """Returns True if HEAD was found and header items could be read"""
         ret = False
         next_header_pos = 8
         f.seek(next_header_pos)
@@ -148,9 +148,9 @@ class KTX_reader:
         return ret
 
     def get_uncompressed_texture_data(self, f):
-        '''Just read the texture data which is lzfse compressed, uncompress and return it.
+        """Just read the texture data which is lzfse compressed, uncompress and return it.
             Exceptions raised are ValueError or liblzfse.error
-        '''
+        """
         if self.glInternalFormat == 0x93B0:
             if self.is_aapl_file:
                 f.seek(self.aapl_data_pos)
@@ -180,7 +180,7 @@ class KTX_reader:
 
     def convert_to_png(self, f, save_to_path):
         # using astc_decomp
-        '''Exports KTX as a PNG file
+        """Exports KTX as a PNG file
             Arguments
             ---------
             f            : file-like object
@@ -195,7 +195,7 @@ class KTX_reader:
             Raises
             ----------
             OSError, ValueError, liblzfse.error
-        '''
+        """
         if self.validate_header(f):
             data = self.get_uncompressed_texture_data(f)
             dec_img = Image.frombytes('RGBA', (self.pixelWidth, self.pixelHeight), data, 'astc', (4, 4, False))

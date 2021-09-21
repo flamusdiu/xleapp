@@ -1,25 +1,26 @@
 import sqlite3
+
 from ileapp.helpers.utils import is_platform_windows
 
 
 def open_sqlite_db_readonly(path):
-    '''Opens an sqlite db in read-only mode, so original db
+    """Opens an sqlite db in read-only mode, so original db
     (and -wal/journal are intact)
-    '''
+    """
     if is_platform_windows():
         if path.startswith('\\\\?\\UNC\\'):  # UNC long path
             path = "%5C%5C%3F%5C" + path[4:]
-        elif path.startswith('\\\\?\\'):     # normal long path
+        elif path.startswith('\\\\?\\'):  # normal long path
             path = "%5C%5C%3F%5C" + path[4:]
-        elif path.startswith('\\\\'):        # UNC path
+        elif path.startswith('\\\\'):  # UNC path
             path = "%5C%5C%3F%5C\\UNC" + path[1:]
-        else:                                # normal path
+        else:  # normal path
             path = "%5C%5C%3F%5C" + path
     return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
 
 
 def does_column_exist_in_db(db, table_name, col_name):
-    '''Checks if a specific col exists'''
+    """Checks if a specific col exists"""
     col_name = col_name.lower()
     try:
         db.row_factory = sqlite3.Row  # For fetching columns by name
@@ -37,10 +38,12 @@ def does_column_exist_in_db(db, table_name, col_name):
 
 
 def does_table_exist(db, table_name):
-    '''Checks if a table with specified name exists in an sqlite db'''
+    """Checks if a table with specified name exists in an sqlite db"""
     try:
-        query = (f"SELECT name FROM sqlite_master "
-                 f"WHERE type='table' AND name='{table_name}'")
+        query = (
+            f"SELECT name FROM sqlite_master "
+            f"WHERE type='table' AND name='{table_name}'"
+        )
         cursor = db.execute(query)
         for row in cursor:
             return True

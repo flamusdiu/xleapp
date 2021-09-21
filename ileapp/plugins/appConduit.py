@@ -1,5 +1,4 @@
 import datetime
-import pathlib
 import re
 from dataclasses import dataclass
 
@@ -49,7 +48,8 @@ class AppConduit(AbstractArtifact):
                     date_time = line_match.group(3, 5, 4)
                     conv_time = ' '.join(date_time)
                     dtime_obj = datetime.datetime.strptime(
-                        conv_time, '%b %d %Y %H:%M:%S'
+                        conv_time,
+                        '%b %d %Y %H:%M:%S',
                     )
                     values = line_match.group(9)
                     device_id = line_match.group(11)

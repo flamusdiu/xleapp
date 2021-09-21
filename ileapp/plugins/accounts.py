@@ -21,7 +21,7 @@ class Accounts(AbstractArtifact):
         )
 
     @timed
-    @Search('**/Accounts3.sqlite', return_on_first_hit=True)
+    @Search('**/Accounts3.sqlite')
     def process(self):
         fp = self.found
         cursor = fp.cursor()
@@ -36,7 +36,7 @@ class Accounts(AbstractArtifact):
             zaccount.zowningbundleid
             from zaccount, zaccounttype
             where zaccounttype.z_pk=zaccount.zaccounttype
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

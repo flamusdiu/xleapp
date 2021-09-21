@@ -88,7 +88,7 @@ class NotificationsXII(ab.AbstractArtifact):
 
 
 def get_bundle_id_and_names_from_plist(library_plist_file_path):
-    '''Parses Library.plist and returns a dictionary where Key=Bundle_ID, Value=Bundle_Name'''
+    """Parses Library.plist and returns a dictionary where Key=Bundle_ID, Value=Bundle_Name"""
     bundle_info = {}
     f = open(library_plist_file_path, 'rb')
     plist = nd.deserialize_plist(f)

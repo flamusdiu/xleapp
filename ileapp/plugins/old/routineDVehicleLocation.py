@@ -21,7 +21,7 @@ class RoutineDVehicleLocation(ab.AbstractArtifact):
         iOSversion = artifacts.artGlobals.versionf
         if version.parse(iOSversion) >= version.parse("12"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zrtvehicleeventmo.zdate + 978307200, 'unixepoch'),
             datetime(zrtvehicleeventmo.zlocdate + 978307200, 'unixepoch'),
@@ -37,10 +37,10 @@ class RoutineDVehicleLocation(ab.AbstractArtifact):
             zloclongitude
             from
             zrtvehicleeventmo
-            ''')
+            """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zrtvehicleeventmo.zdate + 978307200, 'unixepoch'),
             datetime(zrtvehicleeventmo.zlocdate + 978307200, 'unixepoch'),
@@ -57,7 +57,7 @@ class RoutineDVehicleLocation(ab.AbstractArtifact):
             zloclongitude
             from
             zrtvehicleeventmo
-                ''')
+                """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

@@ -20,7 +20,7 @@ class AccountConfiguration(AbstractArtifact):
 
         fp = self.found
         pl = plistlib.load(fp)
-        for key, val in pl.items():
-            data_list.append((key, val))
+        for key, value in pl.items():
+            data_list.append((key, value))
 
         self.data = data_list

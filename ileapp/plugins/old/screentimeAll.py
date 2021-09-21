@@ -24,7 +24,7 @@ class ScreentimeAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("13"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
             zusagetimeditem.zbundleidentifier,
@@ -64,10 +64,10 @@ class ScreentimeAll (ab.AbstractArtifact):
             and zusageblock.zusage = zusage.z_pk
             and zusage.zuser = zcoreuser.z_pk
             and zusage.zdevice = zcoredevice.z_pk
-                ''')
+                """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
             zusagetimeditem.zbundleidentifier,
@@ -100,7 +100,7 @@ class ScreentimeAll (ab.AbstractArtifact):
             and zusageblock.zusage = zusage.z_pk
             and zusage.zuser = zcoreuser.z_pk
             and zusage.zdevice = zcoredevice.z_pk
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -138,7 +138,7 @@ class ScreentimeAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("13"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
             zusagecounteditem.zbundleidentifier,
@@ -162,10 +162,10 @@ class ScreentimeAll (ab.AbstractArtifact):
             and zusageblock.zusage = zusage.z_pk
             and zusage.zuser = zcoreuser.z_pk
             and zusage.zdevice = zcoredevice.z_pk
-                ''')
+                """)
         else:
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
             zusagecounteditem.zbundleidentifier,
@@ -182,7 +182,7 @@ class ScreentimeAll (ab.AbstractArtifact):
             and zusageblock.zusage == zusage.z_pk
             and zusage.zuser == zcoreuser.z_pk
             and zusage.zdevice == zcoredevice.z_pk
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -220,7 +220,7 @@ class ScreentimeAll (ab.AbstractArtifact):
 
         if version.parse(iOSversion) >= version.parse("13"):
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             distinct
             datetime(zusageblock.zstartdate+978307200,'unixepoch'),
@@ -248,7 +248,7 @@ class ScreentimeAll (ab.AbstractArtifact):
             and  zusageblock.zusage == zusage.z_pk
             and  zusage.zuser == zcoreuser.z_pk
             and zusage.zdevice == zcoredevice.z_pk
-            ''')
+            """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

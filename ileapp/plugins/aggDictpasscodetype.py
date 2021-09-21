@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ileapp.abstract import AbstractArtifact
-from ileapp.helpers.decorators import Search, timed
+from ileapp.helpers.decorators import Search, long_running_process, timed
 from ileapp.report.webicons import Icon
 
 
@@ -34,7 +34,7 @@ class AggDictPasscodeType(AbstractArtifact):
             from
             scalars
             where key like 'com.apple.passcode.passcodetype%'
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

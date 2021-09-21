@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
+import ileapp.helpers.strings as strings
 from ileapp.abstract import AbstractArtifact
 from ileapp.helpers.decorators import Search, timed
 from ileapp.report.webicons import Icon
-import ileapp.helpers.strings as strings
 
 
 @dataclass
@@ -30,7 +30,7 @@ class GeodPDPlaceCache(AbstractArtifact):
             SELECT requestkey, pdplacelookup.pdplacehash, datetime('2001-01-01', "lastaccesstime" || ' seconds') as lastaccesstime, datetime('2001-01-01', "expiretime" || ' seconds') as expiretime, pdplace
             FROM pdplacelookup
             INNER JOIN pdplaces on pdplacelookup.pdplacehash = pdplaces.pdplacehash
-            """
+            """,
         )
 
         all_rows = cursor.fetchall()

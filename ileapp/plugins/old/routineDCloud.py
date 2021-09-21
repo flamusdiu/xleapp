@@ -24,7 +24,7 @@ class RoutineDCloud (ab.AbstractArtifact):
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
         if version.parse(iOSversion) >= version.parse("12"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zrtaddressmo.zcreationdate + 978307200, 'unixepoch'),
             datetime(zrtaddressmo.zexpirationdate + 978307200, 'unixepoch'),
@@ -38,7 +38,7 @@ class RoutineDCloud (ab.AbstractArtifact):
             zrtaddressmo.zsubadministrativearea,
             zrtaddressmo.zareasofinterest
             from zrtaddressmo
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -64,7 +64,7 @@ class RoutineDCloud (ab.AbstractArtifact):
                 logfunc('No RoutineD Cloud Addresses data available')
 
         if version.parse(iOSversion) >= version.parse("12"):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zrtmapitemmo.zcreationdate + 978307200, 'unixepoch'),
             datetime(zrtmapitemmo.zexpirationdate + 978307200, 'unixepoch'),
@@ -83,7 +83,7 @@ class RoutineDCloud (ab.AbstractArtifact):
             zrtmapitemmo.zuncertainty
             from zrtmapitemmo, zrtaddressmo
             where  zrtmapitemmo.z_pk == zrtaddressmo.zmapitem
-            ''')
+            """)
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             data_list = []
@@ -112,7 +112,7 @@ class RoutineDCloud (ab.AbstractArtifact):
             logfunc('No RoutineD Map Items Cloud-V2.sqlite data available')
 
         if (version.parse(iOSversion) >= version.parse("13")):
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zrtlearnedvisitmo.zentrydate + 978307200, 'unixepoch'),
             datetime(zrtlearnedvisitmo.zexitdate + 978307200, 'unixepoch'),
@@ -153,7 +153,7 @@ class RoutineDCloud (ab.AbstractArtifact):
             and zrtlearnedplacemo.z_pk = zrtlearnedvisitmo.zplace
             and zrtaddressmo.zmapitem = zrtlearnedplacemo.zmapitem
             and zrtmapitemmo.z_pk = zrtlearnedplacemo.zmapitem
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)

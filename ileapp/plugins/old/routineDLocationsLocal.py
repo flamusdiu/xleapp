@@ -29,7 +29,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
             db = open_sqlite_db_readonly(file_found)
             cursor = db.cursor()
             if version.parse(iOSversion) >= version.parse("14"): # Tested 14.1
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(zrtlearnedlocationofinterestvisitmo.zentrydate + 978307200, 'unixepoch'),
                 datetime(zrtlearnedlocationofinterestvisitmo.zexitdate + 978307200, 'unixepoch'),
@@ -48,7 +48,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                 zrtlearnedlocationofinterestvisitmo,
                 zrtlearnedlocationofinterestmo
                 where zrtlearnedlocationofinterestmo.z_pk = zrtlearnedlocationofinterestvisitmo.zlocationofinterest
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
@@ -78,7 +78,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                     logfunc('No RoutineD Significant Locations Entry data available')
 
             else: # < ios 14
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(zrtlearnedlocationofinterestvisitmo.zentrydate + 978307200, 'unixepoch'),
                 datetime(zrtlearnedlocationofinterestvisitmo.zexitdate + 978307200, 'unixepoch'),
@@ -96,7 +96,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                 zrtlearnedlocationofinterestvisitmo,
                 zrtlearnedlocationofinterestmo
                 where zrtlearnedlocationofinterestmo.z_pk = zrtlearnedlocationofinterestvisitmo.zlocationofinterest
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
@@ -126,7 +126,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                     logfunc('No RoutineD Significant Locations Entry data available')
 
             if version.parse(iOSversion) >= version.parse("12"):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(zrtlearnedlocationofinteresttransitionmo.zstartdate + 978307200, 'unixepoch'),
                 datetime(zrtlearnedlocationofinteresttransitionmo.zstopdate + 978307200, 'unixepoch'),
@@ -139,7 +139,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                 left join
                 zrtlearnedlocationofinterestmo
                 on zrtlearnedlocationofinterestmo.z_pk = zrtlearnedlocationofinteresttransitionmo.zlocationofinterest
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)
@@ -169,7 +169,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                     logfunc('No RoutineD Significant Locations Transtition Start data available')
 
             if (version.parse(iOSversion) >= version.parse("12")):
-                cursor.execute('''
+                cursor.execute("""
                 select
                 datetime(zrtlearnedlocationofinteresttransitionmo.zstartdate + 978307200, 'unixepoch'),
                 datetime(zrtlearnedlocationofinteresttransitionmo.zstopdate + 978307200, 'unixepoch'),
@@ -180,7 +180,7 @@ class RoutineDLocationsLocal (ab.AbstractArtifact):
                 from
                 zrtlearnedlocationofinteresttransitionmo, zrtlearnedlocationofinterestmo
                 where zrtlearnedlocationofinterestmo.z_pk = zrtlearnedlocationofinteresttransitionmo.zlocationofinterest
-                ''')
+                """)
 
                 all_rows = cursor.fetchall()
                 usageentries = len(all_rows)

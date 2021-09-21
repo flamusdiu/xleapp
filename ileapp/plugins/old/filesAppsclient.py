@@ -27,14 +27,14 @@ class FilesAppsClient(ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         item_birthtime,
         item_filename,
         version_mtime
         FROM
         client_items
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

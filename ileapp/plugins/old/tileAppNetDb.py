@@ -24,7 +24,7 @@ class TitleAppNetDB (ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         datetime(ZREGISTRATION_TIMESTAMP,'unixepoch','31 years'),
         ZEMAIL,
@@ -32,7 +32,7 @@ class TitleAppNetDB (ab.AbstractArtifact):
         ZMOBILE_PHONE
         FROM
         ZTILENTITY_USER
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

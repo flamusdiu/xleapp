@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 
 import biplist
+
 from ileapp.abstract import AbstractArtifact
 from ileapp.helpers.decorators import Search, timed
 from ileapp.report.webicons import Icon
@@ -39,10 +40,10 @@ class AppGroupListing(AbstractArtifact):
 
             bundleid = plist['MCMMetadataIdentifier']
 
-            p = pathlib.Path(fp.name)
-            appgroupid = p.parent.name
-            fileloc = p.parent
-            typedir = p.parents[1].name
+            path = pathlib.Path(fp.name)
+            appgroupid = path.parent.name
+            fileloc = path.parent
+            typedir = path.parents[1].name
 
             data_list.append((bundleid, typedir, appgroupid, fileloc))
 

@@ -20,7 +20,7 @@ class CallHistory(ab.AbstractArtifact):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         Z_PK as "CALL ID",
         ZADDRESS AS "ADDRESS",
@@ -33,7 +33,7 @@ class CallHistory(ab.AbstractArtifact):
         ZSERVICE_PROVIDER AS "SERVICE PROVIDER",
         DATETIME(ZDATE+978307200,'UNIXEPOCH') AS "TIMESTAMP"
         FROM ZCALLRECORD
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

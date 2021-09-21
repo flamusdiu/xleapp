@@ -21,7 +21,7 @@ class WebIcon:
     def __set_name__(self, owner, name):
         self.name = str(name)
 
-    def __get__(self, obj, type=Icon) -> object:
+    def __get__(self, obj, icon_type=Icon) -> object:
         return obj.__dict__.get(self.name) or Icon.ALERT_TRIANGLE
 
     def __set__(self, obj, value) -> None:
@@ -30,7 +30,7 @@ class WebIcon:
         else:
             raise TypeError(
                 f"Got {type(value)} instead of {type(Icon)}! "
-                f"Error setting Web Icon on {str(obj)}!"
+                f"Error setting Web Icon on {str(obj)}!",
             )
 
 
@@ -40,7 +40,7 @@ class ReportHeaders:
     def __set_name__(self, owner, name):
         self.name = name
 
-    def __get__(self, obj, type=None) -> Union[list, tuple]:
+    def __get__(self, obj, report_type=None) -> Union[list, tuple]:
         return obj.__dict__.get(self.name) or ('Key', 'Value')
 
     def __set__(self, obj, value) -> None:
@@ -48,11 +48,11 @@ class ReportHeaders:
             obj.__dict__[self.name] = value
         else:
             raise TypeError(
-                'Error setting report headers! ' 'Expected list of tuples or tuple!'
+                'Error setting report headers! ' 'Expected list of tuples or tuple!',
             )
 
     @staticmethod
-    def _check_list_of_tuples(values: list, bool_list: list[bool] = []) -> bool:
+    def _check_list_of_tuples(values: list, bool_list: list[bool] = None) -> bool:
         """Checks list to see if its a list of tuples of strings
 
         Examples:
@@ -76,6 +76,7 @@ class ReportHeaders:
         Returns:
             bool: Returns true or false if values match for tuples of strings
         """
+        bool_list = bool_list or []
         if values == []:
             return all(bool_list)
         else:
@@ -206,7 +207,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         `seeker`. It saves should save the report in `report_folder`.
         """
         NotImplementedError(
-            "Needs to implement AbastractArtifact's" "process() method!"
+            "Needs to implement AbastractArtifact's" "process() method!",
         )
 
     def pre_process(
@@ -222,34 +223,36 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         self.regex = regex
         wildcard_check = re.compile(r"(\b\w*[A-Za-z\/*.]+)$")
 
-        for r in self.regex:
+        for regex in self.regex:
             results = []
 
-            if r in global_regex:
-                results = files[r]
+            if regex in global_regex:
+                results = files[regex]
             else:
                 try:
                     if return_on_first_hit:
-                        results = [next(seeker.search(r))]
+                        results = [next(seeker.search(regex))]
                     else:
-                        results = list(seeker.search(r))
+                        results = list(seeker.search(regex))
                 except StopIteration:
                     results = None
 
                 if bool(results):
-                    files.add(r, results, file_names_only)
+                    files.add(regex, results, file_names_only)
 
             if bool(results):
                 # Checks if a '*' (wildcard) is used to search.
                 # Possible that one or more files can be returned.
                 # You MUST return a list in this case back to the artifact class.
                 # '-1' is no wildcard match and such should NOT return a list
-                return_list = not (wildcard_check.search(r).group(1).find("*") == -1)
+                return_list = not (
+                    wildcard_check.search(regex).group(1).find("*") == -1
+                )
 
                 if (return_on_first_hit or len(results) == 1) and not return_list:
-                    self.found = files[r].copy().pop()
+                    self.found = files[regex].copy().pop()
                 else:
-                    self.found.extend(files[r])
+                    self.found.extend(files[regex])
         return bool(self.found)
 
     @property
@@ -272,8 +275,11 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
     def processing_time(self, time: float) -> None:
         self._processing_time = time
 
-    def report(self, report_folder) -> bool:
+    def report(self, report_folder: str) -> bool:
         """Generates report for artifact.
+
+        Args:
+            report_folder (str): Location of reports
 
         Returns:
             bool: True or False if the report was generated.
@@ -288,7 +294,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
                 logger.info(
                     f'\t-> Report not generated for "{self.name}"! Artifact '
                     'marked for no report generation. Check '
-                    'artifact\'s \'generate_report\' attribute.\n',
+                    "artifact's 'generate_report' attribute.\n",
                     extra={'flow': 'no_filter'},
                 )
             return False
@@ -318,7 +324,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
         shutil.copyfile(input_file, (output_folder / output_file))
         logger.debug(
-            f'File {input_file.base} copied to ' f'{output_folder / output_file}'
+            f'File {input_file.base} copied to ' f'{output_folder / output_file}',
         )
 
     def rmfile(self, input_file: Union[PathLike, str]) -> None:
@@ -335,10 +341,10 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
                 fp.unlink()
             except OSError:
                 logger.warning(
-                    f'Attempting to delete "{fp}" failed! ' 'File was not found!'
+                    f'Attempting to delete "{fp}" failed! ' 'File was not found!',
                 )
         else:
             logger.warning(
                 f'Artifact "{artifact_name}" attempted to '
-                f'delete {fp} not located within its export folder.'
+                f'delete {fp} not located within its export folder.',
             )

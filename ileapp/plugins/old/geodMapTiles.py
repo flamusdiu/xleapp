@@ -1,6 +1,7 @@
 import base64
 import gzip
 import sqlite3
+
 # import artifacts.artGlobals
 import struct
 import zlib
@@ -14,7 +15,7 @@ from artifacts.Artifact import AbstractArtifact
 class GeodMapTiles(ab.AbstractArtifact):
 
     _name = 'GeoD Map Tiles'
-    _search_dirs = ('**/MapTiles.sqlitedb')
+    _search_dirs = '**/MapTiles.sqlitedb'
     _category = 'Geolocation'
 
     def get(self, files_found, seeker):
@@ -24,11 +25,12 @@ class GeodMapTiles(ab.AbstractArtifact):
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
         cursor.execute(
-        """
+            """
         SELECT datetime(access_times.timestamp, 'unixepoch') as timestamp, key_a, key_b, key_c, key_d, tileset, data, size, etag
         FROM data
         INNER JOIN access_times on data.rowid = access_times.data_pk
-        """)
+        """
+        )
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
@@ -40,31 +42,57 @@ class GeodMapTiles(ab.AbstractArtifact):
                 data_parsed = ''
                 data = row['data']
                 if data:  # NULL sometimes
-                    if len(data) >= 11 and data[:11] == b'\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00':
+                    if (
+                        len(data) >= 11
+                        and data[:11] == b'\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00'
+                    ):
                         img_base64 = base64.b64encode(data).decode('utf-8')
                         img_html = f'<img src="data:image/jpeg;base64, {img_base64}" alt="Map Tile" />'
                         data_parsed = img_html
                     elif len(data) >= 4 and data[:4] == b'TCOL':
-                        vmp4_places, tcol_places = ParseTCOL(data)
+                        vmp4_places, tcol_places = parsetcol(data)
                         vmp4_places = ", ".join(vmp4_places)
                         tcol_places = ", ".join(tcol_places)
                     elif len(data) >= 4 and data[:4] == b'VMP4':
-                        vmp4_places = ParseVMP4(data)
+                        vmp4_places = parsevmp4(data)
                         vmp4_places = ", ".join(vmp4_places)
                 # else:
-                    # header_bytes = data[:28]
-                    # hexdump = generate_hexdump(header_bytes, 5) if header_bytes else ''
-                    # data_parsed = hexdump
+                # header_bytes = data[:28]
+                # hexdump = generate_hexdump(header_bytes, 5) if header_bytes else ''
+                # data_parsed = hexdump
 
-                data_list.append((row['timestamp'], tcol_places, vmp4_places, data_parsed, get_hex(row['tileset']),
-                                  get_hex(row['key_a']), get_hex(row['key_b']), get_hex(row['key_c']), get_hex(row['key_d'])))
-                                  # row['size']) , row['etag']))
+                data_list.append(
+                    (
+                        row['timestamp'],
+                        tcol_places,
+                        vmp4_places,
+                        data_parsed,
+                        get_hex(row['tileset']),
+                        get_hex(row['key_a']),
+                        get_hex(row['key_b']),
+                        get_hex(row['key_c']),
+                        get_hex(row['key_d']),
+                    )
+                )
+                # row['size']) , row['etag']))
             description = ''
             report = ArtifactHtmlReport('Geolocation')
             report.start_artifact_report(report_folder, 'Map Tile Cache', description)
             report.add_script()
-            data_headers = ("Timestamp", "Places_from_VLOC", "Labels_in_tile", "Image", "Tileset", "Key A", "Key B", "Key C", "Key D")#, "Size", "ETAG")
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_escape=False)
+            data_headers = (
+                "Timestamp",
+                "Places_from_VLOC",
+                "Labels_in_tile",
+                "Image",
+                "Tileset",
+                "Key A",
+                "Key B",
+                "Key C",
+                "Key D",
+            )  # , "Size", "ETAG")
+            report.write_artifact_data_table(
+                data_headers, data_list, file_found, html_escape=False
+            )
             report.end_artifact_report()
 
             tsvname = 'Geolocation Map Tiles'
@@ -79,7 +107,7 @@ class GeodMapTiles(ab.AbstractArtifact):
         db.close()
 
 
-def ReadVLOC(data):
+def readvloc(data):
     names = []
     total_len = len(data)
     pos = 8
@@ -88,9 +116,11 @@ def ReadVLOC(data):
             skip_len = 2
         else:
             skip_len = 3
-        end_pos = data[pos+skip_len:].find(b'\0')
+        end_pos = data[pos + skip_len :].find(b'\0')
         if end_pos >= 0:
-            name = data[pos + skip_len: pos + skip_len + end_pos].decode('utf8', 'ignore')
+            name = data[pos + skip_len : pos + skip_len + end_pos].decode(
+                'utf8', 'ignore'
+            )
             if name:
                 names.append(name)
             pos += skip_len + end_pos + 1
@@ -99,8 +129,8 @@ def ReadVLOC(data):
     return names
 
 
-def ParseTCOL(data):
-    '''returns tuple (VMP4 places, VLOC places)'''
+def parsetcol(data):
+    """returns tuple (VMP4 places, VLOC places)"""
     tcol_places = []
     data_size = len(data)
     if data_size >= 8:
@@ -111,30 +141,33 @@ def ParseTCOL(data):
                 tcol_places = gzip.decompress(tcol_compressed_data)
                 # print("VLOC ->", tcol_places)
             except (OSError, EOFError, zlib.error) as ex:
-                logfunc('Gzip decompression error from ParseTCOL() - ' + str(ex))
+                logfunc('Gzip decompression error from parsetcol() - ' + str(ex))
                 tcol_places = ''
-        vmp4_places = ParseVMP4(data[8:tcol_data_offset])
-        return vmp4_places, ReadVLOC(tcol_places)
+        vmp4_places = parsevmp4(data[8:tcol_data_offset])
+        return vmp4_places, readvloc(tcol_places)
 
 
-def ParseVMP4(data):
+def parsevmp4(data):
     num_items = struct.unpack('<H', data[6:8])[0]
     pos = 8
     for x in range(num_items):
-        item_type, offset, size = struct.unpack("<HII", data[pos:pos + 10])
+        item_type, offset, size = struct.unpack("<HII", data[pos : pos + 10])
         if item_type == 10:
-            item_data = data[offset:offset + size]
+            item_data = data[offset : offset + size]
             if item_data[0] == 1:
                 compressed_data = item_data[5:]
                 try:
                     places_data = zlib.decompress(compressed_data)
                 except zlib.error as ex:
-                    logfunc('Zlib decompression error from ParseVMP4() - ' + str(ex))
+                    logfunc('Zlib decompression error from parsevmp4() - ' + str(ex))
                     places_data = ''
             else:
                 places_data = item_data[1:]
             # print("VMP4 ->", places_data.rstrip(b'\0').split(b'\0'))
-            return [x.decode('UTF8', 'ignore') for x in places_data.rstrip(b'\0').split(b'\0')]
+            return [
+                x.decode('UTF8', 'ignore')
+                for x in places_data.rstrip(b'\0').split(b'\0')
+            ]
         pos += 10
     return []
 

@@ -38,12 +38,12 @@ class VoiceTriggers (ab.AbstractArtifact):
                         else:
                             creation_date = ''
 
-                        audio = '''
+                        audio = """
                                 <audio controls>
                                     <source src={} type="audio/wav">
                                     <p>Your browser does not support HTML5 audio elements.</p>
                                 </audio>
-                                '''.format(wav_file)
+                                """.format(wav_file)
 
                         data_list.append((creation_date, fl['productType'], fl['utteranceWav'], audio))
 

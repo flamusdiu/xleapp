@@ -5,9 +5,11 @@ from dataclasses import dataclass, field
 from os import PathLike
 from pathlib import Path
 
+import jinja2
+from jinja2 import select_autoescape
+
 import ileapp.ilapglobals as g
 import ileapp.report.webicons as webicons
-import jinja2
 from ileapp._authors import __authors__, __contributors__
 from ileapp._version import VERSION
 from ileapp.report.ext import IncludeLogFileExtension
@@ -28,7 +30,7 @@ def init_jinja(log_folder):
 
     jinja = jinja2.Environment(
         loader=jinja2.ChoiceLoader([template_loader, log_file_loader]),
-        autoescape=jinja2.select_autoescape(['html', 'xml']),
+        autoescape=select_autoescape(['html', 'xml']),
         extensions=[jinja2.ext.do, IncludeLogFileExtension],
         trim_blocks=True,
         lstrip_blocks=True,
@@ -68,7 +70,7 @@ class Template:
         @functools.wraps(func)
         def template_wrapper(cls, *args):
             template_j = jinja.get_template(self._template, None)
-            setattr(cls, 'template', template_j)
+            cls.template = template_j
             return func(cls)
 
         return template_wrapper
@@ -137,9 +139,9 @@ def generate_nav(report_folder: PathLike, selected_artifacts: list) -> dict:
        report.
 
     Args:
-        report_folder (Path): Report folder where Artifact HTML Reports
+        report_folder (PathLike): Report folder where Artifact HTML Reports
             are saved.
-        selected_artifacts (List[AbstractArtifact]): List of selected
+        selected_artifacts (list): List of selected
             Artifacts for the report
 
     Returns:
@@ -193,7 +195,7 @@ class HtmlPage(ABC, _HtmlPageDefaults):
 
     @abstractmethod
     def html(self):
-        raise NotImplementedError('HtmlPage objects must implement \'html()\' method!')
+        raise NotImplementedError('HtmlPage objects must implement "html()" method!')
 
 
 @dataclass
@@ -206,10 +208,12 @@ class Index(HtmlPage):
     """
 
     authors: list = field(
-        init=False, default_factory=lambda: get_contributors(__authors__)
+        init=False,
+        default_factory=lambda: get_contributors(__authors__),
     )
     contributors: list = field(
-        init=False, default_factory=lambda: get_contributors(__contributors__)
+        init=False,
+        default_factory=lambda: get_contributors(__contributors__),
     )
 
     @Template('index')
@@ -235,5 +239,7 @@ class Index(HtmlPage):
         log_file = str((self.log_folder / 'ileapp.log').absolute())
 
         return self.template.render(
-            artifact=artifact, log_file=log_file, navigation=self.navigation
+            artifact=artifact,
+            log_file=log_file,
+            navigation=self.navigation,
         )

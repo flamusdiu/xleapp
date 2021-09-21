@@ -1,6 +1,7 @@
 import fnmatch
 import logging
 import os
+import re
 import sqlite3
 import tarfile
 from abc import ABC, abstractmethod
@@ -12,6 +13,7 @@ from typing import AnyStr, List, Tuple, Type, Union
 from zipfile import ZipFile
 
 from ileapp.helpers.db import open_sqlite_db_readonly
+from ileapp.helpers.utils import is_platform_windows
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -32,22 +34,27 @@ class FileHandles(UserDict):
         if self.get(regex):
             return
 
-        for file in files:
+        for item in files:
             self._items += 1
 
-            '''If we have more then 10 files, then set only
+            """
+            If we have more then 10 files, then set only
             file names instead of `FileIO` or
             `sqlite3.connection` to save memory. Most artifacts
             probably have less then 5 files they will read/use.
-            '''
+            """
 
             if len(files) > 10 or file_names_only:
-                self[regex].add(file)
+                self[regex].add(item)
                 continue
 
-            p = Path(file)
+            if item.drive.startswith("\\\\?\\"):
+                extended_path = Path(item)
+
+            path = Path(item.resolve())
+
             try:
-                db = sqlite3.connect(f'file:{p}?mode=ro', uri=True)
+                db = sqlite3.connect(f'file:{path}?mode=ro', uri=True)
                 cursor = db.cursor()
                 (page_size,) = cursor.execute('PRAGMA page_size').fetchone()
                 (page_count,) = cursor.execute('PRAGMA page_count').fetchone()
@@ -60,10 +67,10 @@ class FileHandles(UserDict):
                 db.row_factory = sqlite3.Row
                 self[regex].add(db)
             except (sqlite3.OperationalError, sqlite3.DatabaseError):
-                fp = open(p, 'rb')
+                fp = open(extended_path, 'rb')
                 self[regex].add(fp)
             except FileNotFoundError:
-                raise FileNotFoundError(f'File {p} was not found!')
+                raise FileNotFoundError(f'File {path} was not found!')
 
     def __getitem__(self, regex: str) -> Union[sqlite3.Connection, BufferedIOBase]:
         try:
@@ -118,16 +125,16 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def search(self, filepattern_to_search, return_on_first_hit=False) -> FileList:
-        '''Returns a list of paths for files/folders that matched'''
+        """Returns a list of paths for files/folders that matched"""
         pass
 
     @abstractmethod
     def cleanup(self):
-        '''close any open handles'''
+        """close any open handles"""
         pass
 
     @abstractmethod
-    def build_files_list(self, dir: Union[str, Path]) -> Tuple[SubFolders, FileList]:
+    def build_files_list(self, folder: Union[str, Path]) -> Tuple[SubFolders, FileList]:
         """Finds files in directory"""
         pass
 
@@ -164,21 +171,21 @@ class FileSeekerDir(FileSeekerBase):
             extra={'flow': 'no_filter'},
         )
 
-    def build_files_list(self, dir) -> tuple((List[str], List[str])):
-        '''Populates all paths in directory into _all_files'''
+    def build_files_list(self, folder) -> tuple:
+        """Populates all paths in directory into _all_files"""
 
         subfolders, files = [], []
 
-        for f in os.scandir(dir):
-            if f.is_dir():
-                subfolders.append(f.path)
-            if f.is_file():
-                files.append(f.path)
+        for item in os.scandir(folder):
+            if item.is_dir():
+                subfolders.append(item.path)
+            if item.is_file():
+                files.append(item.path)
 
-        for dir in list(subfolders):
-            sf, f = self.build_files_list(dir)
+        for folder in list(subfolders):
+            sf, item = self.build_files_list(folder)
             subfolders.extend(sf)
-            files.extend(f)
+            files.extend(item)
 
         return subfolders, files
 
@@ -199,10 +206,10 @@ class FileSeekerItunes(FileSeekerBase):
         self.build_files_list(directory)
         # logfunc(f'File listing complete - {len(self._all_files)} files')
 
-    def build_files_list(self, dir):
-        '''Populates paths from Manifest.db files into _all_files'''
+    def build_files_list(self, folder):
+        """Populates paths from Manifest.db files into _all_files"""
 
-        directory = dir or self.directory
+        directory = folder or self.directory
 
         db = open_sqlite_db_readonly(Path(directory) / "Manifest.db")
         cursor = db.cursor()
@@ -215,7 +222,7 @@ class FileSeekerItunes(FileSeekerBase):
             Files
             WHERE
             flags=1
-            """
+            """,
         )
         all_rows = cursor.fetchall()
         for row in all_rows:
@@ -246,21 +253,25 @@ class FileSeekerTar(FileSeekerBase):
         mode = 'r:gz' if self.is_gzip else 'r'
         self.tar_file = tarfile.open(directory, mode)
         self.temp_folder = temp_folder
+        self.tar_file.getmembers()
 
     def search(self, filepattern, return_on_first_hit=False):
         pathlist = []
         for member in self.tar_file.getmembers():
             if fnmatch.fnmatch(member.name, filepattern):
 
-                full_path = Path(self.temp_folder) / member.name
+                if is_platform_windows():
+                    full_path = Path(f"\\\\?\\{self.temp_folder / member.name}")
+                else:
+                    full_path = self.temp_folder / member.name
+
                 if member.isdir():
                     full_path.mkdir(parents=True, exist_ok=True)
                 else:
-                    if not full_path.parent.exists():
-                        full_path.parent.mkdir(parents=True, exist_ok=True)
-                    with open(full_path, "wb") as fout:
-                        fout.write(tarfile.ExFileObject(self.tar_file, member).read())
-                        fout.close()
+                    full_path.parent.mkdir(parents=True, exist_ok=True)
+                    full_path.write_bytes(
+                        tarfile.ExFileObject(self.tar_file, member).read(),
+                    )
                     os.utime(full_path, (member.mtime, member.mtime))
                 pathlist.append(full_path)
         return iter(pathlist)
@@ -289,7 +300,7 @@ class FileSeekerZip(FileSeekerBase):
                         self.zip_file.extract(member, path=self.temp_folder)
                     )
                     pathlist.append(extracted_path)
-                except Exception as ex:
+                except Exception:
                     member = member.lstrip("/")
                     # logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
         return iter(pathlist)

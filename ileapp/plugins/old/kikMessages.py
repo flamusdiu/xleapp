@@ -27,7 +27,7 @@ class KikMessages(ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
         datetime(ZKIKMESSAGE.ZRECEIVEDTIMESTAMP +978307200,'UNIXEPOCH') AS RECEIVEDTIME,
         datetime(ZKIKMESSAGE.ZTIMESTAMP +978307200,'UNIXEPOCH') as TIMESTAMP,
@@ -45,7 +45,7 @@ class KikMessages(ab.AbstractArtifact):
         from ZKIKMESSAGE
         left join ZKIKUSER on ZKIKMESSAGE.ZUSER = ZKIKUSER.Z_PK
         left join ZKIKATTACHMENT on ZKIKMESSAGE.Z_PK = ZKIKATTACHMENT.ZMESSAGE
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

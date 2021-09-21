@@ -19,7 +19,7 @@ class AppleWalletTransactions(ab.AbstractArtifact):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         select
         datetime(payment_transaction.transaction_date + 978307200,'unixepoch') AS "Transaction Date",
         payment_transaction.merchant_name AS "Merchant",
@@ -30,7 +30,7 @@ class AppleWalletTransactions(ab.AbstractArtifact):
         payment_transaction.transaction_status AS "Transaction Status",
         payment_transaction.transaction_type AS "Transaction Type"
         from payment_transaction
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

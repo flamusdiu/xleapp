@@ -24,7 +24,7 @@ class OoklaSpeedtestData (ab.AbstractArtifact):
 
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         SELECT
             datetime(("ZDATE")+strftime('%s', '2001-01-01 00:00:00'), 'unixepoch') as 'Date',
             "ZEXTERNALIP" as 'External IP Address',
@@ -150,7 +150,7 @@ class OoklaSpeedtestData (ab.AbstractArtifact):
             FROM ZSPEEDTESTRESULT
 
             ORDER BY "ZDATE" DESC
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

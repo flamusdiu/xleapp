@@ -23,7 +23,7 @@ class ApplicationState(ab.AbstractArtifact):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         select ait.application_identifier as ai, kvs.value as compat_info,
         (SELECT kvs.value from kvs left join application_identifier_tab on application_identifier_tab.id = kvs.application_identifier
         left join key_tab on kvs.key = key_tab.id
@@ -35,7 +35,7 @@ class ApplicationState(ab.AbstractArtifact):
         left join key_tab on kvs.key = key_tab.id
         where key_tab.key='compatibilityInfo'
         order by ait.id
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

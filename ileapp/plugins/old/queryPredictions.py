@@ -13,7 +13,7 @@ class QueryPredictions(ab.AbstractArtifact):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         select
         datetime(creationTimestamp, "UNIXEPOCH") as START,
         content,
@@ -22,7 +22,7 @@ class QueryPredictions(ab.AbstractArtifact):
         id,
         uuid
         from messages
-        ''')
+        """)
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)
         if usageentries > 0:

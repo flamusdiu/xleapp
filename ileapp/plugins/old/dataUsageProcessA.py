@@ -19,14 +19,14 @@ class DataUsageProcessA(ab.AbstractArtifact):
         file_found = str(files_found[0])
         db = open_sqlite_db_readonly(file_found)
         cursor = db.cursor()
-        cursor.execute('''
+        cursor.execute("""
         select
         datetime(zprocess.ztimestamp+ 978307200, 'unixepoch'),
         datetime(zprocess.zfirsttimestamp + 978307200, 'unixepoch'),
         zprocess.zprocname,
         zprocess.zbundlename
         from zprocess
-        ''')
+        """)
 
         all_rows = cursor.fetchall()
         usageentries = len(all_rows)

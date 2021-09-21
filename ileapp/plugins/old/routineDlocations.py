@@ -30,7 +30,7 @@ class RoutineDLocations(ab.AbstractArtifact):
 
             db = open_sqlite_db_readonly(file_found)
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(ztimestamp + 978307200, 'unixepoch'),
             zaltitude,
@@ -44,7 +44,7 @@ class RoutineDLocations(ab.AbstractArtifact):
             zlongitude
             from
             zrtcllocationmo
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -73,7 +73,7 @@ class RoutineDLocations(ab.AbstractArtifact):
             else:
                 logfunc('No RoutineD ZRTCLLOCATIONMO data available')
 
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zdate + 978307200, 'unixepoch'),
             zsource,
@@ -81,7 +81,7 @@ class RoutineDLocations(ab.AbstractArtifact):
             zlongitude
             from
             zrthintmo
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
@@ -111,7 +111,7 @@ class RoutineDLocations(ab.AbstractArtifact):
                 logfunc('No RoutineD ZRTHINTMO data available')
 
 
-            cursor.execute('''
+            cursor.execute("""
             select
             datetime(zentrydate + 978307200, 'unixepoch'),
             datetime(zexitdate + 978307200, 'unixepoch'),
@@ -123,7 +123,7 @@ class RoutineDLocations(ab.AbstractArtifact):
             zlocationuncertainty
             from
             zrtvisitmo
-            ''')
+            """)
 
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)

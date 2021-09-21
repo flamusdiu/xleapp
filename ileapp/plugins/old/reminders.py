@@ -16,7 +16,7 @@ class Reminders (ab.AbstractArtifact):
         for file_found in files_found:
             db = open_sqlite_db_readonly(file_found)
             cursor = db.cursor()
-            cursor.execute('''
+            cursor.execute("""
                 SELECT
                 DATETIME(ZCREATIONDATE+978307200,'UNIXEPOCH'),
                 DATETIME(ZLASTMODIFIEDDATE+978307200,'UNIXEPOCH'),
@@ -24,7 +24,7 @@ class Reminders (ab.AbstractArtifact):
                 ZTITLE1
                 FROM ZREMCDOBJECT
                 WHERE ZTITLE1 <> ''
-                ''')
+                """)
 
             all_rows = cursor.fetchall()
 
