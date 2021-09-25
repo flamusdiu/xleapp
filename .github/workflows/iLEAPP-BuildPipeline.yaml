@@ -1,4 +1,4 @@
-name: Build iLEAPP executables and generate release
+name: Build xLEAPP executables and generate release
 
 on:
   push:
@@ -13,27 +13,27 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Package iLEAPP
+    - name: Package xLEAPP
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: .
-        spec: ileapp.spec
+        spec: xleapp.spec
         
-    - name: Package iLEAPP GUI
+    - name: Package xLEAPP GUI
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: .
-        spec: ileappGUI.spec
+        spec: xleappGUI.spec
 
     - uses: actions/upload-artifact@v2
       with:
-        name: iLEAPP
+        name: xLEAPP
         path: dist/windows
         
     - name: Zip All The Things
       uses: montudor/action-zip@v0.1.0
       with:
-        args: zip -qq -r dist/iLEAPP-windows.zip dist/windows
+        args: zip -qq -r dist/xLEAPP-windows.zip dist/windows
         
     - name: Lookup Release URL
       id: githubrelease
@@ -47,6 +47,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.githubrelease.outputs.upload_url }}
-        asset_path: dist/iLEAPP-windows.zip
-        asset_name: iLEAPP-windows.zip
+        asset_path: dist/xLEAPP-windows.zip
+        asset_name: xLEAPP-windows.zip
         asset_content_type: application/zip

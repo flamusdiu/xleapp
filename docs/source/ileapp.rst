@@ -1,7 +1,7 @@
-ileapp module
+xleapp module
 =============
 
-.. automodule:: ileapp
+.. automodule:: xleapp
    :members:
    :undoc-members:
    :show-inheritance:

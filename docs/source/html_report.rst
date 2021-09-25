@@ -6,7 +6,7 @@ HTML Report Overview
 After processing is complete go to the selected output location. There you will find a folder named in the 
 following format:
 
-iLEAPP_Reports_YEAR_MONTH_DAY_DAYOFTHEWEEK_TIME
+xLEAPP_Reports_YEAR_MONTH_DAY_DAYOFTHEWEEK_TIME
 
 Sample output folder:
 

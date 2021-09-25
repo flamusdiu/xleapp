@@ -1,7 +1,7 @@
-ileappGUI module
+xleappGUI module
 ================
 
-.. automodule:: ileappGUI
+.. automodule:: xleappGUI
    :members:
    :undoc-members:
    :show-inheritance:

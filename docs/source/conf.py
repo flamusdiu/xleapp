@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # Default Read The Docs themes
@@ -19,7 +20,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'iLEAPP'
+project = 'xLEAPP'
 copyright = '2021, Alexis Brignoni'
 author = 'Alexis Brignoni'
 
@@ -38,7 +39,7 @@ extensions = [
     "sphinxcontrib.images",
     "sphinxcontrib.napoleon",
     "sphinxcontrib.mermaid",
-    "sphinx.ext.autodoc"
+    "sphinx.ext.autodoc",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -71,7 +72,4 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # Configuration for images
-images_config = {
-    'default_image_width': "50%",
-    'default_image_height': "50%"
-}
+images_config = {'default_image_width': "50%", 'default_image_height': "50%"}

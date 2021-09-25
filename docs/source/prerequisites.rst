@@ -27,4 +27,4 @@ Prerequisites
     $ sudo apt-get install python3-tk
 
 If running the binaries provided in the version releases no dependencies are needed. These can be found here:  
-`Releases <https://github.com/abrignoni/iLEAPP/releases>`_
+`Releases <https://github.com/abrignoni/xLEAPP/releases>`_

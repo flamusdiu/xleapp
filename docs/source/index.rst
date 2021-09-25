@@ -1,4 +1,4 @@
-iLEAPP Wiki!
+xLEAPP Wiki!
 ============
 
 .. toctree::
@@ -29,14 +29,14 @@ iLEAPP Wiki!
 
 
 
-.. thumbnail:: _images/ileapp_cover.png
-   :title: iLEAPP Cover
+.. thumbnail:: _images/xleapp_cover.png
+   :title: xLEAPP Cover
    :width: 216px
    :height: 295px
 
-iLEAPP is a collection of Python 3 scripts that parses logs, events, and property files from iOS file system extractions.  
+xLEAPP is a collection of Python 3 scripts that parses logs, events, and property files from iOS file system extractions.  
 
-This wiki will serve as the main source of documentation on the artifacts iLEAPP supports. Each artifact page will  their meaning, and where to go for additional information. 
+This wiki will serve as the main source of documentation on the artifacts xLEAPP supports. Each artifact page will  their meaning, and where to go for additional information. 
 
 Indices and tables
 ==================

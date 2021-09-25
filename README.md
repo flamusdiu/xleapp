@@ -1,6 +1,6 @@
-# iLEAPP
+# xLEAPP
 iOS Logs, Events, And Plists Parser  
-Details in blog post here: https://abrignoni.blogspot.com/2019/12/ileapp-ios-logs-events-and-properties.html
+Details in blog post here: https://abrignoni.blogspot.com/2019/12/xleapp-ios-logs-events-and-properties.html
 
 Supports iOS/iPadOS 11, 12, 13 and 14.
 Select parsing directly from a compressed .tar/.zip file, or a decompressed directory, or an iTunes/Finder backup folder.
@@ -40,16 +40,16 @@ sudo apt-get install python3-tk
 
 To compile to an executable so you can run this on a system without python installed.
 
-To create ileapp.exe, run:
+To create xleapp.exe, run:
 
 ```
-pyinstaller --onefile ileapp.spec
+pyinstaller --onefile xleapp.spec
 ````
 
-To create ileappGUI.exe, run:
+To create xleappGUI.exe, run:
 
 ```
-pyinstaller --onefile --noconsole ileappGUI.spec
+pyinstaller --onefile --noconsole xleappGUI.spec
 ```
 
 ## Usage
@@ -57,19 +57,19 @@ pyinstaller --onefile --noconsole ileappGUI.spec
 ### CLI
 
 ```
-$ python ileapp.py -t <zip | tar | fs | gz | itunes> -i <path_to_extraction> -o <path_for_report_output>
+$ python xleapp.py -t <zip | tar | fs | gz | itunes> -i <path_to_extraction> -o <path_for_report_output>
 ```
 
 ### GUI
 
 ```
-$ python ileappGUI.py 
+$ python xleappGUI.py 
 ```
 
 ### Help
 
 ```
-$ python ileapp.py --help
+$ python xleapp.py --help
 ```
 
 The GUI will open in another window.  <br><br>

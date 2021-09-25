@@ -2,7 +2,7 @@
 
 block_cipher = None
 
-a = Analysis(['ileappGUI.py'],
+a = Analysis(['xleappGUI.py'],
              pathex=[],
              binaries=[],
              datas=[('.\\scripts\\logo.jpg', '.\\scripts'),
@@ -28,7 +28,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='ileappGUI',
+          name='xleappGUI',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

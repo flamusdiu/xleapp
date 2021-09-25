@@ -1,15 +1,6 @@
-astc_decomp
-biplist
-blackboxprotobuf
-bs4
 jinja2
-nska-deserialize>=1.3.1
-packaging==21.1
-pandas
-pillow
+packaging==20.1
 prettytable
 pyinstaller
-pyliblzfse
 PySimpleGUI==4.47.0
 pyyaml
-simplekml

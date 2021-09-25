@@ -4,14 +4,14 @@ Usage
 Terminal Command Line
 *********************
 
-iLEAPP has a terminal/CLI version named ileapp. Contrast with ileapGUI which 
+xLEAPP has a terminal/CLI version named xleapp. Contrast with ileapGUI which 
 executes the code via a graphical user interface.
 
 .. code-block:: bash
 
-  usage: ileapp.py [-h] [-t {fs,tar,zip,gz,itunes}] [-o OUTPUT_PATH] [-i INPUT_PATH] [-p]
+  usage: xleapp.py [-h] [-t {fs,tar,zip,gz,itunes}] [-o OUTPUT_PATH] [-i INPUT_PATH] [-p]
 
-  iLEAPP: iOS Logs, Events, and Plists Parser.
+  xLEAPP: iOS Logs, Events, and Plists Parser.
 
   optional arguments:
     -h, --help            show this help message and exit
@@ -28,11 +28,11 @@ Look at the selected output folder after execution to access the report generate
 Graphical User Interface Overview
 *********************************
 
-iLEAPP has a graphical user interface version named ileappGUI. Contrast with ileapp which executes 
+xLEAPP has a graphical user interface version named xleappGUI. Contrast with xleapp which executes 
 the code via a terminal or command line interface window.
 
-.. thumbnail:: _images/ileapp_gui_overview.png
-    :title: iLEAPP GUI Overview
+.. thumbnail:: _images/xleapp_gui_overview.png
+    :title: xLEAPP GUI Overview
     :align: center
 
 As seen in the screen above the user can select the extraction to be parsed and where to place the 

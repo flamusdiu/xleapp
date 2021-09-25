@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
 # A003: ignore column name collisions with builtins (eg 'id')
 # D103: don't need docstrings for migrations functions
 # D107: don't need docstrings for __init__ method of classes. 
@@ -10,7 +14,7 @@
 # exclude chat_rendering.py until tested/fixed
 extended_default_ignore=['chat_rendering.py'] 
 format = 'grouped'
-max_line_length = 88
+max_line_length = 90
 show_source = true
 docstring-convention = 'google'
 inline-quotes = 'double'
@@ -38,13 +42,13 @@ pylint = ['+F*', '+E*', '-E0611', '-E1101', '-E0401', '-E1102', '-E1123']
 [tool.flakehell.exceptions.'**/__init__.py']
 pyflakes = ['-F401']
 
-[tool.flakehell.exceptions.'ileapp/helpers/db.py']
+[tool.flakehell.exceptions.'xleapp/helpers/db.py']
 pyflakes = ['-F841']
 
 [tool.isort]
 profile = 'black'
 multi_line_output = 3
-line_length = 88
+line_length = 90
 include_trailing_comma = true
 skip = ['.eggs',
         '.git',

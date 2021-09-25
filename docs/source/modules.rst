@@ -1,8 +1,8 @@
-iLEAPP
+xLEAPP
 ======
 
 .. toctree::
    :maxdepth: 4
 
-   ileapp
-   ileappGUI
+   xleapp
+   xleappGUI
