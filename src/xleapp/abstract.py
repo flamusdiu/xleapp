@@ -109,8 +109,8 @@ class ArtifactHtmlReport(HtmlPage):
     def html(self):
         return self.template.render(artifact=self.artifact, navigation=self.navigation)
 
-    def report(self, found):
-        html = self.html(found)
+    def report(self):
+        html = self.html()
         output_file = (
             self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
         )
@@ -304,7 +304,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
         if self.processed:
             self.html_report.data = self.data
-        self.html_report.report(self.found)
+        self.html_report.report()
 
         return True
 
