@@ -4,13 +4,15 @@ from collections import defaultdict
 
 import xleapp.artifacts as artifacts
 import xleapp.globals as g
+import xleapp.log as log
 import xleapp.report.html as html
+import xleapp.report.kml as kml
+import xleapp.report.templating as templating
+import xleapp.report.timeline as timeline
 from xleapp import VERSION, __project__
 from xleapp.helpers.decorators import timed
 from xleapp.helpers.search import search_providers
 from xleapp.helpers.utils import ValidateInput
-from xleapp.log import init_logging
-from xleapp.report.templating import init_jinja
 
 logger = logging.getLogger()
 
@@ -117,6 +119,7 @@ def _main(artifact_list: list, input_path, output_folder):
             artifact_categories[artifact.category] = name
             num_to_process += 1
     num_of_cateorgies = len(artifact_categories)
+
     print(
         g.generate_program_header(
             input_path,
@@ -126,14 +129,23 @@ def _main(artifact_list: list, input_path, output_folder):
         ),
     )
 
-    init_logging(
+    # Initalize database for KML artifacts
+    kml.init(report_folder)
+
+    # Initalize database for Timeline artifacts
+    timeline.init(report_folder)
+
+    # Initalize logging
+    log.init(
         log_folder,
         input_path,
         report_folder,
         num_to_process,
         num_of_cateorgies,
     )
-    init_jinja(log_folder)
+
+    # Initalizing templating for Reports
+    templating.init(log_folder)
 
     g.seeker = search_providers.create(
         extraction_type.upper(),
@@ -159,7 +171,7 @@ def _main(artifact_list: list, input_path, output_folder):
         f"Completed processing artifacts in {run_time:.2f}s",
         extra={"flow": "no_filter"},
     )
-    html.copy_static_files(report_folder)
+    html.copy_static_files()
 
     logger.info("Generating index file...", extra={"flow": "no_filter"})
     html.generate_index(

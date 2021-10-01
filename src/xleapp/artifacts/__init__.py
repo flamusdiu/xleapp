@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import logging
+import typing
 from collections import UserDict
 from importlib.metadata import entry_points
 from pathlib import Path
@@ -9,7 +10,8 @@ from typing import Dict, List, Type
 
 import prettytable
 
-from xleapp.abstract import AbstractArtifact
+from xleapp.artifacts.abstract import AbstractArtifact
+from xleapp.artifacts.services import ArtifactService, ArtifactServiceBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -24,44 +26,12 @@ __all__ = [
 ]
 
 
-class ArtifactServiceBuilder:
-    _instance: Type[AbstractArtifact] = None
-
-    def __call__(self, artifact: Type[AbstractArtifact]) -> Type[AbstractArtifact]:
-        if not self._instance:
-            self._instance = artifact
-        return self._instance
-
-
-class ArtifactService(UserDict):
-    def __init__(self) -> None:
-        self.data = {}
-        self._items = 0
-
-    def __len__(self) -> int:
-        return self._items
-
-    def register_builder(self, key: str, builder: ArtifactServiceBuilder) -> None:
-        self._items = self._items + 1
-        self.data[key] = builder()
-
-    def create(self, key: str) -> Type[AbstractArtifact]:
-        builder = self.data.get(key)
-        if not builder:
-            raise ValueError(key)
-
-        return builder
-
-
 def _build_artifact_list():
     """Generates a List of Artifacts installed
 
     Returns:
         Artifacts: dictionary of artifacts with short names as keys
     """
-
-    artifacts = ArtifactService()
-    installed = []
 
     logger.debug(
         "Generating artifact lists from file system...",
@@ -94,14 +64,10 @@ def _build_artifact_list():
                         and not inspect.isabstract(cls)
                     ):
                         builder = ArtifactServiceBuilder()
-                        artifacts.register_builder(name.lower(), builder(cls))
+                        services.register_builder(name.lower(), builder(cls))
                         installed.append(name.lower())
 
-    logger.debug(f"Artifacts loaded: {len(artifacts)}")
-    return artifacts, installed
-
-
-services, installed = _build_artifact_list()
+    logger.debug(f"Artifacts loaded: {len(services)}")
 
 
 def crunch_artifacts(
@@ -141,7 +107,7 @@ def crunch_artifacts(
             _process_artifact(name, artifact)
 
 
-def _process_artifact(name: str, artifact: Type[AbstractArtifact]) -> None:
+def _process_artifact(name: str, artifact: "AbstractArtifact") -> None:
     logger.info(
         f"\n{artifact.category} [{name}] artifact " f"processing...",
         extra={"flow": "no_filter"},
@@ -156,7 +122,7 @@ def _process_artifact(name: str, artifact: Type[AbstractArtifact]) -> None:
     )
 
 
-def generate_report(name: str, artifact: Type[AbstractArtifact], output_folder) -> None:
+def generate_report(name: str, artifact: "AbstractArtifact", output_folder) -> None:
     if artifact.report(output_folder):
         logger.info(
             f"\t-> {artifact.category} [{name}]",
@@ -173,7 +139,7 @@ def selected(artifacts: Dict[str, object]) -> List:
 
 
 def select(
-    artifacts: List[AbstractArtifact],
+    artifacts: List["AbstractArtifact"],
     artifact_name: str = None,
     all_artifacts: bool = False,
     long_running_process: bool = False,
@@ -261,3 +227,9 @@ def generate_artifact_table(artifacts) -> None:
         paths.write(output_table.get_string(title="Artifact List", sortby="Short Name"))
     logger.info(f"Table saved to: {output_file}", extra={"flow": "no_flter"})
     logger.info("Artifact table generation completed", extra={"flow": "no_filter"})
+
+
+services: "ArtifactService" = ArtifactService()
+installed: List["AbstractArtifact"] = []
+
+_build_artifact_list()

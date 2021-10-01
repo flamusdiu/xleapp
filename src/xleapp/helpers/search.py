@@ -1,15 +1,15 @@
 import fnmatch
 import logging
 import os
-import re
 import sqlite3
 import tarfile
 from abc import ABC, abstractmethod
 from collections import UserDict
+from functools import lru_cache
 from io import BufferedIOBase
 from pathlib import Path
 from shutil import copyfile
-from typing import AnyStr, List, Tuple, Type, Union
+from typing import AnyStr, List, Optional, Tuple, Type, Union
 from zipfile import ZipFile
 
 from xleapp.helpers.db import open_sqlite_db_readonly
@@ -134,7 +134,9 @@ class FileSeekerBase(ABC):
         pass
 
     @abstractmethod
-    def build_files_list(self, folder: Union[str, Path]) -> Tuple[SubFolders, FileList]:
+    def build_files_list(
+        self, folder: Optional[Union[str, Path]]
+    ) -> Tuple[SubFolders, FileList]:
         """Finds files in directory"""
         pass
 
@@ -256,8 +258,7 @@ class FileSeekerTar(FileSeekerBase):
         self.tar_file.getmembers()
 
     def search(self, filepattern, return_on_first_hit=False):
-        pathlist = []
-        for member in self.tar_file.getmembers():
+        for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, filepattern):
 
                 if is_platform_windows():
@@ -265,23 +266,20 @@ class FileSeekerTar(FileSeekerBase):
                 else:
                     full_path = self.temp_folder / member.name
 
-                if member.isdir():
-                    full_path.mkdir(parents=True, exist_ok=True)
-                else:
+                if not member.isdir():
                     full_path.parent.mkdir(parents=True, exist_ok=True)
                     full_path.write_bytes(
                         tarfile.ExFileObject(self.tar_file, member).read(),
                     )
                     os.utime(full_path, (member.mtime, member.mtime))
-                pathlist.append(full_path)
-        return iter(pathlist)
+                yield full_path
 
     def cleanup(self):
         self.tar_file.close()
 
+    @lru_cache(maxsize=5)
     def build_files_list(self):
-        """Tar files doe not build file list."""
-        pass
+        return self.tar_file.getmembers()
 
 
 class FileSeekerZip(FileSeekerBase):

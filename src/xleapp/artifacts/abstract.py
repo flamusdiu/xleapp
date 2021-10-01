@@ -1,132 +1,22 @@
 import logging
-import re
 import shutil
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass, field
+from io import FileIO
 from os import PathLike
 from pathlib import Path
-from typing import Union
+from re import escape
+from sqlite3.dbapi2 import Time
+from typing import Iterator, Union
 
 import xleapp.globals as g
-import xleapp.report.tsv as tsv
-from xleapp.report.templating import HtmlPage, Template
+from xleapp.artifacts.descriptors import FoundFiles, ReportHeaders, WebIcon
+from xleapp.artifacts.html import ArtifactHtmlReport
+from xleapp.log import init
 from xleapp.report.webicons import Icon as Icon
 
 logger = logging.getLogger(__name__)
-
-
-class WebIcon:
-    """Descriptor ensuring 'web_icon' type"""
-
-    def __set_name__(self, owner, name):
-        self.name = str(name)
-
-    def __get__(self, obj, icon_type=Icon) -> object:
-        return obj.__dict__.get(self.name) or Icon.ALERT_TRIANGLE
-
-    def __set__(self, obj, value) -> None:
-        if isinstance(value, Icon) or isinstance(value, WebIcon):
-            obj.__dict__[self.name] = value
-        else:
-            raise TypeError(
-                f"Got {type(value)} instead of {type(Icon)}! "
-                f"Error setting Web Icon on {str(obj)}!",
-            )
-
-
-class ReportHeaders:
-    """Descriptor ensuring 'report_headers' type"""
-
-    def __set_name__(self, owner, name):
-        self.name = name
-
-    def __get__(self, obj, report_type=None) -> Union[list, tuple]:
-        return obj.__dict__.get(self.name) or ("Key", "Value")
-
-    def __set__(self, obj, value) -> None:
-        if ReportHeaders._check_list_of_tuples(value, bool_list=[]):
-            obj.__dict__[self.name] = value
-        else:
-            raise TypeError(
-                "Error setting report headers! " "Expected list of tuples or tuple!",
-            )
-
-    @staticmethod
-    def _check_list_of_tuples(values: list, bool_list: list[bool] = None) -> bool:
-        """Checks list to see if its a list of tuples of strings
-
-        Examples:
-
-            Set headers for a single table
-            self.report_headers = ('Timestamp', 'Account Desc.', 'Username',
-                                   'Description', 'Identifier', 'Bundle ID')
-
-            Set headers for more the one table
-            self.report_headers = [('Timestamp', 'Account Desc.', 'Username',
-                                    'Description', 'Identifier', 'Bundle ID'),
-                                   ('Key', 'Value)]
-
-            Anything else should fail to set.
-
-        Args:
-            values (list): values to be checked
-            bool_list (list, optional): list of booleans of values checked.
-                Defaults to [].
-
-        Returns:
-            bool: Returns true or false if values match for tuples of strings
-        """
-        bool_list = bool_list or []
-        if values == []:
-            return all(bool_list)
-        else:
-            if isinstance(values, tuple):
-                idx = values
-                values = []
-            elif isinstance(values, list):
-                idx = values[:1][0]
-                values = values[1:]
-            else:
-                return False
-
-            if isinstance(idx, list):
-                return ReportHeaders._check_list_of_tuples(values, bool_list)
-            elif isinstance(idx, tuple):
-                bool_list.extend([isinstance(it, str) for it in idx])
-            else:
-                bool_list.extend([False])
-            return ReportHeaders._check_list_of_tuples(values, bool_list)
-
-
-@dataclass
-class ArtifactHtmlReport(HtmlPage):
-
-    artifact: object = field(init=False, default=None)
-    data: list = field(init=False, default_factory=lambda: [])
-    report_folder: PathLike = field(init=False, default=None)
-
-    @Template("report_base")
-    def html(self):
-        return self.template.render(artifact=self.artifact, navigation=self.navigation)
-
-    def report(self):
-        html = self.html()
-        output_file = (
-            self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
-        )
-        output_file.write_text(html)
-
-        if self.artifact.processed:
-            tsv.save(
-                self.report_folder,
-                self.artifact.report_headers,
-                self.artifact.data,
-                self.artifact.name,
-            )
-
-    def set_artifact(self, artifact):
-        self.artifact_cls = type(artifact).__name__
-        self.artifact = artifact
 
 
 @dataclass
@@ -137,8 +27,6 @@ class _AbstractBase:
 
     Attributes:
         name (str): full name of the artifact
-        html_report (ArtifactHtmlReport): object holding options and
-            information for the html for each artifact.
     """
 
     name: str = field(init=False)
@@ -158,8 +46,6 @@ class _AbstractArtifactDefaults:
             Default is None.
         core (bool): artifacts require to always run. Default is False.
         description (str): Short description of the artifact. Default is ''.
-        found (list[str]): list of files located from the artifact's
-            `process()` function
         generate_report (bool): bool to mark if the artifact should product
             a report. Some artifacts may product information used by other
             artifacts and such may not need a generated report. This
@@ -174,16 +60,19 @@ class _AbstractArtifactDefaults:
             report generation.
         regex (list): search strings set by the `@Search()` decorator.
         processed (bool): True or False if the artifact was properly
-            processed.
+            processed. Default is False.
+        processing_time(float): Seconds of time it takes to process this artifact.
+            Default is 0.0.
         selected: artifacts selected to be run. Default is False.
         web_icon (Icon): FeatherJS icon used for the report navgation menu
+        kml (bool): True or False to generate kml (location files) information
+        timeline(bool): True or False to add data to the timeline database
     """
 
     category: str = field(init=False, default="None")
     core: bool = field(init=False, default=False)
     data: list = field(init=False, default_factory=lambda: [])
     description: str = field(init=False, default="")
-    found: list = field(init=False, default_factory=lambda: [])
     generate_report: bool = field(init=False, default=True)
     hide_html_report_path_table: bool = field(init=False, default=False)
     html_report: ArtifactHtmlReport = field(init=False, default=ArtifactHtmlReport())
@@ -191,8 +80,12 @@ class _AbstractArtifactDefaults:
     report_headers: Union[list, tuple] = field(init=False, default=ReportHeaders())
     regex: list = field(init=False, default_factory=lambda: [])
     processed: bool = field(init=False, default=False)
+    processing_time: float = field(init=False, default=0.0)
     selected: bool = field(init=False, default=False)
     web_icon: Icon = field(init=False, default=WebIcon())
+    kml: bool = field(init=False, default=False)
+    timeline: bool = field(init=False, default=False)
+    found: set = field(init=False, default=FoundFiles())
 
 
 @dataclass
@@ -221,7 +114,6 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         global_regex = files.keys()
 
         self.regex = regex
-        wildcard_check = re.compile(r"(\b\w*[A-Za-z\/*.]+)$")
 
         for regex in self.regex:
             results = []
@@ -231,9 +123,9 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
             else:
                 try:
                     if return_on_first_hit:
-                        results = [next(seeker.search(regex))]
+                        results = {next(seeker.search(regex))}
                     else:
-                        results = list(seeker.search(regex))
+                        results = set(seeker.search(regex))
                 except StopIteration:
                     results = None
 
@@ -241,19 +133,11 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
                     files.add(regex, results, file_names_only)
 
             if bool(results):
-                # Checks if a '*' (wildcard) is used to search.
-                # Possible that one or more files can be returned.
-                # You MUST return a list in this case back to the artifact class.
-                # '-1' is no wildcard match and such should NOT return a list
-                return_list = not (
-                    wildcard_check.search(regex).group(1).find("*") == -1
-                )
-
-                if (return_on_first_hit or len(results) == 1) and not return_list:
-                    self.found = files[regex].copy().pop()
+                if return_on_first_hit or len(results) == 1:
+                    self.found = {files[regex].copy().pop()}
                 else:
-                    self.found.extend(files[regex])
-        return bool(self.found)
+                    self.found = self.found | files[regex]
+        return bool(getattr(self, "found", False))
 
     @property
     def processed(self) -> bool:
@@ -261,19 +145,8 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
             return len(self.found) > 0 and all(self.found)
         except TypeError:
             return bool(self.found)
-
-    @property
-    def processing_time(self) -> str:
-        """Processing time of the artifact
-
-        Returns:
-            str: str representation of the processing time
-        """
-        return self._processing_time
-
-    @processing_time.setter
-    def processing_time(self, time: float) -> None:
-        self._processing_time = time
+        except AttributeError:
+            return False
 
     def report(self, report_folder: str) -> bool:
         """Generates report for artifact.

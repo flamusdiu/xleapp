@@ -71,7 +71,7 @@ def generate_program_header(input_path, output_path, num_to_process, num_of_cate
 device = Device()
 
 # Global search object
-seeker = Type[FileSeekerBase]
+seeker: FileSeekerBase = None
 
 # Report Folder Base
-report_folder = Union[Type[str], Type[Path]]
+report_folder: Path = None

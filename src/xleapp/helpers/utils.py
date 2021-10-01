@@ -146,7 +146,7 @@ def ValidateInput(
 
 
 def get_abstract_artifact():
-    module = importlib.import_module("xleapp.abstract")
+    module = importlib.import_module("xleapp.artifacts.abstract")
     module_members = inspect.getmembers(module, inspect.isclass)
     for name, cls in module_members:
         if name == "AbstractArtifact":

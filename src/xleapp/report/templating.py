@@ -16,7 +16,7 @@ from xleapp.report.ext import IncludeLogFileExtension
 jinja = jinja2.Environment
 
 
-def init_jinja(log_folder):
+def init(log_folder):
     """Sets up Jinja2 templating for HTML report
 
     Args:
@@ -227,7 +227,7 @@ class Index(HtmlPage):
         Returns:
             str: HTML of the page
         """
-        from xleapp.abstract import AbstractArtifact
+        from xleapp.artifacts.abstract import AbstractArtifact
 
         class Artifact(AbstractArtifact):
             def process(self):

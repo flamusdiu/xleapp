@@ -4,8 +4,9 @@ import logging.config
 from pathlib import Path
 
 import yaml
-from xleapp import __authors__, __project__, __version__
+
 import xleapp.globals as g
+from xleapp import __authors__, __project__, __version__
 
 
 class Filter:
@@ -33,7 +34,7 @@ class FileHandlerWithHeader(logging.FileHandler):
         logging.FileHandler.emit(self, record)
 
 
-def init_logging(
+def init(
     log_folder, input_path, output_path, num_to_process: int, num_of_cateorgies: int
 ):
     logConfig = (
