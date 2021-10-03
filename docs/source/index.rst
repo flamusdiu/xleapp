@@ -7,7 +7,6 @@ xLEAPP Wiki!
 
    prerequisites
    usage
-   modules
 
 .. toctree::
    :maxdepth: 2
@@ -27,10 +26,13 @@ xLEAPP Wiki!
 
    artifacts/accounts
 
+.. toctree::
+   :caption: API
 
+   api
 
-.. thumbnail:: _images/xleapp_cover.png
-   :title: xLEAPP Cover
+.. image:: _images/xleapp_cover.png
+   :alt: xLEAPP Cover
    :width: 216px
    :height: 295px
 
