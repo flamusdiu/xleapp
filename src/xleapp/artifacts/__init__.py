@@ -6,10 +6,11 @@ from collections import UserDict
 from importlib.metadata import entry_points
 from pathlib import Path
 from textwrap import TextWrapper
-from typing import Dict, List, Type
+from typing import Dict, List
 
 import prettytable
 
+import xleapp.globals as g
 from xleapp.artifacts.abstract import AbstractArtifact
 from xleapp.artifacts.services import ArtifactService, ArtifactServiceBuilder
 
@@ -26,7 +27,7 @@ __all__ = [
 ]
 
 
-def _build_artifact_list():
+def build_artifact_list():
     """Generates a List of Artifacts installed
 
     Returns:
@@ -38,7 +39,12 @@ def _build_artifact_list():
         extra={"flow": "no_filter"},
     )
 
-    discovered_plugins = entry_points()['xleapp.plugins']
+    device_type = g.device.type
+    discovered_plugins = [
+        plugin
+        for plugin in entry_points()['xleapp.plugins']
+        if plugin.name == device_type
+    ]
 
     for plugin in discovered_plugins:
         # Plugins return a str which is the plugin direction to
@@ -231,5 +237,3 @@ def generate_artifact_table(artifacts) -> None:
 
 services: "ArtifactService" = ArtifactService()
 installed: List["AbstractArtifact"] = []
-
-_build_artifact_list()

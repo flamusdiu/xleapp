@@ -1,22 +1,24 @@
 import logging
 import shutil
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from contextlib import contextmanager
 from dataclasses import dataclass, field
-from io import FileIO
 from os import PathLike
 from pathlib import Path
-from re import escape
-from sqlite3.dbapi2 import Time
-from typing import Iterator, Union
+from typing import Union
 
 import xleapp.globals as g
 from xleapp.artifacts.descriptors import FoundFiles, ReportHeaders, WebIcon
 from xleapp.artifacts.html import ArtifactHtmlReport
-from xleapp.log import init
 from xleapp.report.webicons import Icon as Icon
 
 logger = logging.getLogger(__name__)
+
+
+class ArtifactError(Exception):
+    def __init__(self, message) -> None:
+        self.message = message
+        super().__init__(self.message)
 
 
 @dataclass
@@ -59,8 +61,6 @@ class _AbstractArtifactDefaults:
         report_headers (list or tuple): headers for the report table during
             report generation.
         regex (list): search strings set by the `@Search()` decorator.
-        processed (bool): True or False if the artifact was properly
-            processed. Default is False.
         processing_time(float): Seconds of time it takes to process this artifact.
             Default is 0.0.
         selected: artifacts selected to be run. Default is False.
@@ -79,7 +79,6 @@ class _AbstractArtifactDefaults:
     long_running_process: bool = field(init=False, default=False)
     report_headers: Union[list, tuple] = field(init=False, default=ReportHeaders())
     regex: list = field(init=False, default_factory=lambda: [])
-    processed: bool = field(init=False, default=False)
     processing_time: float = field(init=False, default=0.0)
     selected: bool = field(init=False, default=False)
     web_icon: Icon = field(init=False, default=WebIcon())
@@ -103,7 +102,8 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
             "Needs to implement AbastractArtifact's" "process() method!",
         )
 
-    def pre_process(
+    @contextmanager
+    def context(
         self,
         regex: list[str],
         file_names_only: bool = False,
@@ -137,14 +137,18 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
                     self.found = {files[regex].copy().pop()}
                 else:
                     self.found = self.found | files[regex]
-        return bool(getattr(self, "found", False))
+        yield self
+
+    def __enter__(self):
+        return self
 
     @property
     def processed(self) -> bool:
+        """True or False if the artifact was properly
+        processed.
+        """
         try:
             return len(self.found) > 0 and all(self.found)
-        except TypeError:
-            return bool(self.found)
         except AttributeError:
             return False
 
@@ -189,6 +193,9 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         Args:
             input_file (str): input file name/path
             output_file (str): output file name
+
+        Returns:
+            output_file (Path): Path object of the file save location and name.
         """
         report_folder = g.report_folder
         artifact_folder = type(self).__name__
@@ -199,6 +206,7 @@ class AbstractArtifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         logger.debug(
             f"File {input_file.base} copied to " f"{output_folder / output_file}",
         )
+        return output_folder / output_file
 
     def rmfile(self, input_file: Union[PathLike, str]) -> None:
         """Removed file from report folder

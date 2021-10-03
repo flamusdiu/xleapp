@@ -47,6 +47,7 @@ Icon = Enum(
             "settings",
             "share-2",
             "terminal",
+            "tool",
             "type",
             "user",
             "wifi",

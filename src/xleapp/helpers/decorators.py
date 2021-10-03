@@ -1,9 +1,8 @@
 import functools
 import logging
-import sqlite3
 import time
 
-from xleapp.helpers.utils import get_abstract_artifact
+from xleapp.artifacts.abstract import AbstractArtifact
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +34,10 @@ def core_artifact(cls):
     Returns:
         AbstractArtifact: Artifact is marked as core and selected
     """
-    abstract_artifact = get_abstract_artifact()
 
     @functools.wraps(cls)
     def core_wrapper(cls):
-        if issubclass(cls, abstract_artifact):
+        if issubclass(cls, AbstractArtifact):
             cls.core = True
             cls.selected = True
             return cls
@@ -65,11 +63,9 @@ def long_running_process(cls):
         AbstractArtifact: Artifact is marked as long running process
     """
 
-    abstract_artifact = get_abstract_artifact()
-
     @functools.wraps(cls)
     def lrp_wrapper(cls):
-        if issubclass(cls, abstract_artifact):
+        if issubclass(cls, AbstractArtifact):
             cls.long_running_process = True
             return cls
         else:
@@ -94,17 +90,16 @@ class Search:
 
     def __call__(self, func):
         def search_wrapper(cls) -> bool:
-            pre_processed = cls.pre_process(
-                self.search,
-                self.file_names_only,
-                self.return_on_first_hit,
-            )
-            if pre_processed:
-                try:
-                    func(cls)
-                except sqlite3.OperationalError as ex:
-                    logging.error(f"-> Error: {ex}", extra={"flow": "no_filter"})
-            return cls.processed
+            try:
+                with cls.context(
+                    regex=self.search,
+                    file_names_only=self.file_names_only,
+                    return_on_first_hit=self.return_on_first_hit,
+                ) as artifact:
+                    func(artifact)
+                return cls.processed
+            except Exception as ex:
+                logging.error(f"-> Error {ex}", extra={"flow": "no_filter"})
 
         functools.update_wrapper(search_wrapper, func)
         return search_wrapper

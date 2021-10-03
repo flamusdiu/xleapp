@@ -32,7 +32,6 @@ class ArtifactHtmlReport(HtmlPage):
 
         if self.artifact.processed:
             tsv.save(
-                self.report_folder,
                 self.artifact.report_headers,
                 self.artifact.data,
                 self.artifact.name,

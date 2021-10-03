@@ -143,12 +143,3 @@ def ValidateInput(
             return None, f"Input file is not a supported archive! \n {i_path}"
 
     return ext_type, ""
-
-
-def get_abstract_artifact():
-    module = importlib.import_module("xleapp.artifacts.abstract")
-    module_members = inspect.getmembers(module, inspect.isclass)
-    for name, cls in module_members:
-        if name == "AbstractArtifact":
-            abstract_artifact = cls
-            return abstract_artifact

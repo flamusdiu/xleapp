@@ -1,14 +1,11 @@
 import argparse
 import logging
-from collections import defaultdict
 
 import xleapp.artifacts as artifacts
 import xleapp.globals as g
 import xleapp.log as log
 import xleapp.report.html as html
-import xleapp.report.kml as kml
 import xleapp.report.templating as templating
-import xleapp.report.timeline as timeline
 from xleapp import VERSION, __project__
 from xleapp.helpers.decorators import timed
 from xleapp.helpers.search import search_providers
@@ -23,6 +20,42 @@ def get_parser():
     parser = argparse.ArgumentParser(
         prog=__project__.lower(),
         description="xLEAPP: iOS Logs, Events, and Plists Parser.",
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "-I",
+        dest="device_type",
+        action="store_const",
+        const="ios",
+        help="parse ios artifacts",
+    )
+    group.add_argument(
+        "-R",
+        dest="device_type",
+        action="store_const",
+        const="returns",
+        help="parse warrenty return artifacts",
+    )
+    group.add_argument(
+        "-A",
+        dest="device_type",
+        action="store_const",
+        const="android",
+        help="parse android artifacts",
+    )
+    group.add_argument(
+        "-C",
+        dest="device_type",
+        action="store_const",
+        const="chromebook",
+        help="parse Chromebook artifacts",
+    )
+    group.add_argument(
+        "-V",
+        dest="device_type",
+        action="store_const",
+        const="vehicle",
+        help="parse vehicle artifacts",
     )
     parser.add_argument(
         "-o",
@@ -43,9 +76,8 @@ def get_parser():
         required=False,
         action="store",
         help=(
-            f"Filtered list of artifacts to run. "
-            f"Allowed: core, "
-            f'{", ".join(artifacts.installed)}'
+            "Filtered list of artifacts to run. "
+            "Allowed: core, <check artifact list in documentation>"
         ),
         metavar=None,
         nargs="*",
@@ -77,6 +109,9 @@ def get_parser():
 
 def parse_args(parser):
     args = parser.parse_args()
+
+    g.device.type = args.device_type
+
     if args.gui:
         import xleapp.gui as gui
 
@@ -112,28 +147,25 @@ def _main(artifact_list: list, input_path, output_folder):
 
     g.report_folder = report_folder
 
-    num_to_process = 0
-    artifact_categories = defaultdict(list)
-    for name, artifact in artifact_list.items():
-        if artifact.selected:
-            artifact_categories[artifact.category] = name
-            num_to_process += 1
-    num_of_cateorgies = len(artifact_categories)
+    num_to_process = len(
+        {name for name, artifact in artifact_list.items() if artifact.selected}
+    )
+    num_of_categories = len(
+        {
+            artifact.category
+            for _, artifact in artifact_list.items()
+            if artifact.selected
+        }
+    )
 
     print(
         g.generate_program_header(
             input_path,
             report_folder,
             num_to_process,
-            num_of_cateorgies,
+            num_of_categories,
         ),
     )
-
-    # Initalize database for KML artifacts
-    kml.init(report_folder)
-
-    # Initalize database for Timeline artifacts
-    timeline.init(report_folder)
 
     # Initalize logging
     log.init(
@@ -141,7 +173,7 @@ def _main(artifact_list: list, input_path, output_folder):
         input_path,
         report_folder,
         num_to_process,
-        num_of_cateorgies,
+        num_of_categories,
     )
 
     # Initalizing templating for Reports
@@ -215,10 +247,9 @@ def cli(args):
 
 if __name__ == "__main__":
 
-    for artifact in artifacts.installed:
-        artifact_list.update({artifact: artifacts.services.create(artifact)})
-
     parser = get_parser()
     args = parse_args(parser)
-
+    artifacts.build_artifact_list()
+    for artifact in artifacts.installed:
+        artifact_list.update({artifact: artifacts.services.create(artifact)})
     cli(args)

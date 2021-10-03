@@ -16,18 +16,9 @@ class KMLDBManager:
     report_folder: Path = None
     file: Path = None
 
-    def __enter__(self) -> "KMLDBManager":
-        self.connection = sqlite3.connect(self.file, isolation_level="exclusive")
-        self.connection.row_factory = sqlite3.Row
-        return self
+    def __init__(self) -> None:
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        self.connection.commit()
-        self.connection.close()
-
-    def create(self, report_folder: Path) -> None:
-
-        self.report_folder = Path(report_folder) / "_KML Exports"
+        self.report_folder = Path(g.report_folder) / "_KML Exports"
         self.report_folder.mkdir(parents=True, exist_ok=True)
         self.file = self.report_folder / '_latlong.db'
 
@@ -41,11 +32,20 @@ class KMLDBManager:
             )
             db.commit()
 
+    def __enter__(self) -> "KMLDBManager":
+        self.connection = sqlite3.connect(self.file, isolation_level="exclusive")
+        self.connection.row_factory = sqlite3.Row
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+        self.connection.commit()
+        self.connection.close()
+
 
 def save(kmlactivity: str, data_list: List, data_headers: List[str]) -> None:
     kml = simplekml.Kml(open=1)
 
-    with _kmldb as db:
+    with KMLDBManager() as db:
         db.connection.execute("""PRAGMA synchronous = EXTRA""")
         db.connection.execute("""PRAGMA journal_mode = WAL""")
         db.connection.commit()
@@ -68,19 +68,4 @@ def save(kmlactivity: str, data_list: List, data_headers: List[str]) -> None:
                     (times, lat, lon, kmlactivity),
                 )
 
-    kml.save(_kmldb.report_folder / f'{kmlactivity}.kml')
-
-
-def init(report_folder: Path) -> None:
-    global _kmldb
-
-    _kmldb = KMLDBManager()
-    _kmldb.create(report_folder)
-
-
-""" Creates the KML DB object used by
-    the kmldb.save() function to create the db
-    when it is first accesssed (if it does not exists)
-    then uses this object to execute each set of values.
-"""
-_kmldb: KMLDBManager = None
+    kml.save(g.report_folder / f'{kmlactivity}.kml')

@@ -11,18 +11,9 @@ class TimelineDBManager:
     report_folder: Path = None
     file: Path = None
 
-    def __enter__(self):
-        self.connection = sqlite3.connect(self.file, isolation_level="exclusive")
-        self.connection.row_factory = sqlite3.Row
-        return self
+    def __init__(self):
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.connection.commit()
-        self.connection.close()
-
-    def create(self, report_folder):
-
-        self.report_folder = Path(report_folder) / "_Timeline"
+        self.report_folder = Path(g.report_folder) / "_Timeline"
         self.report_folder.mkdir(parents=True, exist_ok=True)
         self.file = self.report_folder / "t1.db"
 
@@ -36,9 +27,18 @@ class TimelineDBManager:
             )
             db.commit()
 
+    def __enter__(self):
+        self.connection = sqlite3.connect(self.file, isolation_level="exclusive")
+        self.connection.row_factory = sqlite3.Row
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.commit()
+        self.connection.close()
+
 
 def save(tlactivity: str, data_list: List, data_headers: List[str]) -> None:
-    with _timelinedb as db:
+    with TimelineDBManager() as db:
         db.connection.execute("""PRAGMA synchronous = EXTRA""")
         db.connection.execute("""PRAGMA journal_mode = WAL""")
 
@@ -50,18 +50,3 @@ def save(tlactivity: str, data_list: List, data_headers: List[str]) -> None:
                 "INSERT INTO data VALUES(?,?,?)",
                 [(str(row[0]), tlactivity.upper(), str(modifiedlist))],
             )
-
-
-def init(report_folder: Path) -> None:
-    global _timelinedb
-
-    _timelinedb = TimelineDBManager()
-    _timelinedb.create(report_folder)
-
-
-""" Creates the Timeline DB object used by
-    the timeline.save() function to create the db
-    when it is first accesssed (if it does not exists)
-    then uses this object to execute each set of values.
-"""
-_timelinedb: TimelineDBManager = None
