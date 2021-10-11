@@ -5,6 +5,7 @@ This is a completely new way to add artifacts to xLEAPP application from iLEAPP,
 * [Basic Information](#basic-info)
 * [Skeleton Artifact](#skeleton)
 * [Saving Report Data](#saving-report-data)
+* [Publishing Artifacts](#publishing-artifacts)
 
 <h2 id="basic-info">Basic Information</h2>
 
@@ -155,3 +156,16 @@ One final note on create the `data_list`:
 data_list.append((row[0], row[1], row[2]))
 ```
 are equal in output. The first one using column head is the **_preferred_** method to make the artifacts easier to follow.
+
+<h2 id="publishing-artifacts">Publishing Artifacts</h2>
+
+Artifacts need to be published under the proper plugin package. 
+
+For ios:
+
+* [xleapp-ios](https://github.com/flamusdiu/xleapp-ios/)
+* [xleapp-ios-non-free](https://github.com/flamusdiu/xleapp-ios-non-free)
+
+> Be aware, that `non-free` packages contain artifacts that have licenses not compatible with the MIT license. This also will be missing from binary distributed with Autopsy.
+
+You need to add the plugin to the `xleapp-ios/src/xleapp-ios/plugins` folder. This will be **automatically** picked up by `xleapp` as long a it matches the [Skeleton Artifact](#skeleton) section above.
