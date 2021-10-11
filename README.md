@@ -141,7 +141,7 @@ xLEAPP: Logs, Events, and Plists Parser.
 optional arguments:
   -h, --help            show this help message and exit
   -I                    parse ios artifacts
-  -R                    parse warranty return artifacts
+  -R                    parse Warrant Returns / User Generated Archives artifacts
   -A                    parse android artifacts
   -C                    parse Chromebook artifacts
   -V                    parse vehicle artifacts

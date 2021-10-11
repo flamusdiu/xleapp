@@ -35,7 +35,7 @@ def get_parser():
         dest="device_type",
         action="store_const",
         const="returns",
-        help="parse warranty return artifacts",
+        help="parse Warrant Returns / User Generated Archives artifacts",
     )
     group.add_argument(
         "-A",
