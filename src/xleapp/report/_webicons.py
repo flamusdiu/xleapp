@@ -1,7 +1,7 @@
 """Enum for Feather.js icons."""
 from enum import Enum
 
-Icon = Enum(
+Icon: Enum = Enum(
     "Icon",
     (
         (name.replace("-", "_").upper(), name)

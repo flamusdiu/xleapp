@@ -27,15 +27,15 @@
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="case" role="tabpanel" aria-labelledby="case-tab">
                             {% set details = [
-                                ['Extraction location', artifact.html_report.device['extraction_location'] or 'N/A'],
-                                ['Extraction type', artifact.html_report.extraction_type],
-                                ['Report directory', artifact.html_report.report_folder],
-                                ['Processing time', artifact.html_report.processing_time|round(2)|string + 's']
+                                ['Extraction location', g.device['extraction_location'] or 'N/A'],
+                                ['Extraction type', g.extraction_type],
+                                ['Report directory', g.report_folder],
+                                ['Processing time', g.processing_time|round(2)|string + 's']
                             ] %}
                             {{ table(details, stripped=False, width=70) }}
                         </div>
                         <div class="tab-pane fade" id="device" role="tabpanel" aria-labelledby="device-tab">
-                            {{ table(artifact.html_report.device.table(), stripped=False, width=70) }}
+                            {{ table(g.device.table(), stripped=False, width=70) }}
                         </div>
                         <div class="tab-pane fade text-monospace" id="run" role="tabpanel" aria-labelledby="script-run-tab">
                             {% include_logfile 'xleapp.log' %}
@@ -55,13 +55,13 @@
                 <div class="alert alert-light mb-4 bg-white" style="border-style: none">
                     <h4 class="text-center">xLEAPP Authors</h4>
                     <ul class="list-group" style="max-width: 500px; margin:auto">
-                    {% for author in artifact.html_report.authors|sort(attribute='name') %}
+                    {% for author in authors|sort(attribute='name') %}
                         {{ contributor_html(author) }}
                     {% endfor %}
                     </ul>
                     <h4 class="text-center">xLEAPP Contributors</h4>
                     <ul class="list-group" style="max-width: 500px; margin:auto">
-                    {% for contributor in artifact.html_report.contributors|sort(attribute='name') %}
+                    {% for contributor in contributors|sort(attribute='name') %}
                         {{ contributor_html(contributor) }}
                     {% endfor %}
                     <ul>

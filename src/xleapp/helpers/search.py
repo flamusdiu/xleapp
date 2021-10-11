@@ -3,31 +3,75 @@ import logging
 import os
 import sqlite3
 import tarfile
+import typing as t
 from abc import ABC, abstractmethod
 from collections import UserDict
 from functools import lru_cache
-from io import BufferedIOBase
+from io import BufferedIOBase, FileIO, IOBase
 from pathlib import Path
 from shutil import copyfile
-from typing import AnyStr, List, Optional, Tuple, Type, Union
 from zipfile import ZipFile
 
-from xleapp.helpers.db import open_sqlite_db_readonly
-from xleapp.helpers.utils import is_platform_windows
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from .db import open_sqlite_db_readonly
+from .utils import is_platform_windows
 
 # Types
-FileList = List[AnyStr]
-SubFolders = List[AnyStr]
+FileList = list[t.AnyStr]
+SubFolders = list[t.AnyStr]
+
+logger_log = logging.getLogger("xleapp.logfile")
+logger_process = logging.getLogger("xleapp.process")
+
+
+class PathValidator:
+    def __set_name__(self, owner, name):
+        self.name = str(name)
+
+    def __get__(self, obj, type=None):
+        return obj.__dict__.get(self.name) or None
+
+    def __set__(self, obj, value):
+        obj.__dict__[self.name] = value.resolve()
+
+
+class HandleValidator:
+    def __set_name__(self, owner, name):
+        self.name = str(name)
+        self.path = "path"
+
+    def __get__(self, obj, type=None):
+        return obj.__dict__.get(self.name) or None
+
+    def __set__(self, obj, value):
+        path: Path = getattr(obj, self.path, None)
+        if isinstance(value, str) or isinstance(value, Path):
+            value = None
+
+        setattr(obj, self.path, path)
+        obj.__dict__[self.name] = value
+
+
+class Handle:
+    h: t.Union[sqlite3.Connection, FileIO, str] = HandleValidator()
+    path: Path = PathValidator()
+
+    def __init__(self, file: t.Any, path: t.Any = None) -> None:
+        self.path = path
+        self.h = file
+
+    def __call__(self):
+        return self.h or self.path
 
 
 class FileHandles(UserDict):
+    logged: list = []
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(self, *args, **kwargs)
         self.default_factory = set
-        self._items = 0
+
+    def __len__(self):
+        return sum(count for count in self.values())
 
     def add(self, regex: str, files: list, file_names_only: bool = False) -> None:
 
@@ -35,7 +79,6 @@ class FileHandles(UserDict):
             return
 
         for item in files:
-            self._items += 1
 
             """
             If we have more then 10 files, then set only
@@ -43,56 +86,51 @@ class FileHandles(UserDict):
             `sqlite3.connection` to save memory. Most artifacts
             probably have less then 5 files they will read/use.
             """
-
+            h = None
             if len(files) > 10 or file_names_only:
-                self[regex].add(item)
-                continue
+                h = Handle(item)
+            else:
+                if item.drive.startswith("\\\\?\\"):
+                    extended_path = Path(item)
 
-            if item.drive.startswith("\\\\?\\"):
-                extended_path = Path(item)
+                path = Path(item.resolve())
 
-            path = Path(item.resolve())
+                try:
+                    db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+                    cursor = db.cursor()
+                    (page_size,) = cursor.execute("PRAGMA page_size").fetchone()
+                    (page_count,) = cursor.execute("PRAGMA page_count").fetchone()
 
-            try:
-                db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-                cursor = db.cursor()
-                (page_size,) = cursor.execute("PRAGMA page_size").fetchone()
-                (page_count,) = cursor.execute("PRAGMA page_count").fetchone()
+                    if page_size * page_count < 40960:  # less then 40 MB
+                        db_mem = sqlite3.connect(":memory:")
+                        db.backup(db_mem)
+                        db.close()
+                        db = db_mem
+                    db.row_factory = sqlite3.Row
+                    h = Handle(file=db, path=path)
+                except (sqlite3.OperationalError, sqlite3.DatabaseError, TypeError):
+                    fp = open(extended_path, "rb")
+                    h = Handle(fp, path)
+                except FileNotFoundError:
+                    raise FileNotFoundError(f"File {path} was not found!")
+            if h:
+                self[regex].add(h)
 
-                if page_size * page_count < 20480:  # less then 20 MB
-                    db_mem = sqlite3.connect(":memory:")
-                    db.backup(db_mem)
-                    db.close()
-                    db = db_mem
-                db.row_factory = sqlite3.Row
-                self[regex].add(db)
-            except (sqlite3.OperationalError, sqlite3.DatabaseError):
-                fp = open(extended_path, "rb")
-                self[regex].add(fp)
-            except FileNotFoundError:
-                raise FileNotFoundError(f"File {path} was not found!")
-
-    def __getitem__(self, regex: str) -> Union[sqlite3.Connection, BufferedIOBase]:
+    def __getitem__(self, regex: str) -> t.Union[sqlite3.Connection, IOBase]:
         try:
-            items = super().__getitem__(regex)
+            files = super().__getitem__(regex)
 
-            for num, item in enumerate(items, start=1):
-                if num == 1:
-                    logger.info(
-                        f"\nFiles for {regex} located at:",
-                        extra={"flow": "process_file"},
-                    )
-                if type(item) == sqlite3.Connection:
-                    cur = item.cursor()
-                    cur.execute("PRAGMA database_list")
-                    rows = cur.fetchall()
+            for num, file in enumerate(files, start=1):
+                if regex not in self.logged:
+                    if num == 1:
+                        logger_process.info(f"\nFiles for {regex} located at:")
 
-                    logger.info(f"\t{rows[0][2]}", extra={"flow": "process_file"})
-                else:
-                    logger.info(f"\t{item.name}", extra={"flow": "process_file"})
-                if isinstance(item, BufferedIOBase):
-                    item.seek(0)
-            return items
+                    logger_process.info(f"    {file.path}")
+                    self.logged.append(regex)
+
+                if isinstance(file, IOBase):
+                    file.seek(0)
+            return files
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
 
@@ -102,10 +140,8 @@ class FileHandles(UserDict):
             if isinstance(files, list):
                 for f in files:
                     f.close()
-                    self._items -= 1
             else:
                 files.close()
-                self._items -= 1
             return True
         return False
 
@@ -135,8 +171,8 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def build_files_list(
-        self, folder: Optional[Union[str, Path]]
-    ) -> Tuple[SubFolders, FileList]:
+        self, folder: t.Optional[t.Union[str, Path]]
+    ) -> t.Tuple[SubFolders, FileList]:
         """Finds files in directory"""
         pass
 
@@ -145,15 +181,15 @@ class FileSeekerBase(ABC):
         return self._directory
 
     @directory.setter
-    def directory(self, directory: Union[str, Path]):
+    def directory(self, directory: t.Union[str, Path]):
         self._directory = Path(directory)
 
     @property
-    def all_files(self) -> List[AnyStr]:
+    def all_files(self) -> list[str]:
         return self._all_files
 
     @all_files.setter
-    def all_files(self, files: List[AnyStr]):
+    def all_files(self, files: list[str]):
         self._all_files = files
 
     @property
@@ -164,14 +200,11 @@ class FileSeekerBase(ABC):
 class FileSeekerDir(FileSeekerBase):
     def __init__(self, directory, temp_folder=None) -> None:
         self.directory = directory
-        logger.info("Building files listing...", extra={"flow": "no_filter"})
+        logger_log.info("Building files listing...")
         subfolders, files = self.build_files_list(directory)
         self.all_files.extend(subfolders)
         self.all_files.extend(files)
-        logger.info(
-            f"File listing complete - {len(self._all_files)} files",
-            extra={"flow": "no_filter"},
-        )
+        logger_log.info(f"File listing complete - {len(self._all_files)} files")
 
     def build_files_list(self, folder) -> tuple:
         """Populates all paths in directory into _all_files"""
@@ -234,7 +267,7 @@ class FileSeekerItunes(FileSeekerBase):
         db.close()
         return [], []
 
-    def search(self, filepattern, return_on_first_hit=False) -> List:
+    def search(self, filepattern, return_on_first_hit=False) -> list:
         pathlist = []
         matching_keys = fnmatch.filter(self._all_files, filepattern)
         for relative_path in matching_keys:
@@ -319,7 +352,7 @@ class FileSearchProvider(UserDict):
         self._items = self._items + 1
         self.data[key] = builder
 
-    def create(self, key, **kwargs) -> Type[FileSeekerBase]:
+    def create(self, key, **kwargs) -> FileSeekerBase:
         builder = self.data.get(key)
         if not builder:
             raise ValueError(key)

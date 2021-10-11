@@ -15,41 +15,56 @@ formatters:
 
 filters:
   process_file:
-    (): xleapp.log.Filter
-    flow: 'process_file'
-  no_filter:
-    (): xleapp.log.Filter
-    flow: 'no_filter'
-
+    (): xleapp.log.ProcessFileFilter
+  info_log_file:
+    (): xleapp.log.InfoLogFileFilter
+  debug_file:
+    (): xleapp.log.DebugFileFilter
 
 handlers:
   console:
-    class: logging.StreamHandler
-    level: DEBUG
+    class: xleapp.log.StreamHandler
+    level: INFO
     formatter: notime
     stream: ext://sys.stdout
-    filters: [no_filter]
   info_file_handler:
     class: xleapp.log.FileHandlerWithHeader
     filename: xleapp.log
     level: INFO
     formatter: standard
     encoding: utf8
-    filters: [no_filter]
+    filters: [info_log_file]
   process_file_handler:
-    class: logging.FileHandler
+    class: xleapp.log.FileHandler
     filename: process_file.log
     level: INFO
     formatter: notime
     encoding: utf8
     filters: [process_file]
   debug_file_handler:
-    class: logging.FileHandler
+    class: xleapp.log.FileHandler
     level: DEBUG
     formatter: standard
     filename: xleapp_debug.log
     encoding: utf8
+    filters: [debug_file]
 
 root:
   level: DEBUG
-  handlers: [console, info_file_handler, process_file_handler]
+  handlers: [console, process_file_handler, info_file_handler]
+
+loggers:
+  xleapp:
+    level: INFO
+    handlers: [console]
+    propagate: no
+
+  xleapp.logfile:
+    level: INFO
+    handlers: [info_file_handler]
+    propagate: yes
+
+  xleapp.process:
+    level: INFO
+    handlers: [process_file_handler]
+    propagate: no

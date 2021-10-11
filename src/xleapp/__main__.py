@@ -1,19 +1,20 @@
 import argparse
 import logging
+import time
 
-import xleapp.artifacts as artifacts
 import xleapp.globals as g
 import xleapp.log as log
-import xleapp.report.html as html
-import xleapp.report.templating as templating
-from xleapp import VERSION, __project__
-from xleapp.helpers.decorators import timed
-from xleapp.helpers.search import search_providers
-from xleapp.helpers.utils import ValidateInput
+import xleapp.report as report
+import xleapp.templating as templating
 
-logger = logging.getLogger()
+from ._version import __project__, __version__
+from .app import XLEAPP
+from .artifacts import generate_artifact_path_list, generate_artifact_table
+from .helpers.decorators import timed
+from .helpers.search import search_providers
+from .helpers.utils import ValidateInput, generate_program_header
 
-artifact_list = {}
+logger_log = logging.getLogger("xleapp.logfile")
 
 
 def get_parser():
@@ -96,13 +97,15 @@ def get_parser():
         action="store_true",
         help="Text file with table of artifacts",
     )
-    parser.add_argument(
+    group.add_argument(
         "--gui",
         required=False,
         action="store_true",
         help=f"Runs {__project__} into graphical mode",
     )
-    parser.add_argument("--version", action="version", version=VERSION)
+    parser.add_argument(
+        "--version", action="version", version="f{__project__} v{__version__}"
+    )
 
     return parser
 
@@ -110,146 +113,104 @@ def get_parser():
 def parse_args(parser):
     args = parser.parse_args()
 
-    g.device.type = args.device_type
-
     if args.gui:
         import xleapp.gui as gui
 
-        gui.main(artifact_list)
+        gui.main(g.app)
     elif args.artifact_paths:
-        artifacts.generate_artifact_path_list()
+        generate_artifact_path_list()
     elif args.artifact_table:
-        artifacts.generate_artifact_table()
+        generate_artifact_table()
     else:
         return args
     exit()
 
 
-def _main(artifact_list: list, input_path, output_folder):
+def _main(app: "XLEAPP"):
 
-    extraction_type, msg = ValidateInput(
-        input_path,
-        output_folder,
-        artifacts.selected(artifact_list),
-    )
-
-    if extraction_type is None:
-        parser.error(msg)
-
-    # If an Itunes backup, use that artifact otherwise use
-    # 'LastBuild' for everything else.
-    if extraction_type == "itunes":
-        del artifact_list["lastbuild"]
-    else:
-        del artifact_list["itunesbackupinfo"]
-
-    (report_folder, temp_folder, log_folder) = g.set_output_folder(output_folder)
-
-    g.report_folder = report_folder
-
-    num_to_process = len(
-        {name for name, artifact in artifact_list.items() if artifact.selected}
-    )
-    num_of_categories = len(
-        {
-            artifact.category
-            for _, artifact in artifact_list.items()
-            if artifact.selected
-        }
-    )
+    start_time = time.perf_counter()
 
     print(
-        g.generate_program_header(
-            input_path,
-            report_folder,
-            num_to_process,
-            num_of_categories,
+        generate_program_header(
+            f"{__project__} v{__version__}",
+            app.input_path,
+            app.report_folder,
+            app.num_to_process,
+            app.num_of_categories,
         ),
     )
 
-    # Initalize logging
-    log.init(
-        log_folder,
-        input_path,
-        report_folder,
-        num_to_process,
-        num_of_categories,
-    )
-
-    # Initalizing templating for Reports
-    templating.init(log_folder)
-
-    g.seeker = search_providers.create(
-        extraction_type.upper(),
-        directory=input_path,
-        temp_folder=temp_folder,
+    app.seeker = search_providers.create(
+        app.extraction_type.upper(),
+        directory=app.input_path,
+        temp_folder=app.temp_folder,
     )
 
     @timed
     def process():
-        logger.info(
-            f"Processing {num_to_process} artifacts...",
-            extra={"flow": "no_filter"},
-        )
+        logger_log.info(f"Processing {app.num_to_process} artifacts...")
 
-        artifacts.crunch_artifacts(
-            artifacts.selected(artifact_list),
-            input_path,
-        )
+        app.crunch_artifacts()
 
     run_time, _ = process()
 
-    logger.info(
-        f"Completed processing artifacts in {run_time:.2f}s",
-        extra={"flow": "no_filter"},
-    )
-    html.copy_static_files()
+    logger_log.info(f"\nCompleted processing artifacts in {run_time:.2f}s")
+    report.copy_static_files(app.report_folder)
 
-    logger.info("Generating index file...", extra={"flow": "no_filter"})
-    html.generate_index(
-        artifact_list,
-        report_folder,
-        log_folder,
-        extraction_type,
-        processing_time=run_time,
-    )
-    logger.info("Index file generated!", extra={"flow": "no_filter"})
+    end_time = time.perf_counter()
 
-    logger.info("\nGenerating artifact html files ...", extra={"flow": "no_filter"})
-    html.generate_artifacts(artifact_list, report_folder)
-    logger.info("Finished generating html files!", extra={"flow": "no_filter"})
+    app.processing_time = end_time - start_time
+
+    logger_log.info("\nGenerating index file...")
+    templating.generate_index(app)
+    logger_log.info("-> Index file generated!")
+
+    app.generate_reports()
 
 
 def cli(args):
     """Main application entry point for CLI"""
 
-    input_path = args.input_path
-    output_folder = args.output_folder
+    g.app = XLEAPP(
+        output_folder=args.output_folder,
+        input_path=args.input_path,
+        device_type=args.device_type,
+    )
+
+    log.init()
+
+    g.app.extraction_type = ValidateInput(
+        args.input_path,
+        args.output_folder,
+        g.app.artifacts.selected,
+    )
+
+    # If an Itunes backup, use that artifact otherwise use
+    # 'LastBuild' for everything else.
+    if g.app.extraction_type == "itunes":
+        del g.app.artifacts["lastbuild"]
+    else:
+        del g.app.artifacts["itunesbackupinfo"]
 
     if args.artifact is None:
         # If no artifacts selected then choose all of them.
-        [artifacts.select(artifact_list, artifact) for artifact in artifacts.installed]
+        g.app.artifacts.select_artifact(all_artifacts=True)
     else:
         filtered_artifacts = [
             name.lower() for name in args.artifact if name.lower() != "core"
         ]
         for name in filtered_artifacts:
             try:
-                artifacts.select(artifact_list, name)
+                g.app.artifacts.select_artifact(name=name)
             except KeyError:
-                logger.error(
-                    f"Artifact ({name}) not installed " f" or is unknown.",
-                    extra={"flow", "root"},
-                )
+                g.app.error(f"Artifact ({name}) not installed " f" or is unknown.")
 
-    _main(artifact_list, input_path, output_folder)
+    _main(g.app)
 
 
 if __name__ == "__main__":
 
     parser = get_parser()
     args = parse_args(parser)
-    artifacts.build_artifact_list()
-    for artifact in artifacts.installed:
-        artifact_list.update({artifact: artifacts.services.create(artifact)})
+
     cli(args)

@@ -1,188 +1,39 @@
-import importlib
-import inspect
 import logging
-import typing
-from collections import UserDict
-from importlib.metadata import entry_points
+import shutil
+import typing as t
+from dataclasses import dataclass
+from os import PathLike
 from pathlib import Path
 from textwrap import TextWrapper
-from typing import Dict, List
 
 import prettytable
 
-import xleapp.globals as g
-from xleapp.artifacts.abstract import AbstractArtifact
-from xleapp.artifacts.services import ArtifactService, ArtifactServiceBuilder
+import xleapp.helpers.utils as utils
 
-logger = logging.getLogger(__name__)
+from ._abstract import Artifact
+from ._decorators import Search, core_artifact, long_running_process
 
-__all__ = [
-    "generate_artifact_table",
-    "generate_artifact_path_list",
-    "generate_report",
-    "crunch_artifacts",
-    "select",
-    "services",
-    "installed",
-]
+if t.TYPE_CHECKING:
+    from xleapp.app import XLEAPP
+
+logger_log = logging.getLogger("xleapp.logfile")
 
 
-def build_artifact_list():
-    """Generates a List of Artifacts installed
+def crunch_artifacts(app: "XLEAPP") -> bool:
 
-    Returns:
-        Artifacts: dictionary of artifacts with short names as keys
-    """
-
-    logger.debug(
-        "Generating artifact lists from file system...",
-        extra={"flow": "no_filter"},
-    )
-
-    device_type = g.device.type
-    discovered_plugins = [
-        plugin
-        for plugin in entry_points()['xleapp.plugins']
-        if plugin.name == device_type
-    ]
-
-    for plugin in discovered_plugins:
-        # Plugins return a str which is the plugin direction to
-        # find plugins inside of. This direction is loading
-        # that directory. Then, all the plugins are loaded.
-        module_dir = Path(plugin.load()())
-
-        for it in module_dir.glob("*.py"):
-            if it.suffix == ".py" and it.stem not in ["__init__"]:
-                module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
-                module = importlib.import_module(module_name, inspect.isfunction)
-                module_members = inspect.getmembers(module, inspect.isclass)
-                for name, cls in module_members:
-                    # check MRO (Method Resolution Order) for
-                    # AbstractArtifact classes. Also, insure
-                    # we do not get an abstract class.
-                    if (
-                        len(
-                            {str(name).find("AbstractArtifact") for name in cls.mro()}
-                            - {-1},
-                        )
-                        != 0
-                        and not inspect.isabstract(cls)
-                    ):
-                        builder = ArtifactServiceBuilder()
-                        services.register_builder(name.lower(), builder(cls))
-                        installed.append(name.lower())
-
-    logger.debug(f"Artifacts loaded: {len(services)}")
-
-
-def crunch_artifacts(
-    artifact_list,
-    input_path,
-) -> bool:
-
-    core_artifacts = {}
-    selected_artifacts = {}
-
-    for name, artifact in artifact_list:
-        if artifact.core:
-            core_artifacts.update({name: artifact})
-        elif artifact.selected:
-            selected_artifacts.update({name: artifact})
-
-    if len(core_artifacts) > 0:
-        for name, artifact in core_artifacts.items():
-            # Now ready to run
-            # Special processing for iTunesBackup Info.plist as it is a
-            # separate entity, not part of the Manifest.db. Seeker won't find it
-            if name == "ITunesBackupInfo":
-                info_plist_path = Path(input_path) / "Info.plist"
-                if info_plist_path.exists():
-                    _process_artifact(name, artifact)
-                else:
-                    logger.info(
-                        "Info.plist not found for iTunes Backup!",
-                        extra={"flow": "no_filter"},
-                    )
-                # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
+    for artifact in filter_artifacts(app.artifacts.values()):
+        # Now ready to run
+        # Special processing for iTunesBackup Info.plist as it is a
+        # separate entity, not part of the Manifest.db. Seeker won't find it
+        if artifact.cls_name == "ITunesBackupInfo":
+            info_plist_path = Path(app.input_path) / "Info.plist"
+            if info_plist_path.exists():
+                app.artifacts.process_artifact(artifact)
             else:
-                _process_artifact(name, artifact)
-
-    if len(selected_artifacts) > 0:
-        for name, artifact in selected_artifacts.items():
-            _process_artifact(name, artifact)
-
-
-def _process_artifact(name: str, artifact: "AbstractArtifact") -> None:
-    logger.info(
-        f"\n{artifact.category} [{name}] artifact " f"processing...",
-        extra={"flow": "no_filter"},
-    )
-
-    artifact.process_time, _ = artifact.process()
-
-    logger.info(
-        f"{artifact.category} [{name}] artifact "
-        f"finished in {artifact.process_time:.2f}s",
-        extra={"flow": "no_filter"},
-    )
-
-
-def generate_report(name: str, artifact: "AbstractArtifact", output_folder) -> None:
-    if artifact.report(output_folder):
-        logger.info(
-            f"\t-> {artifact.category} [{name}]",
-            extra={"flow": "no_filter"},
-        )
-
-
-def selected(artifacts: Dict[str, object]) -> List:
-    return [
-        (name, artifact)
-        for name, artifact in artifacts.items()
-        if (artifact.selected or artifact.core)
-    ]
-
-
-def select(
-    artifacts: List["AbstractArtifact"],
-    artifact_name: str = None,
-    all_artifacts: bool = False,
-    long_running_process: bool = False,
-    reset: bool = False,
-) -> None:
-    """Toggles if an artifact should be run
-
-       Core artifacts cannot be toggled. `all_artifacts` will not select any
-       artifact marked as long running unless it also is set to True.
-
-       If you want to ensure the state of the artifacts, call this with
-       `reset=True` to reset all the states to their default values.
-
-    Args:
-        artifacts(List[object]): installed list of artifacts
-        artifact_name (str): short name of the artifact. Defaults to None.
-        all_artifacts (bool): bool to select all artifacts.
-            Defaults to False.
-        long_running_process (bool): used with `all_artifacts`
-            to select long running processes. Defaults to False.
-        reset (bool): clears the select flags on non-core artifacts.
-            Defaults to True.
-    """
-    if artifact_name:
-        selected = not artifacts.get(artifact_name).selected
-        artifacts.get(artifact_name).selected = selected
-    else:
-        for _, artifact in artifacts.items():
-            if reset:
-                if not artifact.core:
-                    artifact.selected = False
-            elif all_artifacts:
-                if artifact.long_running_process and not artifact.core:
-                    if long_running_process:
-                        artifact.selected = False
-                elif not artifact.core:
-                    artifact.selected = not artifact.selected
+                logger_log.info("Info.plist not found for iTunes Backup!")
+            # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
+        else:
+            app.artifacts.process_artifact(artifact)
 
 
 def generate_artifact_path_list(artifacts) -> None:
@@ -191,7 +42,7 @@ def generate_artifact_path_list(artifacts) -> None:
     Args:
         artifacts(list): List of artifacts to get regex from.
     """
-    logger.info("Artifact path list generation started.")
+    logger_log.info("Artifact path list generation started.")
 
     with open("path_list.txt", "w") as paths:
         regex_list = []
@@ -202,10 +53,10 @@ def generate_artifact_path_list(artifacts) -> None:
                 regex_list.append(artifact.search_dirs)
         # Create a single list removing duplications
         ordered_regex_list = "\n".join(set(regex_list))
-        logger.info(ordered_regex_list)
+        logger_log.info(ordered_regex_list)
         paths.write(ordered_regex_list)
 
-        logger.info("Artifact path list generation completed")
+        logger_log.info("Artifact path list generation completed")
 
 
 def generate_artifact_table(artifacts) -> None:
@@ -220,7 +71,7 @@ def generate_artifact_table(artifacts) -> None:
     output_table.hrules = prettytable.ALL
     output_file = Path("artifact_table.txt")
 
-    logger.info("Artifact table generation started.")
+    logger_log.info("Artifact table generation started.")
 
     with open(output_file, "w") as paths:
         for key, value in artifacts:
@@ -231,9 +82,40 @@ def generate_artifact_table(artifacts) -> None:
                 search_regex = "\n".join(search_regex)
             output_table.add_row([short_name, full_name, wrapper.fill(search_regex)])
         paths.write(output_table.get_string(title="Artifact List", sortby="Short Name"))
-    logger.info(f"Table saved to: {output_file}", extra={"flow": "no_flter"})
-    logger.info("Artifact table generation completed", extra={"flow": "no_filter"})
+    logger_log.info(f"Table saved to: {output_file}")
+    logger_log.info("Artifact table generation completed")
 
 
-services: "ArtifactService" = ArtifactService()
-installed: List["AbstractArtifact"] = []
+def copyfile(
+    report_folder: Path, name: str, input_file: t.Union[PathLike, str], output_file: str
+) -> Path:
+    """Exports file to report folder
+
+    File will be located under report_folder\\export\\artifact_class
+
+    Args:
+        names(str): name of the artifact class
+        input_file (str): input file name/path
+        output_file (str): output file name
+
+    Returns:
+        output_file (Path): Path object of the file save location and name.
+    """
+    report_folder = report_folder
+    artifact_folder = name
+    output_folder = Path(report_folder / "export" / artifact_folder)
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    if utils.is_platform_windows():
+        input_file = Path(f"\\\\?\\{input_file.resolve()}")
+
+    output_file = Path(output_folder / output_file)
+    shutil.copy2(input_file, output_file)
+    logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
+    return output_file
+
+
+def filter_artifacts(l: list):
+    for artifact in l:
+        if getattr(artifact, "selected", False) == True:
+            yield artifact

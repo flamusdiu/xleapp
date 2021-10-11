@@ -1,6 +1,6 @@
 import sqlite3
 
-from xleapp.helpers.utils import is_platform_windows
+from .utils import is_platform_windows
 
 
 def open_sqlite_db_readonly(path):

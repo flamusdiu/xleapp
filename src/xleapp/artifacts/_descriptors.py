@@ -1,6 +1,6 @@
 from typing import Union
 
-from xleapp.report.webicons import Icon as Icon
+from xleapp.report._webicons import Icon
 
 
 class FoundFiles:
