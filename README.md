@@ -12,6 +12,10 @@ xLEAPP is the framework created to merge several tools together. More informatio
 * Provides a simplified way to write plugins (artifacts) for each different supported platform.
 * Parses iOS, macOS, Android, Chromebook, warranty returns, and Windows artifacts depending on the plugins installed.
 
+## Other Documentation
+
+* [Artifact Creation](docs/current/artifact-creation.md)
+
 ## Pre-requisites
 
 This project requires you to have Python > 3.9
