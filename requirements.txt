@@ -1,6 +1,0 @@
-jinja2
-packaging==20.1
-prettytable
-pyinstaller
-PySimpleGUI==4.47.0
-pyyaml

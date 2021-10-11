@@ -35,7 +35,7 @@ def get_parser():
         dest="device_type",
         action="store_const",
         const="returns",
-        help="parse warrenty return artifacts",
+        help="parse warranty return artifacts",
     )
     group.add_argument(
         "-A",
@@ -113,6 +113,40 @@ def get_parser():
 def parse_args(parser):
     args = parser.parse_args()
 
+    g.app = XLEAPP(
+        output_folder=args.output_folder,
+        input_path=args.input_path,
+        device_type=args.device_type,
+    )
+
+    log.init()
+
+    g.app.extraction_type = ValidateInput(
+        args.input_path,
+        args.output_folder,
+        g.app.artifacts.selected,
+    )
+
+    # If an Itunes backup, use that artifact otherwise use
+    # 'LastBuild' for everything else.
+    if g.app.extraction_type == "itunes":
+        del g.app.artifacts["lastbuild"]
+    else:
+        del g.app.artifacts["itunesbackupinfo"]
+
+    if args.artifact is None:
+        # If no artifacts selected then choose all of them.
+        g.app.artifacts.select_artifact(all_artifacts=True)
+    else:
+        filtered_artifacts = [
+            name.lower() for name in args.artifact if name.lower() != "core"
+        ]
+        for name in filtered_artifacts:
+            try:
+                g.app.artifacts.select_artifact(name=name)
+            except KeyError:
+                g.app.error(f"Artifact ({name}) not installed " f" or is unknown.")
+
     if args.gui:
         import xleapp.gui as gui
 
@@ -168,49 +202,12 @@ def _main(app: "XLEAPP"):
     app.generate_reports()
 
 
-def cli(args):
-    """Main application entry point for CLI"""
-
-    g.app = XLEAPP(
-        output_folder=args.output_folder,
-        input_path=args.input_path,
-        device_type=args.device_type,
-    )
-
-    log.init()
-
-    g.app.extraction_type = ValidateInput(
-        args.input_path,
-        args.output_folder,
-        g.app.artifacts.selected,
-    )
-
-    # If an Itunes backup, use that artifact otherwise use
-    # 'LastBuild' for everything else.
-    if g.app.extraction_type == "itunes":
-        del g.app.artifacts["lastbuild"]
-    else:
-        del g.app.artifacts["itunesbackupinfo"]
-
-    if args.artifact is None:
-        # If no artifacts selected then choose all of them.
-        g.app.artifacts.select_artifact(all_artifacts=True)
-    else:
-        filtered_artifacts = [
-            name.lower() for name in args.artifact if name.lower() != "core"
-        ]
-        for name in filtered_artifacts:
-            try:
-                g.app.artifacts.select_artifact(name=name)
-            except KeyError:
-                g.app.error(f"Artifact ({name}) not installed " f" or is unknown.")
+def cli():
+    parser = get_parser()
+    args = parse_args(parser)
 
     _main(g.app)
 
 
 if __name__ == "__main__":
-
-    parser = get_parser()
-    args = parse_args(parser)
-
-    cli(args)
+    cli()
