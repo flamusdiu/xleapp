@@ -1,7 +1,7 @@
 """Enum for Feather.js icons."""
 from enum import Enum
 
-Icon: Enum = Enum(
+Icon: Enum = Enum(  # type: ignore  # https://github.com/python/typeshed/issues/2305
     "Icon",
     (
         (name.replace("-", "_").upper(), name)

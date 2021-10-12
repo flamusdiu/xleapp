@@ -10,12 +10,12 @@ class ParseError(Exception):
     pass
 
 
-def is_platform_windows():
+def is_platform_windows() -> bool:
     """Returns True if running on Windows"""
     return os.name == "nt"
 
 
-def sanitize_file_path(filename, replacement_char="_"):
+def sanitize_file_path(filename: str, replacement_char: str = "_") -> str:
     """
     Removes illegal characters (for windows) from the string passed.
     Does not replace \\ or /
@@ -23,14 +23,14 @@ def sanitize_file_path(filename, replacement_char="_"):
     return re.sub(r'[*?:"<>|\'\r\n]', replacement_char, filename)
 
 
-def sanitize_file_name(filename, replacement_char="_"):
+def sanitize_file_name(filename: str, replacement_char: str = "_") -> str:
     """
     Removes illegal characters (for windows) from the string passed.
     """
     return re.sub(r'[\\/*?:"<>|\'\r\n]', replacement_char, filename)
 
 
-def get_next_unused_name(path):
+def get_next_unused_name(path: str) -> str:
     """Checks if path exists, if it does, finds an unused name by appending -xx
     where xx=00-99. Return value is new path.
     If it is a file like abc.txt, then abc-01.txt will be the next

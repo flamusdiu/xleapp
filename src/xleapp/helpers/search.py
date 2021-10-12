@@ -7,17 +7,13 @@ import typing as t
 from abc import ABC, abstractmethod
 from collections import UserDict
 from functools import lru_cache
-from io import BufferedIOBase, FileIO, IOBase
+from io import IOBase
 from pathlib import Path
 from shutil import copyfile
 from zipfile import ZipFile
 
 from .db import open_sqlite_db_readonly
 from .utils import is_platform_windows
-
-# Types
-FileList = list[t.AnyStr]
-SubFolders = list[t.AnyStr]
 
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
@@ -52,8 +48,8 @@ class HandleValidator:
 
 
 class Handle:
-    h: t.Union[sqlite3.Connection, FileIO, str] = HandleValidator()
-    path: Path = PathValidator()
+    h = HandleValidator()
+    path = PathValidator()
 
     def __init__(self, file: t.Any, path: t.Any = None) -> None:
         self.path = path
@@ -116,7 +112,7 @@ class FileHandles(UserDict):
             if h:
                 self[regex].add(h)
 
-    def __getitem__(self, regex: str) -> t.Union[sqlite3.Connection, IOBase]:
+    def __getitem__(self, regex: str) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
 
@@ -134,7 +130,7 @@ class FileHandles(UserDict):
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
 
-    def __delitem__(self, regex: str):
+    def __delitem__(self, regex: str) -> None:
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
@@ -142,10 +138,8 @@ class FileHandles(UserDict):
                     f.close()
             else:
                 files.close()
-            return True
-        return False
 
-    def __missing__(self, key):
+    def __missing__(self, key: str) -> set[Handle]:
         if self.default_factory is None:
             raise KeyError(key)
         if key not in self:
@@ -155,24 +149,27 @@ class FileHandles(UserDict):
 
 class FileSeekerBase(ABC):
 
-    _all_files = []
-    _directory = Path()
+    temp_folder: Path
+    _all_files: list[str] = []
+    _directory: Path
     _file_handles = FileHandles()
 
     @abstractmethod
-    def search(self, filepattern_to_search, return_on_first_hit=False) -> FileList:
+    def search(
+        self, filepattern_to_search: str, return_on_first_hit: bool = False
+    ) -> t.Iterator[t.Any]:
         """Returns a list of paths for files/folders that matched"""
         pass
 
     @abstractmethod
-    def cleanup(self):
+    def cleanup(self) -> None:
         """close any open handles"""
         pass
 
     @abstractmethod
     def build_files_list(
         self, folder: t.Optional[t.Union[str, Path]]
-    ) -> t.Tuple[SubFolders, FileList]:
+    ) -> t.Union[tuple[list, list], list]:
         """Finds files in directory"""
         pass
 
@@ -198,15 +195,15 @@ class FileSeekerBase(ABC):
 
 
 class FileSeekerDir(FileSeekerBase):
-    def __init__(self, directory, temp_folder=None) -> None:
-        self.directory = directory
+    def __init__(self, directory, temp_folder=None):
+        self.directory = Path(directory)
         logger_log.info("Building files listing...")
         subfolders, files = self.build_files_list(directory)
         self.all_files.extend(subfolders)
         self.all_files.extend(files)
         logger_log.info(f"File listing complete - {len(self._all_files)} files")
 
-    def build_files_list(self, folder) -> tuple:
+    def build_files_list(self, folder):
         """Populates all paths in directory into _all_files"""
 
         subfolders, files = [], []
@@ -218,13 +215,13 @@ class FileSeekerDir(FileSeekerBase):
                 files.append(item.path)
 
         for folder in list(subfolders):
-            sf, item = self.build_files_list(folder)
+            sf, items = self.build_files_list(folder)
             subfolders.extend(sf)
-            files.extend(item)
+            files.extend(items)
 
         return subfolders, files
 
-    def search(self, filepattern):
+    def search(self, filepattern, return_on_first_hit=False):
         return iter(fnmatch.filter(self.all_files, filepattern))
 
     def cleanup(self):
@@ -232,21 +229,19 @@ class FileSeekerDir(FileSeekerBase):
 
 
 class FileSeekerItunes(FileSeekerBase):
-    def __init__(self, directory, temp_folder):
+    def __init__(self, directory, temp_folder) -> None:
 
-        self.directory = directory
-        self.temp_folder = temp_folder
+        self.directory = Path(directory)
+        self.temp_folder = Path(temp_folder)
 
-        # logfunc('Building files listing...')
-        self.build_files_list(directory)
-        # logfunc(f'File listing complete - {len(self._all_files)} files')
+        self.build_files_list()
 
-    def build_files_list(self, folder):
+    def build_files_list(self, folder=None) -> list:
         """Populates paths from Manifest.db files into _all_files"""
 
-        directory = folder or self.directory
+        directory = self.directory
 
-        db = open_sqlite_db_readonly(Path(directory) / "Manifest.db")
+        db = open_sqlite_db_readonly(directory / "Manifest.db")
         cursor = db.cursor()
         cursor.execute(
             """
@@ -265,9 +260,11 @@ class FileSeekerItunes(FileSeekerBase):
             relative_path = row[1]
             self._all_files[relative_path] = hash_filename
         db.close()
-        return [], []
 
-    def search(self, filepattern, return_on_first_hit=False) -> list:
+        # does not return any values for this FileSeeker
+        return []
+
+    def search(self, filepattern, return_on_first_hit=False):
         pathlist = []
         matching_keys = fnmatch.filter(self._all_files, filepattern)
         for relative_path in matching_keys:
@@ -284,10 +281,10 @@ class FileSeekerItunes(FileSeekerBase):
 
 class FileSeekerTar(FileSeekerBase):
     def __init__(self, directory, temp_folder):
-        self.is_gzip = directory.lower().endswith("gz")
+        self.is_gzip = Path(directory).suffix == ".gz"
         mode = "r:gz" if self.is_gzip else "r"
         self.tar_file = tarfile.open(directory, mode)
-        self.temp_folder = temp_folder
+        self.temp_folder = Path(temp_folder)
         self.tar_file.getmembers()
 
     def search(self, filepattern, return_on_first_hit=False):
@@ -311,7 +308,7 @@ class FileSeekerTar(FileSeekerBase):
         self.tar_file.close()
 
     @lru_cache(maxsize=5)
-    def build_files_list(self):
+    def build_files_list(self) -> list[tarfile.TarInfo]:
         return self.tar_file.getmembers()
 
 

@@ -16,3 +16,5 @@ pep8-naming
 pycodestyle
 pyflakes
 pylint
+mypy==0.910
+types-PyYAML

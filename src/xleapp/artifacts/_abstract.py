@@ -23,13 +23,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import xleapp.artifacts as artifacts
-from xleapp.helpers.search import Handle
 
 from ._descriptors import FoundFiles, ReportHeaders, WebIcon
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
-    from xleapp.report._webicons import Icon
 
 
 @dataclass
@@ -51,7 +49,8 @@ class _AbstractBase:
     description: str = field(init=False, repr=False)
     name: str = field(init=False)
     data: list = field(init=False, repr=False)
-    regex: list = field(init=False, repr=False)
+    regex: set = field(init=False, repr=False)
+    app: "XLEAPP" = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False)
 
 
@@ -85,22 +84,21 @@ class _AbstractArtifactDefaults:
         web_icon (Icon): FeatherJS icon used for the report navgation menu. Default is `Icon.TRIANGLE`.
     """
 
-    app: "XLEAPP" = field(init=False, repr=False, default=None)
     category: str = field(init=False, default="Unknown")
     core: bool = field(init=False, default=False)
-    found: set = field(init=False, default=FoundFiles())
+    found: FoundFiles = field(init=False, default=FoundFiles())
     kml: bool = field(init=False, default=False)
     long_running_process: bool = field(init=False, default=False)
     processed: bool = field(init=False, default=False)
-    processing_time: float = field(init=False, default=float())
+    process_time: float = field(init=False, default=float())
     report: bool = field(init=False, default=True)
-    report_headers: t.Union[list, tuple] = field(init=False, default=ReportHeaders())
+    report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
     selected: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
-    web_icon: "Icon" = field(init=False, default=WebIcon())
+    web_icon: WebIcon = field(init=False, default=WebIcon())
 
 
-@dataclass
+@dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
 class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
     """Abstract class for creating Artifacts"""
 
@@ -116,10 +114,10 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
     @contextmanager
     def context(
         self,
-        regex: list[str],
+        regex: set[str],
         file_names_only: bool = False,
         return_on_first_hit: bool = True,
-    ) -> "Artifact":
+    ) -> t.Iterator["Artifact"]:
         """Creates a contaxt manager for an artifact.
 
         This will automatically search and add the regex and files to an artifact when
@@ -149,28 +147,28 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
         self.regex = regex
 
-        for regex in self.regex:
-            results = []
+        for r in self.regex:
+            results = set()
 
-            if regex in global_regex:
-                results = files[regex]
+            if r in global_regex:
+                results = files[r]
             else:
                 try:
                     if return_on_first_hit:
-                        results = {next(seeker.search(regex))}
+                        results = {next(seeker.search(r))}
                     else:
-                        results = set(seeker.search(regex))
+                        results = set(seeker.search(r))
                 except StopIteration:
-                    results = None
+                    results = set()
 
                 if bool(results):
-                    files.add(regex, results, file_names_only)
+                    files.add(r, results, file_names_only)
 
             if bool(results):
                 if return_on_first_hit or len(results) == 1:
-                    self.found = {files[regex].copy().pop()}
+                    self.found = {files[r].copy().pop()}
                 else:
-                    self.found = self.found | files[regex]
+                    self.found = self.found | files[r]
         yield self
 
     def __enter__(self):

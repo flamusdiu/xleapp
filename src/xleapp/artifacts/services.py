@@ -10,7 +10,10 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 class ArtifactServiceBuilder:
-    _instance: "Artifact" = None
+    _instance: "Artifact"
+
+    def __init__(self, artfact: "Artifact"):
+        self._instance = artfact
 
     def __call__(self, artifact: "Artifact") -> "Artifact":
         if not self._instance:
@@ -25,8 +28,8 @@ class ArtifactService(UserDict):
     def __len__(self) -> int:
         return len(self.data)
 
-    def register_builder(self, key: str, builder: ArtifactServiceBuilder) -> None:
-        self[key] = builder()
+    def register_builder(self, key: str, cls: "Artifact") -> None:
+        self[key] = ArtifactServiceBuilder(cls)
 
     @cached_property
     def installed(self) -> list:

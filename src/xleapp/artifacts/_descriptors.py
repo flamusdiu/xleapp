@@ -9,7 +9,7 @@ class FoundFiles:
     def __set_name__(self, owner, name):
         self.name = str(name)
 
-    def __get__(self, obj, type=None) -> object:
+    def __get__(self, obj, type=None) -> set:
         return obj.__dict__.get(self.name) or set()
 
     def __set__(self, obj, value) -> None:
@@ -22,8 +22,8 @@ class WebIcon:
     def __set_name__(self, owner, name):
         self.name = str(name)
 
-    def __get__(self, obj, icon_type=Icon) -> object:
-        return obj.__dict__.get(self.name) or Icon.ALERT_TRIANGLE
+    def __get__(self, obj, icon_type=Icon) -> Icon:
+        return obj.__dict__.get(self.name) or Icon.ALERT_TRIANGLE  # type: ignore # dynamic Enum which does not type
 
     def __set__(self, obj, value) -> None:
         if isinstance(value, Icon) or isinstance(value, WebIcon):

@@ -1,4 +1,7 @@
-def raw(data) -> str:
+import typing as t
+
+
+def raw(data: t.ByteString) -> str:
     """Returns string of printable characters. Replacing non-printable characters
     with '.', or CHR(46)
     ``"""
@@ -7,7 +10,7 @@ def raw(data) -> str:
     )
 
 
-def print(data) -> str:
+def print(data: t.ByteString) -> filter[str]:
     """Returns string of printable characters. Works similar to the Linux
     `string` function.
     """

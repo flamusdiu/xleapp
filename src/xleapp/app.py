@@ -2,6 +2,7 @@ import datetime
 import importlib
 import inspect
 import logging
+import typing as t
 from collections import UserDict
 from functools import cached_property
 from importlib.metadata import entry_points
@@ -58,7 +59,7 @@ class XLEAPP:
 
     device: Device = Device()
 
-    default_configs = dict()
+    default_configs: dict[str, t.Any] = dict()
 
     extraction_type: str
 
@@ -74,7 +75,7 @@ class XLEAPP:
 
     input_path: Path
 
-    output_folder: Path = OutputFolder()
+    output_folder = OutputFolder()
 
     def __init__(self, output_folder: Path, input_path: Path, device_type: str) -> None:
         self.default_configs = {
@@ -110,7 +111,7 @@ class XLEAPP:
         return rv
 
     @cached_property
-    def artifacts(self) -> dict:
+    def artifacts(self) -> ArtifactService:
         return self.create_artifact_list()
 
     def create_artifact_list(self) -> ArtifactService:
@@ -140,7 +141,7 @@ class XLEAPP:
             for it in module_dir.glob("*.py"):
                 if it.suffix == ".py" and it.stem not in ["__init__"]:
                     module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
-                    module = importlib.import_module(module_name, inspect.isfunction)
+                    module = importlib.import_module(module_name)
                     module_members = inspect.getmembers(module, inspect.isclass)
                     for name, cls in module_members:
                         # check MRO (Method Resolution Order) for
