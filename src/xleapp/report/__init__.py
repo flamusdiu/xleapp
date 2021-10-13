@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 from ._db import KmlDBManager, TimelineDBManager, TsvManager
-from ._webicons import Icon as WebIcon
+from ._webicons import WebIcon
 
 
 def save_to_db(report_folder: Path, db_type: str, **options) -> None:

@@ -1,55 +1,36 @@
-from typing import Union
+import xleapp.report._webicons as web
+from xleapp.helpers.descriptors import Validator
 
-from xleapp.report._webicons import Icon
 
-
-class FoundFiles:
+class FoundFiles(Validator):
     """Descriptor ensuring 'foundfiles' type"""
 
-    def __set_name__(self, owner, name):
-        self.name = str(name)
+    default_value = set()
 
-    def __get__(self, obj, type=None) -> set:
-        return obj.__dict__.get(self.name) or set()
-
-    def __set__(self, obj, value) -> None:
-        obj.__dict__[self.name] = value
+    def validator(self, value):
+        if not isinstance(value, set):
+            raise TypeError(f"Expected {value!r} to be a set!")
 
 
-class WebIcon:
+class WebIcon(Validator):
     """Descriptor ensuring 'web_icon' type"""
 
-    def __set_name__(self, owner, name):
-        self.name = str(name)
+    default_value = web.WebIcon.ALERT_TRIANGLE
 
-    def __get__(self, obj, icon_type=Icon) -> Icon:
-        return obj.__dict__.get(self.name) or Icon.ALERT_TRIANGLE  # type: ignore # dynamic Enum which does not type
-
-    def __set__(self, obj, value) -> None:
-        if isinstance(value, Icon) or isinstance(value, WebIcon):
-            obj.__dict__[self.name] = value
-        else:
-            raise TypeError(
-                f"Got {type(value)} instead of {type(Icon)}! "
-                f"Error setting Web Icon on {str(obj)}!",
-            )
+    def validator(self, value):
+        if not isinstance(value, (web.WebIcon, WebIcon)):
+            raise TypeError(f"Expected {value!r} to be {web.WebIcon!r}! ")
 
 
-class ReportHeaders:
+class ReportHeaders(Validator):
     """Descriptor ensuring 'report_headers' type"""
 
-    def __set_name__(self, owner, name):
-        self.name = name
+    default_value = ("Key", "Value")
 
-    def __get__(self, obj, report_type=None) -> Union[list, tuple]:
-        return obj.__dict__.get(self.name) or ("Key", "Value")
-
-    def __set__(self, obj, value) -> None:
-        if ReportHeaders._check_list_of_tuples(value, bool_list=[]):
-            obj.__dict__[self.name] = value
-        else:
+    def validator(self, value) -> None:
+        if not ReportHeaders._check_list_of_tuples(value, bool_list=[]):
             raise TypeError(
-                "Error setting report headers! Expected list of tuples or tuple!",
+                f"Expected {value!r} to be a list of tuples or tuple!",
             )
 
     @staticmethod

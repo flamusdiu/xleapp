@@ -12,6 +12,8 @@ from pathlib import Path
 from shutil import copyfile
 from zipfile import ZipFile
 
+from xleapp.helpers.descriptors import Validator
+
 from .db import open_sqlite_db_readonly
 from .utils import is_platform_windows
 
@@ -19,32 +21,21 @@ logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
 
 
-class PathValidator:
-    def __set_name__(self, owner, name):
-        self.name = str(name)
-
-    def __get__(self, obj, type=None):
-        return obj.__dict__.get(self.name) or None
-
-    def __set__(self, obj, value):
-        obj.__dict__[self.name] = value.resolve()
+class PathValidator(Validator):
+    def validator(self, value):
+        if not isinstance(value, (Path, os.PathLike, str)):
+            raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
+        return value.resolve()
 
 
-class HandleValidator:
-    def __set_name__(self, owner, name):
-        self.name = str(name)
-        self.path = "path"
-
-    def __get__(self, obj, type=None):
-        return obj.__dict__.get(self.name) or None
-
-    def __set__(self, obj, value):
-        path: Path = getattr(obj, self.path, None)
-        if isinstance(value, str) or isinstance(value, Path):
-            value = None
-
-        setattr(obj, self.path, path)
-        obj.__dict__[self.name] = value
+class HandleValidator(Validator):
+    def validator(self, value):
+        if isinstance(value, (str, Path)):
+            return None
+        elif not isinstance(value, (sqlite3.Connection, IOBase)):
+            raise TypeError(
+                f"Expected {value!r} to be one of: string, Path, sqlite3.Connection or IOBase."
+            )
 
 
 class Handle:
@@ -106,9 +97,9 @@ class FileHandles(UserDict):
                     h = Handle(file=db, path=path)
                 except (sqlite3.OperationalError, sqlite3.DatabaseError, TypeError):
                     fp = open(extended_path, "rb")
-                    h = Handle(fp, path)
+                    h = Handle(file=fp, path=path)
                 except FileNotFoundError:
-                    raise FileNotFoundError(f"File {path} was not found!")
+                    raise FileNotFoundError(f"File {path!r} was not found!")
             if h:
                 self[regex].add(h)
 

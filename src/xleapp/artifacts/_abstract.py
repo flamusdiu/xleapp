@@ -95,7 +95,7 @@ class _AbstractArtifactDefaults:
     report_headers: ReportHeaders = field(
         init=False, default=ReportHeaders(), hash=False
     )
-    selected: bool = field(init=False, default=False)
+    _selected: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
     web_icon: WebIcon = field(init=False, default=WebIcon())
 
