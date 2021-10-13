@@ -20,7 +20,9 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 def crunch_artifacts(app: "XLEAPP") -> None:
-    for artifact in filter_artifacts(app.artifacts.values()):
+    for artifact in app.artifacts:
+        if not artifact.value.selected:
+            continue
         # Now ready to run
         # Special processing for iTunesBackup Info.plist as it is a
         # separate entity, not part of the Manifest.db. Seeker won't find it

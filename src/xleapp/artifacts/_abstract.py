@@ -46,12 +46,12 @@ class _AbstractBase:
         _log (logging.Logger). Logger attached to artifact for output to log files.
     """
 
-    description: str = field(init=False, repr=False)
-    name: str = field(init=False)
-    data: list = field(init=False, repr=False)
-    regex: set = field(init=False, repr=False)
-    app: "XLEAPP" = field(init=False, repr=False)
-    _log: logging.Logger = field(init=False, repr=False)
+    description: str = field(init=False, repr=False, compare=False, hash=False)
+    name: str = field(init=False, compare=True, hash=True)
+    data: list = field(init=False, repr=False, compare=False, hash=False)
+    regex: set = field(init=False, repr=False, compare=False, hash=False)
+    app: "XLEAPP" = field(init=False, repr=False, compare=False, hash=False)
+    _log: logging.Logger = field(init=False, repr=False, compare=False, hash=False)
 
 
 @dataclass
@@ -84,15 +84,17 @@ class _AbstractArtifactDefaults:
         web_icon (Icon): FeatherJS icon used for the report navgation menu. Default is `Icon.TRIANGLE`.
     """
 
-    category: str = field(init=False, default="Unknown")
+    category: str = field(init=False, default="Unknown", hash=True, compare=True)
     core: bool = field(init=False, default=False)
-    found: FoundFiles = field(init=False, default=FoundFiles())
+    found: FoundFiles = field(init=False, default=FoundFiles(), hash=False)
     kml: bool = field(init=False, default=False)
     long_running_process: bool = field(init=False, default=False)
     processed: bool = field(init=False, default=False)
     process_time: float = field(init=False, default=float())
     report: bool = field(init=False, default=True)
-    report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
+    report_headers: ReportHeaders = field(
+        init=False, default=ReportHeaders(), hash=False
+    )
     selected: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
     web_icon: WebIcon = field(init=False, default=WebIcon())

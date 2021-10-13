@@ -130,9 +130,9 @@ def parse_args(parser):
     # If an Itunes backup, use that artifact otherwise use
     # 'LastBuild' for everything else.
     if g.app.extraction_type == "itunes":
-        del g.app.artifacts["lastbuild"]
+        g.app.artifacts.LAST_BUILD.value.selected = False
     else:
-        del g.app.artifacts["itunesbackupinfo"]
+        g.app.artifacts.ITUNES_BACKUP_INFO.value.selected = False
 
     if args.artifact is None:
         # If no artifacts selected then choose all of them.

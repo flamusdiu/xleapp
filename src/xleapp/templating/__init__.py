@@ -4,7 +4,7 @@ from collections import defaultdict
 from os import PathLike
 from pathlib import Path
 
-from xleapp.artifacts.services import ArtifactService
+# from xleapp.artifacts.services import ArtifactService
 
 from ._ext import IncludeLogFileExtension
 from ._html import ArtifactHtmlReport, Contributor, HtmlPage, NavigationItem, Template
@@ -41,7 +41,7 @@ def get_contributors(contributors: list) -> list[Contributor]:
     return contrib_list
 
 
-def generate_nav(report_folder: PathLike, artifacts: ArtifactService) -> dict:
+def generate_nav(report_folder: PathLike, artifacts) -> dict:
     """Generates a dictionary containing the navigation of the
        report.
 
@@ -56,12 +56,14 @@ def generate_nav(report_folder: PathLike, artifacts: ArtifactService) -> dict:
     """
     nav = defaultdict(set)
 
-    for artifact in artifacts.values():
+    for artifact in artifacts:
         if not artifact.core and artifact.selected:
             temp_item = NavigationItem(
-                name=artifact.name,
-                web_icon=artifact.web_icon.value,
-                href=(report_folder / f"{artifact.category} - {artifact.name}.html"),
+                name=artifact.value.name,
+                web_icon=artifact.value.web_icon.value,
+                href=(
+                    report_folder / f"{artifact.value.category} - {artifact.name}.html"
+                ),
             )
-            nav[artifact.category].add(temp_item)
+            nav[artifact.value.category].add(temp_item)
     return nav

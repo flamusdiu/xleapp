@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 import importlib
 import inspect
 import logging
@@ -15,7 +16,7 @@ import xleapp.artifacts as artifacts
 import xleapp.templating as templating
 
 from ._version import __project__, __version__
-from .artifacts.services import ArtifactService, ArtifactServiceBuilder
+from .artifacts.services import generate_artifact_enum
 from .helpers.search import FileSeekerBase
 from .templating._ext import IncludeLogFileExtension
 
@@ -111,66 +112,10 @@ class XLEAPP:
         return rv
 
     @cached_property
-    def artifacts(self) -> ArtifactService:
-        return self.create_artifact_list()
+    def artifacts(self) -> Enum:
+        return generate_artifact_enum(self)
 
-    def create_artifact_list(self) -> ArtifactService:
-        """Generates a List of Artifacts installed
-
-        Returns:
-            Artifacts: dictionary of artifacts with short names as keys
-        """
-
-        logger_log.debug("Generating artifact lists from file system...")
-
-        discovered_plugins = [
-            plugin
-            for plugin in entry_points()["xleapp.plugins"]
-            if plugin.name == self.device.get("type")
-        ]
-
-        core_services = ArtifactService()
-        services = ArtifactService()
-
-        for plugin in discovered_plugins:
-            # Plugins return a str which is the plugin direction to
-            # find plugins inside of. This direction is loading
-            # that directory. Then, all the plugins are loaded.
-            module_dir = Path(plugin.load()())
-
-            for it in module_dir.glob("*.py"):
-                if it.suffix == ".py" and it.stem not in ["__init__"]:
-                    module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
-                    module = importlib.import_module(module_name)
-                    module_members = inspect.getmembers(module, inspect.isclass)
-                    for name, cls in module_members:
-                        # check MRO (Method Resolution Order) for
-                        # Artifact classes. Also, insure
-                        # we do not get an abstract class.
-                        if (
-                            len(
-                                {str(name).find("Artifact") for name in cls.mro()}
-                                - {-1},
-                            )
-                            != 0
-                            and not inspect.isabstract(cls)
-                        ):
-                            builder = ArtifactServiceBuilder()
-                            cls.app = self
-                            artifact = builder(cls)
-                            if cls.core:
-                                core_services.register_builder(name.lower(), artifact)
-                            else:
-                                services.register_builder(name.lower(), artifact)
-
-        # Creates dict with core artifacts up front
-        # per Python 3.7 docs, this will keep them ordered.
-        core_services.data.update(services.data)
-        logger_log.debug(f"Artifacts loaded: {len(core_services)}")
-
-        return core_services
-
-    def crunch_artifacts(self):
+    def crunch_artifacts(self) -> None:
         return artifacts.crunch_artifacts(self)
 
     def generate_artifact_table(self):
@@ -212,8 +157,8 @@ class XLEAPP:
         return len(
             {
                 artifact.cls_name
-                for artifact in self.artifacts.values()
-                if artifact.selected
+                for artifact in self.artifacts
+                if artifact.value.selected
             }
         )
 
@@ -221,8 +166,8 @@ class XLEAPP:
     def num_of_categories(self):
         return len(
             {
-                artifact.category
-                for artifact in self.artifacts.values()
-                if artifact.selected
+                artifact.value.category
+                for artifact in self.artifacts
+                if artifact.value.selected
             }
         )
