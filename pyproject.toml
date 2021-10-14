@@ -1,6 +1,70 @@
+[tool.poetry]
+name = "xleapp"
+version = "0.1.0"
+description = "Multiplaform Logs, Events, And Plists Parser"
+authors = ["Jesse Spangenberger <azuleonyx@digitalforensics.io>"]
+license = "MIT"
+
+readme = "README.md"
+
+homepage = "https://github.com/flamusdiu/xleapp"
+repository = "https://github.com/flamusdiu/xleapp"
+documentation = "https://github.com/flamusdiu/xleapp"
+
+keywords = ["forensics", "dfir", "security", "framework"]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Security",
+  "Topic :: Utilities",
+  "Typing :: Typed"
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+prettytable = "^2.2.1"
+Jinja2 = "^3.0.2"
+PySimpleGUI = "^4.49.0"
+PyYAML = "^6.0"
+packaging = "^21.0"
+pyinstaller = "^4.5.1"
+python-magic-bin = "^0.4.14"
+simplekml = "^1.3.6"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+flakehell = "^0.9.0"
+flake8-bandit = "^2.1.2"
+flake8-bugbear = "^21.9.2"
+flake8-commas = "^2.1.0"
+flake8-comprehensions = "^3.7.0"
+flake8-docstrings = "^1.6.0"
+flake8-mutable = "^1.2.0"
+flake8-pytest-style = "^1.5.0"
+flake8-quotes = "^3.3.0"
+flake8-variables-names = "^0.0.4"
+mccabe = "^0.6.1"
+pylint = "^2.11.1"
+mypy = "0.910"
+types-PyYAML = "^5.4.11"
+flake8 = "<3.9.0"
+testfixtures = "<6"
+flake8-isort = "<4.0.0"
+pyflakes = "<2.3.0"
+pycodestyle = "<2.7.0"
+
+
+[tool.poetry.scripts]
+xleapp = "xleapp.__main__:cli"
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 
 # A003: ignore column name collisions with builtins (eg 'id')
 # D103: don't need docstrings for migrations functions
@@ -47,17 +111,21 @@ pyflakes = ['-F841']
 
 [tool.isort]
 profile = 'black'
-multi_line_output = 3
+atomic = true
+lines_after_imports = 2
+lines_between_types = 1
+use_parentheses = true
 line_length = 90
 include_trailing_comma = true
 skip = ['.eggs',
         '.git',
         '.venv',
-        '_build',
-        'venv']
+        '_build']
+src_paths = "src"
 
 [tool.black]
-line_length = 88
+line_length = 90
+inlcude = '\.pyi?*$'
 target_version = ['py39']
 exclude = '''
 ^/(
@@ -71,3 +139,4 @@ exclude = '''
   )/
 )
 '''
+
