@@ -112,3 +112,6 @@ docs/old
 
 # ignore docs build directory
 docs/source/_build/
+
+# ignore plugins
+plugins/
