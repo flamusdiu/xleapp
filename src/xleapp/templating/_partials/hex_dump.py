@@ -3,8 +3,7 @@ import math
 from dataclasses import dataclass
 
 import xleapp.helpers.strings as istrings
-
-from .. import HtmlPage, Template
+from xleapp.templating._html import HtmlPage, Template
 
 
 @dataclass

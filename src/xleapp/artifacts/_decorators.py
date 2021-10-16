@@ -7,7 +7,7 @@ from ._abstract import Artifact
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def core_artifact(cls):
+def core_artifact(cls: Artifact):
     """Decorator to mark a core artifact
 
     Args:
@@ -16,8 +16,6 @@ def core_artifact(cls):
     Raises:
         AttributeError
 
-    Returns:
-        Artifact: Artifact is marked as core and selected
     """
 
     @functools.wraps(cls)
@@ -36,7 +34,7 @@ def core_artifact(cls):
     return core_wrapper(cls)
 
 
-def long_running_process(cls):
+def long_running_process(cls: Artifact):
     """Decorator to mark an artifact as long running
 
     Args:
@@ -84,9 +82,9 @@ class Search:
                 ) as artifact:
                     func(artifact)
                     cls.processed = True
-                return cls.processed
             except sqlite3.OperationalError as ex:
                 logger_log.error(f"-> Error {ex}")
+            return cls.processed
 
         functools.update_wrapper(search_wrapper, func)
         return search_wrapper

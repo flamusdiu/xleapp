@@ -130,22 +130,24 @@ def parse_args(parser):
     # If an Itunes backup, use that artifact otherwise use
     # 'LastBuild' for everything else.
     if g.app.extraction_type == "itunes":
-        del g.app.artifacts["lastbuild"]
+        g.app.artifacts.LAST_BUILD.value.selected = False
     else:
-        del g.app.artifacts["itunesbackupinfo"]
+        g.app.artifacts.ITUNES_BACKUP_INFO.value.selected = False
 
     if args.artifact is None:
         # If no artifacts selected then choose all of them.
         g.app.artifacts.select_artifact(all_artifacts=True)
     else:
-        filtered_artifacts = [
-            name.lower() for name in args.artifact if name.lower() != "core"
-        ]
+        filtered_artifacts = filter(
+            lambda artifact: (artifact.lower() != 'core'), g.app.artifacts
+        )
         for name in filtered_artifacts:
             try:
-                g.app.artifacts.select_artifact(name=name)
+                g.app.artifacts[name.lower()].selected()
             except KeyError:
-                g.app.error(f"Artifact ({name}) not installed " f" or is unknown.")
+                g.app.error(
+                    f"Artifact ({name.lower()}) not installed " f" or is unknown."
+                )
 
     if args.gui:
         import xleapp.gui as gui
