@@ -1,9 +1,10 @@
+import os
 import sqlite3
 
 from .utils import is_platform_windows
 
 
-def open_sqlite_db_readonly(path):
+def open_sqlite_db_readonly(path: str) -> sqlite3.Connection:
     """Opens an sqlite db in read-only mode, so original db
     (and -wal/journal are intact)
     """
@@ -19,7 +20,9 @@ def open_sqlite_db_readonly(path):
     return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
 
 
-def does_column_exist_in_db(db, table_name, col_name):
+def does_column_exist_in_db(
+    db: sqlite3.Connection, table_name: str, col_name: str
+) -> bool:
     """Checks if a specific col exists"""
     col_name = col_name.lower()
     try:
@@ -37,7 +40,7 @@ def does_column_exist_in_db(db, table_name, col_name):
     return False
 
 
-def does_table_exist(db, table_name):
+def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
     """Checks if a table with specified name exists in an sqlite db"""
     try:
         query = (

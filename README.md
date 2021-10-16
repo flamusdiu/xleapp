@@ -1,10 +1,12 @@
 # xLEAPP
 
+**Development build. Please be cauious using on real cases.**
+
 Framework for Logs, Events, And Plists Parser (LEAPP)
 
-This framework is a complete rewrite of the excellent tool iLEAPP.Details of iLEAPP can be found in this blog post here: https://abrignoni.blogspot.com/2019/12/xleapp-ios-logs-events-and-properties.html
+This framework is a complete rewrite of the excellent tool iLEAPP.Details of iLEAPP can be found in this [blog post](https://abrignoni.blogspot.com/2019/12/xleapp-ios-logs-events-and-properties.html)
 
-xLEAPP is the framework created to merge several tools together. More information about the rewrite is given in by talk at Black Hills Info Security's Wild West Hackin' Fest (WWHF): Deadwood in 2021: https://www.youtube.com/watch?v=seTpCmSF0Gc
+xLEAPP is the framework created to merge several tools together. More information about the rewrite is given in by talk ([YouTube](https://www.youtube.com/watch?v=seTpCmSF0Gc)) at Black Hills Info Security&#39;s Wild West Hackin&#39; Fest (WWHF): Deadwood in 2021.
 
 ## Features
 
@@ -18,112 +20,48 @@ xLEAPP is the framework created to merge several tools together. More informatio
 
 ## Pre-requisites
 
-This project requires you to have Python > 3.9
+This project requires you to have Python >= 3.9
 
-## Installation from github
+## Installation
+
+### Windows
+
+```powershell
+PS> py -m pip install xleapp
+PS> py -m pip install xleapp-<plugin>
+```
+
+### Linux
 
 ```bash
-# Create a project directory
-$ mkdir xleapp-project
-$ cd xleapp-project
-
-# Clone the xLEAPP main repo
-$ git clone https://github.com/flamusdiu/xleapp.git
-$ python -m pip install .\xleapp
-
-# Clone each plugin repo
-$ git clone https://github.com/flamusdiu/xleapp-ios.git
-$ python -m pip install .\xleapp-ios
-
-# Run application
-$ xleapp -h
-usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH] [--artifact [ARTIFACT ...]]
-              [-p] [-l] [--gui] [--version]
+$ python -m pip install xleapp
+$ python -m pip install xleapp-<plugin>
 ```
 
-## Installation for development
+## Installation from Github and Development Information
 
-**Folder Structure**
-
-If you follow all the information, you should end up with the following folders.
-
-```txt
---| xleapp-project
-       --| .vscode
-       --| xleapp
-       --| xleapp-ios
-       --| xleapp-ios-non-free
-       --| <other plugins>
-```
-
-To run this current development application, you need to do the following to setup the environment:
-
-```bash
-# Clone repo with VS Code configurations. Or alternatively,
-# make a "xleapp-project" folder and skip this command.
-$ git clone https://github.com/flamusdiu/xleapp-project.git
-
-# Change directory into this folder
-$ cd xleapp-project
-
-# Clone the xLEAPP main repo
-$ git clone https://github.com/flamusdiu/xleapp.git
-
-# You will need some plugins. Do one more more of 
-# the following. More will be added later!
-$ git clone https://github.com/flamusdiu/xleapp-ios.git
-$ git clone https://github.com/flamusdiu/xleapp-ios-non-free.git
-
-# You need to change directory into the `xleapp` folder.
-$ cd .\xleapp
-
-# Create a virtual environment
-$ python -m venv .venv
-
-# Activate virtual environment
-$ source .venv/Scripts/activate
-
-# Then run the following This uses `pip` to install 
-# the application. `-e` creates and editable installation. 
-# See: https://pip.pypa.io/en/latest/cli/pip_install/#editable-installs on how this works.
-$ python -m pip install -e .
-
-# Add plugins (do not change folders)
-$ python -m pip install -e ..\xleapp-ios
-$ python -m pip install -e ..\xleapp-ios-non-free
-$ python -m pip install -e ..\<plugin folder>
-# do this for each plugin folder
-
-# run the following:
-$ (.venv) > xleapp -h # or > python -m xleapp -h
-usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH] [--artifact [ARTIFACT ...]]
-              [-p] [-l] [--gui] [--version]
-
-# Install development requirements
-$ python -m pip install -r requirements-dev.txt
-
-```
+* [Windows](docs/current/windows.md)
+* [Linux](docs/current/linux.md)
 
 ## VS Code configuration files
 
-There are several configuration files that I have been using for VS Code. You can find those here: https://github.com/flamusdiu/xleapp-project
-
+There are several [configuration files](https://github.com/flamusdiu/xleapp-project) that I have been using for VS Code.
 
 ## Compile to executable
 
-**NOTE:** This may not work at this time with this alpha version. 
+**NOTE:** This may not work at this time with this alpha version.
 
 To compile to an executable so you can run this on a system without python installed.
 
 To create xleapp.exe, run:
 
-```
+```bash
 pyinstaller --onefile xleapp.spec
-````
+```
 
 To create xleappGUI.exe, run:
 
-```
+```bash
 pyinstaller --onefile --noconsole xleappGUI.spec
 ```
 
@@ -131,10 +69,10 @@ pyinstaller --onefile --noconsole xleappGUI.spec
 
 ### CLI
 
-```
+```bash
 $ xleapp -h
-usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH] [--artifact [ARTIFACT ...]]
-              [-p] [-l] [--gui] [--version]
+usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH]
+       [--artifact [ARTIFACT ...]] [-p] [-l] [--gui] [--version]
 
 xLEAPP: Logs, Events, and Plists Parser.
 
@@ -163,18 +101,19 @@ optional arguments:
 
 This needs work and may not work properly!
 
-```
+```bash
 $ xleapp --gui 
+
 ```
 
 ### Help
 
-```
+```bash
 $ xleapp.py --help
+
 ```
 
-The GUI will open in another window.  <br><br>
-
+The GUI will open in another window.  
 
 ## Acknowledgements
 

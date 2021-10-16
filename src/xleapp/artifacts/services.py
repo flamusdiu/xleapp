@@ -1,84 +1,154 @@
+import importlib
+import inspect
+import itertools
 import logging
 import typing as t
-from collections import UserDict
-from functools import cached_property
+
+from dataclasses import dataclass
+from enum import Enum
+from importlib.metadata import entry_points
+from pathlib import Path
+
+from xleapp.helpers.strings import split_camel_case
+
 
 if t.TYPE_CHECKING:
+    from xleapp.app import XLEAPP
+
     from ._abstract import Artifact
 
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-class ArtifactServiceBuilder:
-    _instance: "Artifact" = None
-
-    def __call__(self, artifact: "Artifact") -> "Artifact":
-        if not self._instance:
-            self._instance = artifact
-        return self._instance
-
-    def __get__(self):
-        return self._instance
-
-
-class ArtifactService(UserDict):
-    def __len__(self) -> int:
-        return len(self.data)
-
-    def register_builder(self, key: str, builder: ArtifactServiceBuilder) -> None:
-        self[key] = builder()
-
-    @cached_property
-    def installed(self) -> list:
-        return [name.lower() for name in self.keys()]
+class Artifact:
+    @property
+    def cls_name(self) -> str:
+        return self.value.cls_name.lower()
 
     @property
-    def selected(self) -> list:
-        return [name for name, artifact in self.items() if artifact.selected]
+    def core(self) -> bool:
+        return self.value.core
 
-    def select_artifact(
-        self,
-        name: t.Optional[None] = None,
-        all_artifacts: t.Optional[bool] = False,
-        long_running_process: t.Optional[bool] = False,
-        reset: t.Optional[bool] = False,
-    ) -> None:
-        """Toggles if an artifact should be run
+    @property
+    def long_running_process(self) -> bool:
+        return self.value.long_running_process
 
-        Core artifacts cannot be toggled. `all_artifacts` will not select any
-        artifact marked as long running unless it also is set to True.
+    @property
+    def selected(self) -> bool:
+        return self.value._selected
 
-        If you want to ensure the state of the artifacts, call this with
-        `reset=True` to reset all the states to their default values.
+    @selected.setter
+    def selected(self, bool: bool = True) -> None:
+        """Toggles the selected state of the artifact
+
+        Note:
+            True fips the toggle state. i.e. `selected` property is changed from True
+            to False or from False to True. False keeps the current state.
 
         Args:
-            artifacts(List[object]): installed list of artifacts
-            artifact_name (str): short name of the artifact. Defaults to None.
-            all_artifacts (bool): bool to select all artifacts.
-                Defaults to False.
-            long_running_process (bool): used with `all_artifacts`
-                to select long running processes. Defaults to False.
-            reset (bool): clears the select flags on non-core artifacts.
-                Defaults to True.
+            bool (bool, optional): Selected state of the artifact. Defaults to True.
         """
-        if name:
-            self.get(name).selected ^= True
-        else:
-            for artifact in list(self.values()):
-                if reset:
-                    if not artifact.core:
-                        artifact.selected = False
-                elif all_artifacts:
-                    if artifact.long_running_process and not artifact.core:
-                        if long_running_process:
-                            artifact.selected = False
-                    elif not artifact.core:
-                        artifact.selected = not artifact.selected
+        if not self.core:
+            self.value._selected ^= bool
 
-    def process_artifact(self, artifact: "Artifact") -> None:
-        msg_artifact = f"{artifact.category} [{artifact.cls_name}] artifact"
+    def process_artifact(self) -> None:
+        msg_artifact = f"{self.value.category} [{self.cls_name}] artifact"
         logger_log.info(f"\n{msg_artifact} processing...")
-        artifact.process_time, _ = artifact.process()
-        if not artifact.processed:
+        self.value.process_time, _ = self.value.process()
+        if not self.value.processed:
             logger_log.warn(f"-> Artifact failed to processed!")
-        logger_log.info(f"{msg_artifact} finished in {artifact.process_time:.2f}s")
+        logger_log.info(f"{msg_artifact} finished in {self.value.process_time:.2f}s")
+
+
+class Artifacts:
+
+    data: Enum
+
+    def __init__(self, app: "XLEAPP") -> None:
+        self.data = Artifacts.generate_artifact_enum(app)
+
+    def __getattr__(self, name: str) -> t.Any:
+        try:
+            return getattr(self.data, name)
+        except AttributeError:
+            raise AttributeError(
+                f"{__name__!r} doesn't have {name!r} attribute"
+            ) from None
+
+    @property
+    def installed(self) -> list:
+        return [artifact.cls_name for artifact in self]
+
+    @property
+    def selected_artifacts(self) -> list:
+        return [artifact.cls_name for artifact in self.data if artifact.selected]
+
+    def reset_selected(self):
+        for artifact in self.data:
+            if not artifact.core:
+                artifact.selected = False
+
+    def select_all(
+        self,
+        long_running_process: t.Optional[bool] = False,
+    ) -> None:
+        for artifact in self.data:
+            if not artifact.core:
+                if not long_running_process and artifact.long_running_process:
+                    artifact.selected = False
+                else:
+                    artifact.selected = True
+
+    @staticmethod
+    def generate_artifact_enum(app: "XLEAPP"):
+        members = {}
+        device_type: str = app.device["type"]
+        discovered_plugins = [
+            plugin
+            for plugin in entry_points()["xleapp.plugins"]
+            if plugin.name == device_type
+        ]
+
+        for plugin in discovered_plugins:
+            # Plugins return a str which is the plugin direction to
+            # find plugins inside of. This direction is loading
+            # that directory. Then, all the plugins are loaded.
+            module_dir = Path(plugin.load()())
+
+            for it in module_dir.glob("*.py"):
+                if it.suffix == ".py" and it.stem not in ["__init__"]:
+                    module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
+                    module = importlib.import_module(module_name)
+                    module_members = inspect.getmembers(module, inspect.isclass)
+                    for name, xleapp_cls in module_members:
+                        # check MRO (Method Resolution Order) for
+                        # Artifact classes. Also, insure
+                        # we do not get an abstract class.
+                        if (
+                            len(
+                                {str(name).find("Artifact") for name in xleapp_cls.mro()}
+                                - {-1},
+                            )
+                            != 0
+                            and not inspect.isabstract(xleapp_cls)
+                        ):
+                            artifact: "Artifact" = dataclass(
+                                xleapp_cls, unsafe_hash=True
+                            )()
+                            artifact_name = "_".join(
+                                split_camel_case(artifact.cls_name)
+                            ).upper()
+                            artifact.app = app
+                            members[artifact] = [
+                                artifact_name,
+                                artifact.cls_name.lower(),
+                            ]
+
+        return Enum(
+            value=f"{device_type.title()}Artifact",
+            names=itertools.chain.from_iterable(
+                itertools.product(v, [k]) for k, v in members.items()
+            ),
+            module=__name__,
+            type=Artifact,
+        )

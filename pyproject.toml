@@ -1,14 +1,60 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.poetry]
+name = "xleapp"
+version = "0.1.11"
+description = "Multiplaform Logs, Events, And Plists Parser"
+authors = ["Jesse Spangenberger <azuleonyx@digitalforensics.io>"]
+license = "MIT"
 
-# A003: ignore column name collisions with builtins (eg 'id')
-# D103: don't need docstrings for migrations functions
-# D107: don't need docstrings for __init__ method of classes. 
-#       Infavor of documenting at the top of classes instead of inside __init__ methods.
-# D203: 1 blank line required before class docstring.
-# W503: Line breaks should occur after the binary operator to keep 
-#       all variable names aligned. Disabled infavor of W504 (PEP8 updates)
+readme = "README.md"
+
+homepage = "https://github.com/flamusdiu/xleapp"
+repository = "https://github.com/flamusdiu/xleapp"
+documentation = "https://github.com/flamusdiu/xleapp"
+
+keywords = ["forensics", "dfir", "security", "framework"]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Security",
+  "Topic :: Utilities",
+  "Typing :: Typed"
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Jinja2 = "^3.0.2"
+PySimpleGUI = "^4.49.0"
+PyYAML = "^6.0"
+prettytable = "^2.2.1"
+python-magic-bin = "^0.4.14"
+simplekml = "^1.3.6"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+# See: https://github.com/flakehell/flakehell/pull/20
+flake8 = "<3.9.0"
+flake8-bandit = "^2.1.2"
+flake8-bugbear = "^21.9.2"
+flake8-commas = "^2.1.0"
+flake8-comprehensions = "^3.7.0"
+flake8-docstrings = "^1.6.0"
+flake8-isort = "^4.1.1"
+flake8-mutable = "^1.2.0"
+flake8-pytest-style = "^1.5.0"
+flake8-quotes = "^3.3.0"
+flake8-variables-names = "^0.0.4"
+flakehell = "^0.9.0"
+mypy = "0.910"
+pyinstaller = "^4.5.1"
+types-PyYAML = "^5.4.11"
+
+[tool.poetry.scripts]
+xleapp = "xleapp._main__:cli"
+
 [tool.flakehell]
 # Added per https://githubmemory.com/repo/flakehell/flakehell/issues/10
 # exclude chat_rendering.py until tested/fixed
@@ -19,6 +65,19 @@ show_source = true
 docstring-convention = 'google'
 inline-quotes = 'double'
 
+# D107: don't need docstrings for __init__ method of classes. 
+#       Infavor of documenting at the top of classes instead of inside __init__ methods.
+# D203: 1 blank line required before class docstring.
+# E203: Whitespace before ':'
+# E611: No name %r in module %r
+# E1101: %s %r has no %r member
+# E401: Multiple imports on one line
+# E1102: %s is not callable
+# E1123: Passing unexpected keyword argument %r in function call
+# F401: Module imported but unused.
+# W503: Line breaks should occur after the binary operator to keep 
+#       all variable names aligned. Disabled infavor of W504 (PEP8 updates)
+# Q000: Remove bad quotes
 [tool.flakehell.plugins]
 flake8-bandit = ['+*']
 flake8-bugbear = ['+*']
@@ -42,22 +101,24 @@ pylint = ['+F*', '+E*', '-E0611', '-E1101', '-E0401', '-E1102', '-E1123']
 [tool.flakehell.exceptions.'**/__init__.py']
 pyflakes = ['-F401']
 
-[tool.flakehell.exceptions.'xleapp/helpers/db.py']
-pyflakes = ['-F841']
 
 [tool.isort]
 profile = 'black'
-multi_line_output = 3
+atomic = true
+lines_after_imports = 2
+lines_between_types = 1
+use_parentheses = true
 line_length = 90
 include_trailing_comma = true
 skip = ['.eggs',
         '.git',
         '.venv',
-        '_build',
-        'venv']
+        '_build']
+src_paths = "src"
 
 [tool.black]
-line_length = 88
+line_length = 90
+inlcude = '\.pyi?*$'
 target_version = ['py39']
 exclude = '''
 ^/(
@@ -71,3 +132,8 @@ exclude = '''
   )/
 )
 '''
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

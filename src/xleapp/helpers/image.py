@@ -1,8 +1,9 @@
 import os
 import shutil
 
-
-from PIL import Image
+from PIL import (  # type: ignore  # https://github.com/python-pillow/Pillow/issues/2625
+    Image,
+)
 
 
 def generate_thumbnail(imDirectory, imFilename, seeker, report_folder):

@@ -19,9 +19,10 @@ if t.TYPE_CHECKING:
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def crunch_artifacts(app: "XLEAPP") -> bool:
-
-    for artifact in filter_artifacts(app.artifacts.values()):
+def crunch_artifacts(app: "XLEAPP") -> None:
+    for artifact in app.artifacts:
+        if not artifact.value.selected:
+            continue
         # Now ready to run
         # Special processing for iTunesBackup Info.plist as it is a
         # separate entity, not part of the Manifest.db. Seeker won't find it
@@ -115,7 +116,7 @@ def copyfile(
     return output_file
 
 
-def filter_artifacts(l: list):
+def filter_artifacts(l: t.Iterator[Artifact]):
     for artifact in l:
         if getattr(artifact, "selected", False) == True:
             yield artifact
