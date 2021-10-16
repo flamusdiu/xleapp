@@ -13,31 +13,33 @@ Below, I have layed out a basic artifact pulling a SQLite database. Things to re
 
 * "MyArtifact" must be unique for each artifact. This should be descriptive name for the artifact.
 * `__post__init__()` functions contains several metadata fields for the artifact. Here is the complete list of these fields:
-    * description - information of the artifact shown on the HTML report
-    * name - Name of the artifact shown on the HTML report
-    * category - Category where the artifact is listed on the HTML report
-    * kml - Artifact saves KML data
-    * report - Produce HTML report. Setting this to "False" forces NO report to be generated
-    * report_headers - Headers for the HTML tables in the HTML report. This can be a list of tuples where each tuple if a different table. If not present, then `('Key', 'Value')` tuple is used.
-    * timeline - Artifact saves timeline data
-    * web_icon - Icon from Feathers.JS icons for the HTML Report. Check `xleapp/report/_webicons.py` for a list of icons.
+  * description - information of the artifact shown on the HTML report
+  * name - Name of the artifact shown on the HTML report
+  * category - Category where the artifact is listed on the HTML report
+  * kml - Artifact saves KML data
+  * report - Produce HTML report. Setting this to "False" forces NO report to be generated
+  * report_headers - Headers for the HTML tables in the HTML report. This can be a list of tuples where each tuple if a different table. If not present, then `('Key', 'Value')` tuple is used.
+  * timeline - Artifact saves timeline data
+  * web_icon - Icon from Feathers.JS icons for the HTML Report. Check `xleapp/report/_webicons.py` for a list of icons.
 * There are also two decorators you can use to mark an artifact. These are not used very often.
-    * core_artifact: marks an artifact as `core` artifact. These artifacts are run first and ALWAYS ran. 
-        * mark as following:
-          ```python
-          @core_artifact
-          @dataclass
-          class MyArtifact(Artifact):
-              pass
-          ```
+  * core_artifact: marks an artifact as `core` artifact. These artifacts are run first and ALWAYS ran.
+    * mark as following:
+
+        ```python
+        @core_artifact
+        class MyArtifact(Artifact):
+            pass
+        ```
+
     * long_running_process: these artifacts must be selected manually.
-        * mark as following:
-            ```python
-            @long_running_process
-            @dataclass
-            class MyArtifact(Artifact):
-                pass
-            ```
+      * mark as following:
+
+        ```python
+        @long_running_process
+        class MyArtifact(Artifact):
+            pass
+        ```
+
 Searching is the core of processing any artifact. To process files for your artifacts, you add the `@Search()` decorator to your `process()` function. You add a list within the decorator as shown below. The files are automatically opened for you if there are less then **10** files. These are returned to the artifact through the `self.found` attribute of the artifact.
 
 There are two other options usable with this decorator:
@@ -50,15 +52,13 @@ First, `file_names_only` returns a list of file paths to your artifact instead o
 Second, `return_on_first_hit` ensures that the very first file found is returned.
 
 <h2 id="skeleton">Skeleton Artifact</h2>
-    
-```python
-from dataclasses import dataclass
 
+```python
 from xleapp import Artifact, WebIcon, Search, timed
 
 
-@dataclass
 class MyArtifact(Artifact):
+    # This is for SQLite Database Artifacts. 
     def __post_init__(self):
         self.name = "Artifact Name"
         self.category = "Applications"
@@ -70,6 +70,7 @@ class MyArtifact(Artifact):
     def process(self):
         for fp in self.found:
             cursor = fp().cursor()
+            # Replace this query with the proper one.
             cursor.execute(
                 """
                 SELECT column1, column2, column3
@@ -77,6 +78,10 @@ class MyArtifact(Artifact):
                 """,
             )
 
+            # Everything below here is used to construct the list of information
+            # from the artifact. 
+            #
+            # Note: Either syntax works => row['column1'] == row[0]
             all_rows = cursor.fetchall()
             usageentries = len(all_rows)
             if usageentries > 0:
@@ -102,6 +107,7 @@ self.data = [
 
 Translates to:
 
+```html
 <table>
 <thead>
     <th>Column 1</th>
@@ -126,6 +132,13 @@ Translates to:
     </tr>
 </tbody>
 </table>
+```
+
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| 1        | apple    | oranges  |
+| 2        | apple    | oranges  |
+| 3        | apple    | oranges  |
 
 If you have more then one table of a data, your create your `self.data` like this:
 
@@ -149,12 +162,15 @@ This produces two tables in the report.
 One final note on create the `data_list`:
 
 ```python
- data_list.append((row['column1'], row['column2'], row['column3']))
+data_list.append((row['column1'], row['column2'], row['column3']))
 ```
- and 
+
+ and
+
 ```python
 data_list.append((row[0], row[1], row[2]))
 ```
+
 are equal in output. The first one using column head is the **_preferred_** method to make the artifacts easier to follow.
 
 <h2 id="publishing-artifacts">Publishing Artifacts</h2>

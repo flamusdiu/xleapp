@@ -3,13 +3,14 @@ import inspect
 import itertools
 import logging
 import typing as t
+
 from dataclasses import dataclass
 from enum import Enum
-from functools import cached_property
 from importlib.metadata import entry_points
 from pathlib import Path
 
 from xleapp.helpers.strings import split_camel_case
+
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
@@ -125,10 +126,7 @@ class Artifacts:
                         # we do not get an abstract class.
                         if (
                             len(
-                                {
-                                    str(name).find("Artifact")
-                                    for name in xleapp_cls.mro()
-                                }
+                                {str(name).find("Artifact") for name in xleapp_cls.mro()}
                                 - {-1},
                             )
                             != 0
