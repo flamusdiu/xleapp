@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xleapp"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 description = "Multiplaform Logs, Events, And Plists Parser"
 authors = ["Jesse Spangenberger <azuleonyx@digitalforensics.io>"]
 license = "MIT"
@@ -53,7 +53,7 @@ pyinstaller = "^4.5.1"
 types-PyYAML = "^5.4.11"
 
 [tool.poetry.scripts]
-xleapp = "xleapp._main__:cli"
+xleapp = "xleapp.__main__:cli"
 
 [tool.flakehell]
 # Added per https://githubmemory.com/repo/flakehell/flakehell/issues/10

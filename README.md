@@ -92,7 +92,7 @@ pyinstaller --onefile --noconsole xleappGUI.spec
 ```bash
 $ xleapp -h
 usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH]
-       [--artifact [ARTIFACT ...]] [-p] [-l] [--gui] [--version]
+       [--artifacts [ARTIFACTS ...]] [-p] [-l] [--gui] [--version]
 
 xLEAPP: Logs, Events, and Plists Parser.
 
