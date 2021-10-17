@@ -4,6 +4,7 @@ import os
 import sqlite3
 import tarfile
 import typing as t
+
 from abc import ABC, abstractmethod
 from collections import UserDict
 from functools import lru_cache
@@ -16,6 +17,7 @@ from xleapp.helpers.descriptors import Validator
 
 from .db import open_sqlite_db_readonly
 from .utils import is_platform_windows
+
 
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
@@ -66,6 +68,8 @@ class FileHandles(UserDict):
             return
 
         for item in files:
+            file_handle = None
+            path = Path(item.resolve())
 
             """
             If we have more then 10 files, then set only
@@ -73,14 +77,12 @@ class FileHandles(UserDict):
             `sqlite3.connection` to save memory. Most artifacts
             probably have less then 5 files they will read/use.
             """
-            h = None
+
             if len(files) > 10 or file_names_only:
-                h = Handle(item)
+                file_handle = Handle(file=item, path=path)
             else:
                 if item.drive.startswith("\\\\?\\"):
                     extended_path = Path(item)
-
-                path = Path(item.resolve())
 
                 try:
                     db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
@@ -94,14 +96,14 @@ class FileHandles(UserDict):
                         db.close()
                         db = db_mem
                     db.row_factory = sqlite3.Row
-                    h = Handle(file=db, path=path)
+                    file_handle = Handle(file=db, path=path)
                 except (sqlite3.OperationalError, sqlite3.DatabaseError, TypeError):
                     fp = open(extended_path, "rb")
-                    h = Handle(file=fp, path=path)
+                    file_handle = Handle(file=fp, path=path)
                 except FileNotFoundError:
                     raise FileNotFoundError(f"File {path!r} was not found!")
-            if h:
-                self[regex].add(h)
+            if file_handle:
+                self[regex].add(file_handle)
 
     def __getitem__(self, regex: str) -> set[Handle]:
         try:

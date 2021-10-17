@@ -4,6 +4,7 @@ SHELL := pwsh.exe
 .SHELLFLAGS := -Command
 endif
 
+PYPIREPO := testpypi
 SOURCEDIR := src/xleapp
 PLUGINDIR := plugins
 BASEREPO := https://github.com/flamusdiu
@@ -72,7 +73,7 @@ pkg-publish-wheel:
 	twine check dist/*
 	$(call plugin_run,twine check dist/*)
 # upload to test pypi
-	twine upload -r pypi dist/*
+	twine upload -r testpypi dist/*
 	$(call plugin_run,twine upload -r testpypi dist/*)
 
 clean:

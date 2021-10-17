@@ -14,6 +14,7 @@ from .helpers.decorators import timed
 from .helpers.search import search_providers
 from .helpers.utils import ValidateInput, generate_program_header
 
+
 logger_log = logging.getLogger("xleapp.logfile")
 
 
@@ -73,7 +74,7 @@ def get_parser():
         help="Path to input file/folder",
     )
     parser.add_argument(
-        "--artifact",
+        "--artifacts",
         required=False,
         action="store",
         help=(
@@ -113,41 +114,21 @@ def get_parser():
 def parse_args(parser):
     args = parser.parse_args()
 
+    extraction_type = ValidateInput(
+        args.input_path,
+        args.output_folder,
+    )
+
+    artifacts = args.artifacts or ()
     g.app = XLEAPP(
+        *artifacts,
         output_folder=args.output_folder,
         input_path=args.input_path,
         device_type=args.device_type,
+        extraction_type=extraction_type,
     )
 
     log.init()
-
-    g.app.extraction_type = ValidateInput(
-        args.input_path,
-        args.output_folder,
-        g.app.artifacts.selected,
-    )
-
-    # If an Itunes backup, use that artifact otherwise use
-    # 'LastBuild' for everything else.
-    if g.app.extraction_type == "itunes":
-        g.app.artifacts.LAST_BUILD.value.selected = False
-    else:
-        g.app.artifacts.ITUNES_BACKUP_INFO.value.selected = False
-
-    if args.artifact is None:
-        # If no artifacts selected then choose all of them.
-        g.app.artifacts.select_artifact(all_artifacts=True)
-    else:
-        filtered_artifacts = filter(
-            lambda artifact: (artifact.lower() != 'core'), g.app.artifacts
-        )
-        for name in filtered_artifacts:
-            try:
-                g.app.artifacts[name.lower()].selected()
-            except KeyError:
-                g.app.error(
-                    f"Artifact ({name.lower()}) not installed " f" or is unknown."
-                )
 
     if args.gui:
         import xleapp.gui as gui
@@ -206,7 +187,7 @@ def _main(app: "XLEAPP"):
 
 def cli():
     parser = get_parser()
-    args = parse_args(parser)
+    parse_args(parser)
 
     _main(g.app)
 

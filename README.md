@@ -26,17 +26,37 @@ This project requires you to have Python >= 3.9
 
 ### Windows
 
-```powershell
-PS> py -m pip install xleapp
-PS> py -m pip install xleapp-<plugin>
-```
+* Python
+
+  ```powershell
+  PS> py -3 -m pip install xleapp
+  PS> py -3 -m pip install xleapp-<plugin>
+  ```
+
+* PIPX
+
+  ```powershell
+  PS> py -3 -m pip install pipx
+  PS> pipx install xleapp
+  PS> pipx inject xleapp xleapp-<plugin>
+  ```
 
 ### Linux
 
-```bash
-$ python -m pip install xleapp
-$ python -m pip install xleapp-<plugin>
-```
+* Python
+
+  ```bash
+  $ python3 -m pip install xleapp
+  $ python3 -m pip install xleapp-<plugin>
+  ```
+
+* PIPX
+
+  ```bash
+  $ python3 -m pip install pipx
+  $ pipx install xleapp
+  $ pipx inject xleapp xleapp-<plugin>
+  ```
 
 ## Installation from Github and Development Information
 

@@ -4,6 +4,7 @@ import sqlite3
 
 from ._abstract import Artifact
 
+
 logger_log = logging.getLogger("xleapp.logfile")
 
 
@@ -22,7 +23,7 @@ def core_artifact(cls: Artifact):
     def core_wrapper(cls):
         if issubclass(cls, Artifact):
             cls.core = True
-            cls.selected = True
+            cls.select = True
             cls.report = False
             return cls
         else:

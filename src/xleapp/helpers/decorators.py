@@ -2,7 +2,9 @@ import functools
 import time
 import typing as t
 
+
 F = t.TypeVar('F', bound=t.Callable[..., t.Any])
+
 
 # timer function
 def timed(func: F) -> F:

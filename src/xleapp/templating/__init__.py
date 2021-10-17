@@ -57,7 +57,7 @@ def generate_nav(report_folder: PathLike, artifacts) -> dict:
     nav = defaultdict(set)
 
     for artifact in artifacts:
-        if not artifact.core and artifact.selected:
+        if not artifact.core and artifact.select:
             temp_item = NavigationItem(
                 name=artifact.value.name,
                 web_icon=artifact.value.web_icon.value,

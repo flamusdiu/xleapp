@@ -1,6 +1,7 @@
 import os
 import re
 import typing as t
+
 from pathlib import Path
 
 from xleapp import __authors__
@@ -54,8 +55,7 @@ def get_next_unused_name(path: str) -> str:
 def ValidateInput(
     input_path: str,
     output_path: str,
-    selected_artifacts: list,
-) -> t.Union[str, str]:
+) -> t.Optional[str]:
     """
     Returns tuple (success, extraction_type)
     """
@@ -74,9 +74,7 @@ def ValidateInput(
         if not o_path.exists():
             raise ParseError("OUTPUT does not exist!")
 
-    if len(selected_artifacts) == 0:
-        raise ParseError("No module selected for processing!")
-    elif i_path.is_dir() and (i_path / "Manifest.db").exists():
+    if i_path.is_dir() and (i_path / "Manifest.db").exists():
         ext_type = "itunes"
     elif i_path.is_dir():
         ext_type = "fs"

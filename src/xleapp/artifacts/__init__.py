@@ -1,6 +1,7 @@
 import logging
 import shutil
 import typing as t
+
 from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
@@ -13,6 +14,7 @@ import xleapp.helpers.utils as utils
 from ._abstract import Artifact
 from ._decorators import Search, core_artifact, long_running_process
 
+
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
 
@@ -20,21 +22,36 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 def crunch_artifacts(app: "XLEAPP") -> None:
-    for artifact in app.artifacts:
-        if not artifact.value.selected:
-            continue
-        # Now ready to run
-        # Special processing for iTunesBackup Info.plist as it is a
-        # separate entity, not part of the Manifest.db. Seeker won't find it
-        if artifact.cls_name == "ITunesBackupInfo":
-            info_plist_path = Path(app.input_path) / "Info.plist"
-            if info_plist_path.exists():
-                app.artifacts.process_artifact(artifact)
+    def process(artifacts):
+        for artifact in artifacts:
+            if not artifact.select:
+                continue
+            # Now ready to run
+            # Special processing for iTunesBackup Info.plist as it is a
+            # separate entity, not part of the Manifest.db. Seeker won't find it
+            if artifact.cls_name == "ITunesBackupInfo":
+                info_plist_path = Path(app.input_path) / "Info.plist"
+                if info_plist_path.exists():
+                    app.artifacts["ITunesBackupInfo"].process()
+                else:
+                    logger_log.info("Info.plist not found for iTunes Backup!")
+                # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
             else:
-                logger_log.info("Info.plist not found for iTunes Backup!")
-            # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
-        else:
-            app.artifacts.process_artifact(artifact)
+                artifact.process()
+
+    # Process core artifacts first
+    core = filter(
+        lambda artifact: artifact.core and artifact.select,
+        app.artifacts,
+    )
+    process(core)
+
+    # Process everything else
+    standard = filter(
+        lambda artifact: not artifact.core and artifact.select,
+        app.artifacts,
+    )
+    process(standard)
 
 
 def generate_artifact_path_list(artifacts) -> None:
@@ -116,7 +133,8 @@ def copyfile(
     return output_file
 
 
-def filter_artifacts(l: t.Iterator[Artifact]):
-    for artifact in l:
-        if getattr(artifact, "selected", False) == True:
-            yield artifact
+def filter_artifacts(artifact_list) -> filter:
+    return filter(
+        lambda artifact: getattr(artifact, "select", False) is True,
+        artifact_list,
+    )

@@ -1,13 +1,14 @@
 import functools
 import logging
 import typing as t
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from xleapp import artifacts
 
-import xleapp.report as report
 import xleapp.globals as g
+import xleapp.report as report
+
 
 if t.TYPE_CHECKING:
     from xleapp.artifacts._abstract import Artifact
@@ -82,6 +83,7 @@ class _HtmlPageDefaults:
         navigation (dict): Navigation of the HTML report
     """
 
+    artifact: "Artifact" = field(default=None, init=False)
     report_folder: Path = field(default="", init=True)
     log_folder: Path = field(default="", init=True)
     extraction_type: str = field(default="fs", init=True)
@@ -165,20 +167,23 @@ class ArtifactHtmlReport(HtmlPage):
         """Generates report information (html, tsv, kml, and timeline)"""
         html = self.html()
         output_file = (
-            self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
+            self.report_folder
+            / f"{self.artifact.category} - {self.artifact.value.name}.html"
         )
         output_file.write_text(html)
 
         if self.artifact.processed and hasattr(self.artifact, "data"):
             options = (
                 {
-                    "name": self.artifact.name,
+                    "name": self.artifact.value.name,
                     "data_list": self.data,
                     "data_headers": self.artifact.report_headers,
                 },
             )
             report.save_to_db(
-                report_folder=self.report_folder, db_type="tsv", options=options
+                report_folder=self.report_folder,
+                db_type="tsv",
+                options=options,
             )
 
             if self.artifact.kml:

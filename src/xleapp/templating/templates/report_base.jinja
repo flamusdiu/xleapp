@@ -5,13 +5,13 @@
 {% block navigation %}{{ nav(navigation) }}{% endblock %}
 {% block report_data %}
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="display-5">{{artifact.report_title if artifact.report_title is defined else artifact.name}}</h1>
+                <h1 class="display-5">{{artifact.report_title if artifact.report_title is defined else artifact.value.name}}</h1>
                 <h6 class="animated fadeIn mb-3">{{artifact.description}}</h6>
             </div>
-            {% if artifact.processed %}
+            {% if artifact.data | length > 0 %}
             <h6>Total number of entries: {{ artifact.data|length }}</h6>
             {% if artifact.found | length < 5 %}
-            <p class="lead">{{ artifact.name }} located at:
+            <p class="lead">{{ artifact.value.name }} located at:
                 {% set table_data = [] %}
                 {% if (artifact.found is not string and artifact.found is not mapping) %}
                     {% for item in artifact.found %}

@@ -2,14 +2,12 @@
 """This module contains all the functions for Artifact abstract class.
 
 Python requires that attributes with out default values come after attributes with defaults.
+
 The class order ABC > _AbstractArtifactDefaults > _AbstractBase ensures this is correct.
 
-:obj:`_AbstractBase` contains all attributes without a default. Please place any extra attributes
-that do not require defaults within this class. Also ensure to use `field(init=false)` for each 
-attribute so they are not required when the class is first created.
+:obj:`_AbstractBase` contains all attributes without a default. Please place any extra attributes that do not require defaults within this class. Also ensure to use `field(init=false)` for each attribute so they are not required when the class is first created.
 
-:obj:`_AbstractArtifactDefaults` provides any attributes with defaults. Also, use `field(init=False)`
-for each one as before.
+:obj:`_AbstractArtifactDefaults` provides any attributes with defaults. Also, use `field(init=False)` for each one as before.
 
 :obj:`Artifact` is the class every artifact needs to be subclassed from.
 
@@ -17,6 +15,7 @@ for each one as before.
 
 import logging
 import typing as t
+
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -25,6 +24,7 @@ from pathlib import Path
 import xleapp.artifacts as artifacts
 
 from ._descriptors import FoundFiles, ReportHeaders, WebIcon
+
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
@@ -79,7 +79,7 @@ class _AbstractArtifactDefaults:
         report (bool): True or False. sets to generate HTML report. Default True.
         report_headers (list or tuple): headers for the report table during
             report generation.
-        selected: artifacts selected to be run. Default is False.
+        select: artifacts selected to be run. Default is False.
         timeline(bool): True or False to add data to the timeline database. Default is False.
         web_icon (Icon): FeatherJS icon used for the report navgation menu. Default is `Icon.TRIANGLE`.
     """
@@ -92,10 +92,8 @@ class _AbstractArtifactDefaults:
     processed: bool = field(init=False, default=False)
     process_time: float = field(init=False, default=float())
     report: bool = field(init=False, default=True)
-    report_headers: ReportHeaders = field(
-        init=False, default=ReportHeaders(), hash=False
-    )
-    _selected: bool = field(init=False, default=False)
+    report_headers: ReportHeaders = field(init=False, default=ReportHeaders(), hash=False)
+    select: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
     web_icon: WebIcon = field(init=False, default=WebIcon())
 
@@ -149,28 +147,28 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
         self.regex = regex
 
-        for r in self.regex:
+        for artifact_regex in self.regex:
             results = set()
 
-            if r in global_regex:
-                results = files[r]
+            if artifact_regex in global_regex:
+                results = files[artifact_regex]
             else:
                 try:
                     if return_on_first_hit:
-                        results = {next(seeker.search(r))}
+                        results = {next(seeker.search(artifact_regex))}
                     else:
-                        results = set(seeker.search(r))
+                        results = set(seeker.search(artifact_regex))
                 except StopIteration:
                     results = set()
 
                 if bool(results):
-                    files.add(r, results, file_names_only)
+                    files.add(artifact_regex, results, file_names_only)
 
             if bool(results):
                 if return_on_first_hit or len(results) == 1:
-                    self.found = {files[r].copy().pop()}
+                    self.found = {files[artifact_regex].copy().pop()}
                 else:
-                    self.found = self.found | files[r]
+                    self.found = self.found | files[artifact_regex]
         yield self
 
     def __enter__(self):
