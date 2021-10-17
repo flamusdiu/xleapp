@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xleapp"
-version = "0.1.0-alpha.0"
+version = "0.1.0-alpha.1"
 description = "Multiplaform Logs, Events, And Plists Parser"
 authors = ["Jesse Spangenberger <azuleonyx@digitalforensics.io>"]
 license = "MIT"

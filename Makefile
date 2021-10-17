@@ -58,7 +58,7 @@ pkg-freeze-setup:
 pkg-increment:
 	@echo "Bumping version of xLEAPP..."
 	@poetry version prerelease
-	$(call plugin_run,Write-Host "Bumping version of $$_ ..." && poetry version patch)
+	$(call plugin_run,Write-Host "Bumping version of $$_ ..." && poetry version prerelease)
 
 pkg-publish-wheel:
 # clean up any artifacts first
