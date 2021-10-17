@@ -4,7 +4,7 @@ SHELL := pwsh.exe
 .SHELLFLAGS := -Command
 endif
 
-PYPIREPO := testpypi
+PYPIREPO := pypi
 SOURCEDIR := src/xleapp
 PLUGINDIR := plugins
 BASEREPO := https://github.com/flamusdiu
@@ -58,13 +58,14 @@ pkg-freeze-setup:
 pkg-increment:
 	@echo "Bumping version of xLEAPP..."
 	@poetry version prerelease
+
+pkg-plugin-increment:
 	$(call plugin_run,Write-Host "Bumping version of $$_ ..." && poetry version prerelease)
 
 pkg-publish-wheel:
 # clean up any artifacts first
 	rm -r -Force dist/*
 	$(call plugin_run, rm -Force dist/*)
-# increment versions
 
 # generate setup
 	poetry build
@@ -73,8 +74,8 @@ pkg-publish-wheel:
 	twine check dist/*
 	$(call plugin_run,twine check dist/*)
 # upload to test pypi
-	twine upload -r testpypi dist/*
-	$(call plugin_run,twine upload -r testpypi dist/*)
+	twine upload -r $(PYPIREPO) dist/*
+	$(call plugin_run,twine upload -r $(PYPIREPO) dist/*)
 
 clean:
 	rm -r -Force dist/*
