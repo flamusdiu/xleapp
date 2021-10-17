@@ -27,7 +27,7 @@ This project requires you to have Python >= 3.9
 Here is a list of plugins that need to be completed. Plugin package suffixed with "non-free" use licenses that may not conform with MIT licenses and are seperated out.
 
 - [X] xleapp-ios [[Github](https://github.com/flamusdiu/xleapp-ios)] [[PyPI](https://pypi.org/project/xleapp-ios/)]
-- [ ] xleapp-ios-non-free [[Github]](https://github.com/flamusdiu/xleapp-ios)]
+- [ ] xleapp-ios-non-free [[Github](https://github.com/flamusdiu/xleapp-ios)]
 - [ ] xleapp-android
 - [ ] xleapp-android-non-free
 - [ ] xleapp-chrome
