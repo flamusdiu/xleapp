@@ -58,23 +58,29 @@ pkg-freeze-setup:
 pkg-increment:
 	@echo "Bumping version of xLEAPP..."
 	@poetry version prerelease
+
+pkg-plugin-increment:
 	$(call plugin_run,Write-Host "Bumping version of $$_ ..." && poetry version prerelease)
 
 pkg-publish-wheel:
 # clean up any artifacts first
 	rm -r -Force dist/*
-	$(call plugin_run, rm -Force dist/*)
-# increment versions
-
 # generate setup
 	poetry build
-	$(call plugin_run, poetry build)
 # check wheel
 	twine check dist/*
+# upload to test pypi
+	twine upload -r $(PYPIREPO) dist/*
+
+pkg-plugins-publish-wheel:
+# clean up any artifacts first
+	$(call plugin_run, rm -Force dist/*)
+# generate setup
+	$(call plugin_run, poetry build)
+# check wheel
 	$(call plugin_run,twine check dist/*)
 # upload to test pypi
-	twine upload -r testpypi dist/*
-	$(call plugin_run,twine upload -r testpypi dist/*)
+	$(call plugin_run,twine upload -r $(PYPIREPO) dist/*)
 
 clean:
 	rm -r -Force dist/*
