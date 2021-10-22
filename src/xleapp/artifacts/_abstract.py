@@ -46,12 +46,12 @@ class _AbstractBase:
         _log (logging.Logger). Logger attached to artifact for output to log files.
     """
 
-    description: str = field(init=False, repr=False, compare=False, hash=False)
-    name: str = field(init=False, compare=True, hash=True)
-    data: list = field(init=False, repr=False, compare=False, hash=False)
-    regex: set = field(init=False, repr=False, compare=False, hash=False)
-    app: "XLEAPP" = field(init=False, repr=False, compare=False, hash=False)
-    _log: logging.Logger = field(init=False, repr=False, compare=False, hash=False)
+    description: str = field(init=False, repr=False, compare=False)
+    name: str = field(init=False)
+    data: list = field(init=False, repr=False, compare=False)
+    regex: set = field(init=False, repr=False, compare=False)
+    app: "XLEAPP" = field(init=False, repr=False)
+    _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
 @dataclass
@@ -84,15 +84,15 @@ class _AbstractArtifactDefaults:
         web_icon (Icon): FeatherJS icon used for the report navgation menu. Default is `Icon.TRIANGLE`.
     """
 
-    category: str = field(init=False, default="Unknown", hash=True, compare=True)
+    category: str = field(init=False, default="Unknown")
     core: bool = field(init=False, default=False)
-    found: FoundFiles = field(init=False, default=FoundFiles(), hash=False)
+    found: FoundFiles = field(init=False, default=FoundFiles())
     kml: bool = field(init=False, default=False)
     long_running_process: bool = field(init=False, default=False)
     processed: bool = field(init=False, default=False)
     process_time: float = field(init=False, default=float())
     report: bool = field(init=False, default=True)
-    report_headers: ReportHeaders = field(init=False, default=ReportHeaders(), hash=False)
+    report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
     select: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
     web_icon: WebIcon = field(init=False, default=WebIcon())
@@ -173,6 +173,9 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
 
     def __enter__(self):
         return self
+
+    def __eq__(self, other):
+        return (self.name == other.name) and (self.category == self.category)
 
     @property
     def cls_name(self) -> str:

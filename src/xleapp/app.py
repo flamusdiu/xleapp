@@ -13,6 +13,7 @@ import jinja2
 from jinja2 import Environment
 
 import xleapp.artifacts as artifacts
+import xleapp.log as log
 import xleapp.templating as templating
 
 from xleapp.helpers.descriptors import Validator
@@ -79,14 +80,7 @@ class XLEAPP:
     input_path: Path
     output_folder = OutputFolder()
 
-    def __init__(
-        self,
-        *artifacts,
-        output_folder: Path,
-        input_path: Path,
-        device_type: str,
-        extraction_type: str,
-    ) -> None:
+    def __init__(self) -> None:
         self.default_configs = {
             "thumbnail_root": "**/Media/PhotoData/Thumbnails/**",
             "media_root": "**/Media",
@@ -95,11 +89,24 @@ class XLEAPP:
 
         self.project = __project__
         self.version = __version__
+
+    def __call__(
+        self,
+        *artifacts,
+        output_folder: t.Optional[Path] = None,
+        input_path: t.Optional[Path] = None,
+        extraction_type: t.Optional[str] = None,
+    ) -> None:
         self.output_folder = output_folder
         self.create_output_folder()
+
+        log.init()
+
         self.input_path = input_path
         self.extraction_type = extraction_type
-        self.device["type"] = device_type
+
+    def set_device(self, type: str) -> None:
+        self.device["type"] = type
 
         # If an Itunes backup, use that artifact otherwise use
         # 'LastBuild' for everything else.

@@ -2,6 +2,8 @@ import os
 import re
 import typing as t
 
+from collections import defaultdict
+from importlib.metadata import entry_points
 from pathlib import Path
 
 from xleapp import __authors__
@@ -123,3 +125,13 @@ def filter_dict(d: dict, filter_string: str):
         if filter_string not in key:
             continue
         yield key, val
+
+
+def discovered_plugins() -> dict[set]:
+    plugins = defaultdict(set)
+    try:
+        for plugin in entry_points()["xleapp.plugins"]:
+            plugins[plugin.name].add(plugin)
+        return plugins
+    except KeyError:
+        return None

@@ -4,7 +4,7 @@ SHELL := pwsh.exe
 .SHELLFLAGS := -Command
 endif
 
-PYPIREPO := testpypi
+PYPIREPO := pypi
 SOURCEDIR := src/xleapp
 PLUGINDIR := plugins
 BASEREPO := https://github.com/flamusdiu

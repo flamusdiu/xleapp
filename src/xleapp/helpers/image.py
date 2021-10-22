@@ -1,17 +1,31 @@
 import os
 import shutil
+import typing as t
+
+from pathlib import Path
 
 from PIL import (  # type: ignore  # https://github.com/python-pillow/Pillow/issues/2625
     Image,
 )
 
+import xleapp.globals as g
 
-def generate_thumbnail(imDirectory, imFilename, seeker, report_folder):
+
+if t.TYPE_CHECKING:
+    from xleapp.helpers.search import FileSeekerBase
+
+
+def generate_thumbnail(
+    imDirectory: Path,
+    imFilename: str,
+    seeker: FileSeekerBase,
+    report_folder: Path,
+) -> str:
     """
     searching for thumbnails, copy it to report folder and return tag  to
     insert in html
     """
-    thumb = f"{g.app.get('thumbnail_root')}/{imDirectory}/{imFilename}"
+    thumb = f"{g.app.default_configs.get('thumbnail_root')}/{imDirectory}/{imFilename}"
     thumblist = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)
     thumbname = imDirectory.replace("/", "_") + "_" + imFilename + ".JPG"
     pathToThumb = os.path.join(
@@ -24,13 +38,13 @@ def generate_thumbnail(imDirectory, imFilename, seeker, report_folder):
         # recreate thumbnail from image
         # TODO: handle videos and HEIC
         files = seeker.search(
-            f"{g.app.get('MEDIA_ROOT')}/{imDirectory}/{imFilename}",
+            f"{g.app.default_configs.get('MEDIA_ROOT')}/{imDirectory}/{imFilename}",
             return_on_first_hit=True,
         )
         if files:
             try:
                 im = Image.open(files[0])
-                im.thumbnail(g.app.get("THUMB_SIZE"))
+                im.thumbnail(g.app.default_configs.get("THUMB_SIZE"))
                 im.save(os.path.join(report_folder, thumbname))
             except:  # noqa
                 pass  # unsupported format

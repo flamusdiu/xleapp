@@ -2,7 +2,6 @@ import logging
 import shutil
 import typing as t
 
-from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
 from textwrap import TextWrapper
@@ -105,7 +104,10 @@ def generate_artifact_table(artifacts) -> None:
 
 
 def copyfile(
-    report_folder: Path, name: str, input_file: t.Union[PathLike, str], output_file: str
+    report_folder: Path,
+    name: str,
+    input_file: t.Union[PathLike, str],
+    output_file: str,
 ) -> Path:
     """Exports file to report folder
 
@@ -133,7 +135,7 @@ def copyfile(
     return output_file
 
 
-def filter_artifacts(artifact_list) -> filter:
+def filter_artifacts(artifact_list: t.Iterable) -> filter:
     return filter(
         lambda artifact: getattr(artifact, "select", False) is True,
         artifact_list,

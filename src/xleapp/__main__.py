@@ -3,7 +3,6 @@ import logging
 import time
 
 import xleapp.globals as g
-import xleapp.log as log
 import xleapp.report as report
 import xleapp.templating as templating
 
@@ -111,24 +110,10 @@ def get_parser():
     return parser
 
 
-def parse_args(parser):
+def parse_args(parser: argparse.ArgumentParser):
     args = parser.parse_args()
-
-    extraction_type = ValidateInput(
-        args.input_path,
-        args.output_folder,
-    )
-
     artifacts = args.artifacts or ()
-    g.app = XLEAPP(
-        *artifacts,
-        output_folder=args.output_folder,
-        input_path=args.input_path,
-        device_type=args.device_type,
-        extraction_type=extraction_type,
-    )
-
-    log.init()
+    g.app = XLEAPP()
 
     if args.gui:
         import xleapp.gui as gui
@@ -139,6 +124,18 @@ def parse_args(parser):
     elif args.artifact_table:
         generate_artifact_table()
     else:
+        extraction_type = ValidateInput(
+            args.input_path,
+            args.output_folder,
+        )
+
+        g.app = g.app(
+            *artifacts,
+            output_folder=args.output_folder,
+            input_path=args.input_path,
+            device_type=args.device_type,
+            extraction_type=extraction_type,
+        )
         return args
     exit()
 

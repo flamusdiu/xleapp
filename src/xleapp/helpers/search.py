@@ -31,25 +31,26 @@ class PathValidator(Validator):
 
 
 class HandleValidator(Validator):
-    def validator(self, value):
+    def validator(self, value) -> None:
         if isinstance(value, (str, Path)):
             return None
         elif not isinstance(value, (sqlite3.Connection, IOBase)):
             raise TypeError(
-                f"Expected {value!r} to be one of: string, Path, sqlite3.Connection or IOBase."
+                f"Expected {value!r} to be one of: string, Path, sqlite3.Connection"
+                " or IOBase.",
             )
 
 
 class Handle:
-    h = HandleValidator()
+    file_handle = HandleValidator()
     path = PathValidator()
 
-    def __init__(self, file: t.Any, path: t.Any = None) -> None:
+    def __init__(self, found_file: t.Any, path: Path = None) -> None:
         self.path = path
-        self.h = file
+        self.file_handle = found_file
 
     def __call__(self):
-        return self.h or self.path
+        return self.file_handle or self.path
 
 
 class FileHandles(UserDict):
@@ -59,7 +60,7 @@ class FileHandles(UserDict):
         super().__init__(self, *args, **kwargs)
         self.default_factory = set
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum(count for count in self.values())
 
     def add(self, regex: str, files: list, file_names_only: bool = False) -> None:
@@ -149,7 +150,9 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def search(
-        self, filepattern_to_search: str, return_on_first_hit: bool = False
+        self,
+        filepattern_to_search: str,
+        return_on_first_hit: bool = False,
     ) -> t.Iterator[t.Any]:
         """Returns a list of paths for files/folders that matched"""
         pass

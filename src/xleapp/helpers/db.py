@@ -1,7 +1,10 @@
-import os
+import logging
 import sqlite3
 
 from .utils import is_platform_windows
+
+
+logger_log = logging.getLogger("xleapp.logfile")
 
 
 def open_sqlite_db_readonly(path: str) -> sqlite3.Connection:
@@ -21,7 +24,9 @@ def open_sqlite_db_readonly(path: str) -> sqlite3.Connection:
 
 
 def does_column_exist_in_db(
-    db: sqlite3.Connection, table_name: str, col_name: str
+    db: sqlite3.Connection,
+    table_name: str,
+    col_name: str,
 ) -> bool:
     """Checks if a specific col exists"""
     col_name = col_name.lower()
@@ -35,8 +40,7 @@ def does_column_exist_in_db(
             if row["name"].lower() == col_name:
                 return True
     except sqlite3.Error as ex:
-        # logfunc(f"Query error, query={query} Error={str(ex)}")
-        pass
+        logger_log.error(f"Query error, query={query} Error={str(ex)}")
     return False
 
 
@@ -44,13 +48,12 @@ def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
     """Checks if a table with specified name exists in an sqlite db"""
     try:
         query = (
-            f"SELECT name FROM sqlite_master "
+            "SELECT name FROM sqlite_master "
             f"WHERE type='table' AND name='{table_name}'"
         )
         cursor = db.execute(query)
         for row in cursor:
             return True
     except sqlite3.Error as ex:
-        # logfunc(f"Query error, query={query} Error={str(ex)}")
-        pass
+        logger_log.error(f"Query error, query={query} Error={str(ex)}")
     return False

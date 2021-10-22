@@ -6,16 +6,23 @@ import typing as t
 
 from dataclasses import dataclass
 from enum import Enum
-from importlib.metadata import entry_points
 from pathlib import Path
 
+import wrapt
+
 from xleapp.helpers.strings import split_camel_case
+from xleapp.helpers.utils import discovered_plugins
 
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
 
 logger_log = logging.getLogger("xleapp.logfile")
+
+
+class ArtifactProxy(wrapt.ObjectProxy):
+    def __hash__(self):
+        return hash((self.__wrapped__.name, self.__wrapped__.category))
 
 
 class ArtifactError(Exception):
@@ -54,13 +61,19 @@ class Artifact:
 class Artifacts:
 
     data: Enum
+    app: "XLEAPP"
 
     def __init__(self, app: "XLEAPP") -> None:
-        self.data = Artifacts.generate_artifact_enum(app)
+        self.app = app
+
+    def __call__(self, device_type: str) -> "Artifacts":
+        self.data = Artifacts.generate_artifact_enum(self.app, device_type)
+        return self
 
     def __getattr__(self, name: str) -> t.Any:
         try:
-            return getattr(self.data, name)
+            if name != 'data':
+                return getattr(self.data, name)
         except AttributeError:
             raise AttributeError(
                 f"{__name__!r} doesn't have {name!r} attribute",
@@ -81,6 +94,9 @@ class Artifacts:
         else:
             return True
 
+    def __len__(self):
+        return len(self.data) or 0
+
     @property
     def installed(self) -> list:
         return [artifact.cls_name for artifact in self]
@@ -90,7 +106,7 @@ class Artifacts:
         return [artifact.cls_name for artifact in self if artifact.select]
 
     def reset(self):
-        for artifact in self.data:
+        for artifact in self:
             if not artifact.core:
                 artifact.selected = False
 
@@ -116,16 +132,11 @@ class Artifacts:
                 raise KeyError(f"Artifact[{item!r}] does not exist!")
 
     @staticmethod
-    def generate_artifact_enum(app: "XLEAPP"):
+    def generate_artifact_enum(app: "XLEAPP", device_type: str):
         members = {}
-        device_type: str = app.device["type"]
-        discovered_plugins = [
-            plugin
-            for plugin in entry_points()["xleapp.plugins"]
-            if plugin.name == device_type
-        ]
+        plugins = discovered_plugins()
 
-        for plugin in discovered_plugins:
+        for plugin in plugins[device_type]:
             # Plugins return a str which is the plugin direction to
             # find plugins inside of. This direction is loading
             # that directory. Then, all the plugins are loaded.
@@ -148,15 +159,16 @@ class Artifacts:
                             != 0
                             and not inspect.isabstract(xleapp_cls)
                         ):
+
                             artifact: "Artifact" = dataclass(
                                 xleapp_cls,
-                                unsafe_hash=True,
                             )()
                             artifact_name = "_".join(
                                 split_camel_case(artifact.cls_name),
                             ).upper()
                             artifact.app = app
-                            members[artifact] = [
+                            artifact_proxy = ArtifactProxy(artifact)
+                            members[artifact_proxy] = [
                                 artifact_name,
                                 artifact.cls_name,
                             ]

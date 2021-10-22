@@ -1,5 +1,7 @@
 # xLEAPP
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 **Development build. Please be cauious using on real cases.**
 
 Framework for Logs, Events, And Plists Parser (LEAPP)
