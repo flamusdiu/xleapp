@@ -27,11 +27,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 Jinja2 = "^3.0.2"
-PySimpleGUI = "^4.49.0"
+PySimpleGUI = "^4.51.0"
 PyYAML = "^6.0"
 prettytable = "^2.2.1"
 python-magic-bin = "^0.4.14"
 simplekml = "^1.3.6"
+wrapt = "^1.13.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
