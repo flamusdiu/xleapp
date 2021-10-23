@@ -57,7 +57,7 @@ def main(app: "XLEAPP") -> None:
 
     if len(window["-DEVICETYPE-"].Values) > 0:
         device_type = window["-DEVICETYPE-"].Values[0]
-        artifacts = Artifacts.generate_artifact_enum(app=app, device_type=device_type)
+        artifacts = app.artifacts(device_type=device_type)
         window["-DEVICETYPE-"].update(set_to_index=0, scroll_to_index=0)
         window["-MODULELIST-"].update(
             values=generate_artifact_list(artifacts),

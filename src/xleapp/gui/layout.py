@@ -98,7 +98,7 @@ def generate_layout() -> list:
                     PySG.FileBrowse(
                         font=Font.NORMAL,
                         button_text="Browse File", key="-INPUTFILEBROWSER-",
-                        file_types=(("Compressed Files", ("*.tar", "*.zip", "*.gz"))),
+                        file_types=(("Compressed Files", ("*.tar", "*.zip", "*.gz")),),
                     ),
                     PySG.FolderBrowse(
                         font=Font.NORMAL,
