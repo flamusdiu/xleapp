@@ -10,8 +10,8 @@ import prettytable
 
 import xleapp.helpers.utils as utils
 
-from ._abstract import Artifact
-from ._decorators import Search, core_artifact, long_running_process
+from .abstract import Artifact
+from .decorators import Search, core_artifact, long_running_process
 
 
 if t.TYPE_CHECKING:
@@ -21,36 +21,28 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 def crunch_artifacts(app: "XLEAPP") -> None:
-    def process(artifacts):
-        for artifact in artifacts:
-            if not artifact.select:
-                continue
-            # Now ready to run
-            # Special processing for iTunesBackup Info.plist as it is a
-            # separate entity, not part of the Manifest.db. Seeker won't find it
-            if artifact.cls_name == "ITunesBackupInfo":
+    while not app.artifacts.queue.empty():
+        _, artifact = app.artifacts.queue.get()
+
+        # Now ready to run
+        # Special processing for iTunesBackup Info.plist as it is a
+        # separate entity, not part of the Manifest.db. Seeker won't find it
+        if app.device["type"] == "ios" and app.extraction_type == "itunes":
+            if artifact.name == "ITUNES_BACKUP_INFO":
                 info_plist_path = Path(app.input_path) / "Info.plist"
-                if info_plist_path.exists():
-                    app.artifacts["ITunesBackupInfo"].process()
-                else:
+                if not info_plist_path.exists():
                     logger_log.info("Info.plist not found for iTunes Backup!")
+                else:
+                    app.artifacts['LAST_BUILD'].select = False
                 # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
-            else:
-                artifact.process()
+        else:
+            app.artifacts['ITUNES_BACKUP_INFO'].select = False
 
-    # Process core artifacts first
-    core = filter(
-        lambda artifact: artifact.core and artifact.select,
-        app.artifacts,
-    )
-    process(core)
+        if not artifact.select:
+            continue
 
-    # Process everything else
-    standard = filter(
-        lambda artifact: not artifact.core and artifact.select,
-        app.artifacts,
-    )
-    process(standard)
+        artifact.process()
+        app.artifacts.queue.task_done()
 
 
 def generate_artifact_path_list(artifacts) -> None:

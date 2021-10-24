@@ -88,11 +88,13 @@ class FileHandles(UserDict):
                     db = sqlite3.connect(
                         f"file:{path}?mode=ro",
                         uri=True,
-                        check_same_thread=False,
                     )
+                    cursor = db.cursor()
+                    # This will fail if not a database file
+                    cursor.execute("PRAGMA page_count").fetchone()
                     db.row_factory = sqlite3.Row
                     file_handle = Handle(found_file=db, path=path)
-                except (sqlite3.OperationalError, sqlite3.DatabaseError, TypeError):
+                except (sqlite3.DatabaseError):
                     fp = open(extended_path, "rb")
                     file_handle = Handle(found_file=fp, path=path)
                 except FileNotFoundError:

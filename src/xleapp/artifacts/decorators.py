@@ -2,7 +2,7 @@ import functools
 import logging
 import sqlite3
 
-from ._abstract import Artifact
+from .abstract import Artifact
 
 
 logger_log = logging.getLogger("xleapp.logfile")

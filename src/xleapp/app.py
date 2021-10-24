@@ -13,13 +13,13 @@ import jinja2
 from jinja2 import Environment
 
 import xleapp.artifacts as artifacts
-import xleapp.log as log
 import xleapp.templating as templating
 
+from xleapp.artifacts.abstract import Artifact
 from xleapp.helpers.descriptors import Validator
 
 from ._version import __project__, __version__
-from .artifacts.services import ArtifactError, Artifacts
+from .artifacts.services import Artifacts
 from .helpers.search import FileSeekerBase
 from .templating._ext import IncludeLogFileExtension
 
@@ -67,18 +67,18 @@ class XLEAPP:
     """
 
     debug: bool = False
-    project: str
-    version: str
+    default_configs: dict[str, t.Any]
     device: Device = Device()
-    default_configs: dict[str, t.Any] = {}
     extraction_type: str
-    report_folder: Path
-    log_folder: Path
-    seeker: FileSeekerBase
-    jinja_environment = Environment
-    processing_time: float
     input_path: Path
+    jinja_environment = Environment
+    log_folder: Path
     output_folder = OutputFolder()
+    processing_time: float
+    project: str
+    report_folder: Path
+    seeker: FileSeekerBase
+    version: str
 
     def __init__(self) -> None:
         self.default_configs = {
@@ -92,58 +92,24 @@ class XLEAPP:
 
     def __call__(
         self,
-        *artifacts,
+        *artifacts: t.Optional[list[Artifact]],
+        device_type: t.Optional[str] = None,
         output_folder: t.Optional[Path] = None,
         input_path: t.Optional[Path] = None,
         extraction_type: t.Optional[str] = None,
     ) -> None:
         self.output_folder = output_folder
         self.create_output_folder()
-
-        log.init()
-
         self.input_path = input_path
         self.extraction_type = extraction_type
+        self.device.update({'type': device_type})
 
-    def set_device(self, type: str) -> None:
-        self.device["type"] = type
+        for artifact in self.artifacts:
+            if artifacts and artifact in artifacts:
+                self.artifacts[artifact.name].select = True
 
-        # If an Itunes backup, use that artifact otherwise use
-        # 'LastBuild' for everything else.
-        if self.extraction_type == "itunes":
-            self.artifacts.LAST_BUILD.select = False
-        else:
-            self.artifacts.ITUNES_BACKUP_INFO.select = False
-
-        choosen_artifacts = [name.lower() for name in artifacts]
-        if not choosen_artifacts:
-            # If no artifacts selected then choose all of them.
-            self.artifacts.select(all=True)
-        else:
-            filtered_artifacts = filter(
-                lambda artifact: (
-                    artifact.cls_name.lower() in choosen_artifacts and not artifact.core
-                ),
-                self.artifacts,
-            )
-
-            # Remove the 'core' group of artifacts from this list.
-            # It is not a "true" artifact.
-            if 'core' in choosen_artifacts:
-                choosen_artifacts.remove('core')
-
-            for artifact in filtered_artifacts:
-                try:
-                    choosen_artifacts.remove(artifact.cls_name.lower())
-                except ValueError:
-                    # Core artifacts are not usually not given on the CLI. However,
-                    # if they are specified, they are removed from this list.
-                    pass
-
-                artifact.select = True
-
-            if len(choosen_artifacts) > 0:
-                raise ArtifactError(f"Artifact(s) - {choosen_artifacts!r} not valid!")
+            if not artifacts:
+                self.artifacts[artifact.name].select = True
 
     @cached_property
     def jinja_env(self) -> Environment:

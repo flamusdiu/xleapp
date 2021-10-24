@@ -1,15 +1,17 @@
 import importlib
 import logging
 import logging.config
-import typing as t
-from pathlib import Path
 import os
+import typing as t
+
+from pathlib import Path
 
 import yaml
 
 import xleapp.globals as g
 
 from ..helpers.utils import generate_program_header
+
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
@@ -80,9 +82,7 @@ class FileHandlerWithHeader(logging.FileHandler):
 
 
 def init():
-    logConfig = (
-        Path(importlib.util.find_spec(__name__).origin).parent / "log_config.yaml"
-    )
+    logConfig = Path(importlib.util.find_spec(__name__).origin).parent / "log_config.yaml"
     with open(logConfig, "r") as file:
         config = yaml.safe_load(file.read())
 
@@ -90,9 +90,7 @@ def init():
         g.app.log_folder.mkdir(parents=True, exist_ok=True)
 
     info_log_file = config["handlers"]["info_file_handler"]["filename"]
-    config["handlers"]["info_file_handler"]["filename"] = (
-        g.app.log_folder / info_log_file
-    )
+    config["handlers"]["info_file_handler"]["filename"] = g.app.log_folder / info_log_file
     config["handlers"]["info_file_handler"]["header"] = generate_program_header(
         project_version=f"{g.app.project} v{g.app.version}",
         input_path=g.app.input_path,

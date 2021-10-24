@@ -23,7 +23,7 @@ from pathlib import Path
 
 import xleapp.artifacts as artifacts
 
-from ._descriptors import FoundFiles, ReportHeaders, WebIcon
+from .descriptors import FoundFiles, ReportHeaders, WebIcon
 
 
 if t.TYPE_CHECKING:

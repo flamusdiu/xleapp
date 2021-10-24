@@ -3,6 +3,7 @@ import logging
 import time
 
 import xleapp.globals as g
+import xleapp.log as log
 import xleapp.report as report
 import xleapp.templating as templating
 
@@ -129,11 +130,11 @@ def parse_args(parser: argparse.ArgumentParser):
             args.output_folder,
         )
 
-        g.app = g.app(
+        g.app(
             *artifacts,
+            device_type=args.device_type,
             output_folder=args.output_folder,
             input_path=args.input_path,
-            device_type=args.device_type,
             extraction_type=extraction_type,
         )
         return args
@@ -185,6 +186,8 @@ def _main(app: "XLEAPP"):
 def cli():
     parser = get_parser()
     parse_args(parser)
+
+    log.init()
 
     _main(g.app)
 

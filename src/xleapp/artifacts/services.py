@@ -7,6 +7,7 @@ import typing as t
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from queue import PriorityQueue
 
 import wrapt
 
@@ -30,6 +31,9 @@ class ArtifactError(Exception):
 
 
 class Artifact:
+    def __lt__(self, other):
+        return self.name < other.name
+
     def __getattr__(self, name: str) -> t.Any:
         if "_value_" in self.__dict__.keys():
             if hasattr(self.value, name):
@@ -62,12 +66,24 @@ class Artifacts:
 
     data: Enum
     app: "XLEAPP"
+    queue: PriorityQueue
 
     def __init__(self, app: "XLEAPP") -> None:
         self.app = app
+        if 'type' in self.app.device:
+            self = self(self.app.device["type"])
 
     def __call__(self, device_type: str) -> "Artifacts":
-        self.data = Artifacts.generate_artifact_enum(self.app, device_type)
+        self.queue = PriorityQueue()
+        self.data = Artifacts.generate_artifact_enum(
+            app=self.app,
+            device_type=device_type,
+        )
+        for artifact in self.data:
+            priorty = 10
+            if artifact.core:
+                priorty = 1
+            self.queue.put((priorty, artifact))
         return self
 
     def __getattr__(self, name: str) -> t.Any:
