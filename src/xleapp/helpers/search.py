@@ -7,7 +7,6 @@ import typing as t
 
 from abc import ABC, abstractmethod
 from collections import UserDict
-from functools import lru_cache
 from io import IOBase
 from pathlib import Path
 from shutil import copyfile
@@ -80,27 +79,22 @@ class FileHandles(UserDict):
             """
 
             if len(files) > 10 or file_names_only:
-                file_handle = Handle(file=item, path=path)
+                file_handle = Handle(found_file=item, path=path)
             else:
                 if item.drive.startswith("\\\\?\\"):
                     extended_path = Path(item)
 
                 try:
-                    db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
-                    cursor = db.cursor()
-                    (page_size,) = cursor.execute("PRAGMA page_size").fetchone()
-                    (page_count,) = cursor.execute("PRAGMA page_count").fetchone()
-
-                    if page_size * page_count < 40960:  # less then 40 MB
-                        db_mem = sqlite3.connect(":memory:")
-                        db.backup(db_mem)
-                        db.close()
-                        db = db_mem
+                    db = sqlite3.connect(
+                        f"file:{path}?mode=ro",
+                        uri=True,
+                        check_same_thread=False,
+                    )
                     db.row_factory = sqlite3.Row
-                    file_handle = Handle(file=db, path=path)
+                    file_handle = Handle(found_file=db, path=path)
                 except (sqlite3.OperationalError, sqlite3.DatabaseError, TypeError):
                     fp = open(extended_path, "rb")
-                    file_handle = Handle(file=fp, path=path)
+                    file_handle = Handle(found_file=fp, path=path)
                 except FileNotFoundError:
                     raise FileNotFoundError(f"File {path!r} was not found!")
             if file_handle:
@@ -281,7 +275,6 @@ class FileSeekerTar(FileSeekerBase):
         mode = "r:gz" if self.is_gzip else "r"
         self.tar_file = tarfile.open(directory, mode)
         self.temp_folder = Path(temp_folder)
-        self.tar_file.getmembers()
 
     def search(self, filepattern, return_on_first_hit=False):
         for member in self.build_files_list():
@@ -303,7 +296,6 @@ class FileSeekerTar(FileSeekerBase):
     def cleanup(self):
         self.tar_file.close()
 
-    @lru_cache(maxsize=5)
     def build_files_list(self) -> list[tarfile.TarInfo]:
         return self.tar_file.getmembers()
 
