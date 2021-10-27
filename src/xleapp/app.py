@@ -13,6 +13,8 @@ import jinja2
 from jinja2 import Environment
 
 import xleapp.artifacts as artifacts
+import PySimpleGUI as PySG
+import xleapp.report as report
 import xleapp.templating as templating
 
 from xleapp.artifacts.abstract import Artifact
@@ -73,7 +75,7 @@ class XLEAPP:
     input_path: Path
     jinja_environment = Environment
     log_folder: Path
-    output_folder = OutputFolder()
+    output_path = OutputFolder()
     processing_time: float
     project: str
     report_folder: Path
@@ -94,11 +96,11 @@ class XLEAPP:
         self,
         *artifacts: t.Optional[list[Artifact]],
         device_type: t.Optional[str] = None,
-        output_folder: t.Optional[Path] = None,
+        output_path: t.Optional[Path] = None,
         input_path: t.Optional[Path] = None,
         extraction_type: t.Optional[str] = None,
     ) -> None:
-        self.output_folder = output_folder
+        self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
         self.extraction_type = extraction_type
@@ -111,6 +113,8 @@ class XLEAPP:
             if not artifacts:
                 self.artifacts[artifact.name].select = True
 
+        return self
+
     @cached_property
     def jinja_env(self) -> Environment:
         return self.create_jinja_environment()
@@ -120,7 +124,7 @@ class XLEAPP:
         current_time = now.strftime("%Y-%m-%d_%A_%H%M%S")
 
         rf = self.report_folder = (
-            Path(self.output_folder) / f"xLEAPP_Reports_{current_time}"
+            Path(self.output_path) / f"xLEAPP_Reports_{current_time}"
         )
 
         tf = self.temp_folder = rf / "temp"
@@ -148,8 +152,8 @@ class XLEAPP:
     def artifacts(self) -> Enum:
         return Artifacts(self)
 
-    def crunch_artifacts(self) -> None:
-        return artifacts.crunch_artifacts(self)
+    def crunch_artifacts(self, window: PySG.Window) -> None:
+        return self.artifacts.crunch_artifacts(window)
 
     def generate_artifact_table(self):
         return artifacts.generate_artifact_table(self.artifacts)
@@ -159,6 +163,7 @@ class XLEAPP:
 
     def generate_reports(self):
         logger_log.info("\nGenerating artifact report files...")
+        report.copy_static_files(self.report_folder)
         nav = templating.generate_nav(
             report_folder=self.report_folder,
             artifacts=self.artifacts,
@@ -185,7 +190,7 @@ class XLEAPP:
             else:
                 logger_log.info(f"{msg_artifact}: Report skipped for core artifacts!")
         logger_log.info("Report files generated!")
-        logger_log.info(f"Report location: {self.output_folder}")
+        logger_log.info(f"Report location: {self.output_path}")
 
     @property
     def num_to_process(self):

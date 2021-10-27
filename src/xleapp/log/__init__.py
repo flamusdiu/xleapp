@@ -94,7 +94,7 @@ def init():
     config["handlers"]["info_file_handler"]["header"] = generate_program_header(
         project_version=f"{g.app.project} v{g.app.version}",
         input_path=g.app.input_path,
-        output_path=g.app.output_folder,
+        output_path=g.app.output_path,
         num_to_process=g.app.num_to_process,
         num_of_categories=g.app.num_of_categories,
     )

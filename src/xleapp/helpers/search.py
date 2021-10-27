@@ -148,7 +148,6 @@ class FileSeekerBase(ABC):
     def search(
         self,
         filepattern_to_search: str,
-        return_on_first_hit: bool = False,
     ) -> t.Iterator[t.Any]:
         """Returns a list of paths for files/folders that matched"""
         pass
@@ -278,7 +277,7 @@ class FileSeekerTar(FileSeekerBase):
         self.tar_file = tarfile.open(directory, mode)
         self.temp_folder = Path(temp_folder)
 
-    def search(self, filepattern, return_on_first_hit=False):
+    def search(self, filepattern):
         for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, filepattern):
 

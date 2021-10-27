@@ -1,4 +1,5 @@
-import xleapp.report._webicons as web
+import xleapp.report.webicons as web
+
 from xleapp.helpers.descriptors import Validator
 
 

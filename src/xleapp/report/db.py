@@ -5,12 +5,11 @@
 import codecs
 import csv
 import sqlite3
+
 from abc import abstractmethod
 from pathlib import Path
-import typing as t
 
 import simplekml
-from xleapp import report
 
 
 class Options:
@@ -32,7 +31,7 @@ class Options:
 class DBManager:
     connection = None
     report_folder: Path = None
-    file: Path = None
+    db_file: Path = None
     options: dict = Options()
 
     def __init__(self, report_folder: Path, db_folder: Path, options: dict) -> None:
@@ -41,7 +40,7 @@ class DBManager:
         self.options = options
 
     def __enter__(self) -> "DBManager":
-        self.connection = sqlite3.connect(self.file, isolation_level="exclusive")
+        self.connection = sqlite3.connect(self.db_file, isolation_level="exclusive")
         self.connection.row_factory = sqlite3.Row
         return self
 
@@ -70,12 +69,14 @@ class DBManager:
 class KmlDBManager(DBManager):
     def __init__(self, report_folder: Path, **options) -> None:
         super().__init__(
-            report_folder=report_folder, db_folder="_KML_Exports", options=options
+            report_folder=report_folder,
+            db_folder="_KML_Exports",
+            options=options,
         )
-        self.file = self.report_folder / "_latlong.db"
+        self.db_file = self.report_folder / "_latlong.db"
 
-        if not self.file.exists():
-            db = sqlite3.connect(self.file, isolation_level="exclusive")
+        if not self.db_file.exists():
+            db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
             cursor.execute(
                 """
@@ -116,12 +117,14 @@ class KmlDBManager(DBManager):
 class TimelineDBManager(DBManager):
     def __init__(self, report_folder: Path, **options):
         super().__init__(
-            report_folder=report_folder, db_folder="_Timeline", options=options
+            report_folder=report_folder,
+            db_folder="_Timeline",
+            options=options,
         )
-        self.file = self.report_folder / "t1.db"
+        self.db_file = self.report_folder / "t1.db"
 
-        if not self.file.exists():
-            db = sqlite3.connect(self.file, isolation_level="exclusive")
+        if not self.db_file.exists():
+            db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
             cursor.execute(
                 """
@@ -148,12 +151,14 @@ class TimelineDBManager(DBManager):
 class TsvManager(DBManager):
     def __init__(self, report_folder: Path, **options):
         super().__init__(
-            report_folder=report_folder, db_folder="_TSV Exports", options=options
+            report_folder=report_folder,
+            db_folder="_TSV Exports",
+            options=options,
         )
-        self.file = f"{self.file}.tsv"
+        self.db_file = f"{self.db_file}.tsv"
 
     def __enter__(self):
-        self.connection = codecs.open(self.file, "a", "utf-8-sig")
+        self.connection = codecs.open(self.db_file, "a", "utf-8-sig")
         return self.connection
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:

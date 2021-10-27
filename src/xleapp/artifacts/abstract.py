@@ -108,7 +108,7 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         `seeker`. It saves should save the report in `report_folder`.
         """
         raise NotImplementedError(
-            "Needs to implement AbastractArtifact's" "process() method!",
+            "Needs to implement Artifact's" "process() method!",
         )
 
     @contextmanager
@@ -126,7 +126,7 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         Example:
             This can be used with `with` blocks::
 
-                with Artifact.context(['*/myregex*'], file_names_only=True) as artifact:
+                with Artifact.context({'*/myregex*'}, file_names_only=True) as artifact:
                     artifact.name = 'New Name'
                     artifact.process()
 

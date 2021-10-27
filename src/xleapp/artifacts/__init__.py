@@ -12,37 +12,13 @@ import xleapp.helpers.utils as utils
 
 from .abstract import Artifact
 from .decorators import Search, core_artifact, long_running_process
+from .services import ArtifactError
 
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
 
 logger_log = logging.getLogger("xleapp.logfile")
-
-
-def crunch_artifacts(app: "XLEAPP") -> None:
-    while not app.artifacts.queue.empty():
-        _, artifact = app.artifacts.queue.get()
-
-        # Now ready to run
-        # Special processing for iTunesBackup Info.plist as it is a
-        # separate entity, not part of the Manifest.db. Seeker won't find it
-        if app.device["type"] == "ios" and app.extraction_type == "itunes":
-            if artifact.name == "ITUNES_BACKUP_INFO":
-                info_plist_path = Path(app.input_path) / "Info.plist"
-                if not info_plist_path.exists():
-                    logger_log.info("Info.plist not found for iTunes Backup!")
-                else:
-                    app.artifacts['LAST_BUILD'].select = False
-                # noqa GuiWindow.SetProgressBar(categories_searched * ratio)
-        else:
-            app.artifacts['ITUNES_BACKUP_INFO'].select = False
-
-        if not artifact.select:
-            continue
-
-        artifact.process()
-        app.artifacts.queue.task_done()
 
 
 def generate_artifact_path_list(artifacts) -> None:

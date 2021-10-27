@@ -9,8 +9,10 @@ from enum import Enum
 from pathlib import Path
 from queue import PriorityQueue
 
+import PySimpleGUI as PySG
 import wrapt
 
+from xleapp.helpers.decorators import timed
 from xleapp.helpers.strings import split_camel_case
 from xleapp.helpers.utils import discovered_plugins
 
@@ -35,10 +37,9 @@ class Artifact:
         return self.name < other.name
 
     def __getattr__(self, name: str) -> t.Any:
-        if "_value_" in self.__dict__.keys():
-            if hasattr(self.value, name):
-                return getattr(self.value, name)
-        if name in self.__dict__:
+        if "_value_" in self.__dict__.keys() and hasattr(self.value, name):
+            return getattr(self.value, name)
+        elif name in self.__dict__:
             return self.__dict__[name]
         else:
             raise AttributeError(
@@ -56,7 +57,7 @@ class Artifact:
     def process(self) -> None:
         msg_artifact = f"{self.value.category} [{self.cls_name}] artifact"
         logger_log.info(f"\n{msg_artifact} processing...")
-        self.value.process_time, _ = self.value.process()
+        self.value.process_time, _ = timed(self.value.process)()
         if not self.value.processed:
             logger_log.warn("-> Failed to processed!")
         logger_log.info(f"{msg_artifact} finished in {self.value.process_time:.2f}s")
@@ -197,3 +198,20 @@ class Artifacts:
             module=__name__,
             type=Artifact,
         )
+
+    def crunch_artifacts(self, window: PySG.Window):
+        num_processed = 0
+        artifact: Artifact = None
+
+        while not self.queue.empty():
+            _, artifact = self.queue.get()
+
+            if not artifact.select:
+                self.queue.task_done()
+                continue
+
+            artifact.process()
+            num_processed += 1
+            window.write_event_value("<THREAD>", num_processed)
+            self.queue.task_done()
+        window.write_event_value("<DONE>", None)

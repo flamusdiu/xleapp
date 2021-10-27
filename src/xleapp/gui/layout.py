@@ -76,7 +76,13 @@ def layout_left_column():
     layout = [
         [PySG.Fr(
             layout=[
-                [PySG.Output(size=(79, 23), key="-LOG-", echo_stdout_stderr=True)],
+                [PySG.Multiline(
+                    size=(79, 23),
+                    key="<LOG>",
+                    reroute_stdout=True,
+                    write_only=True,
+                    autoscroll=True,
+                )],
             ], title="Log File", font=Font.FRAME)],
     ]
 
@@ -94,7 +100,13 @@ def generate_layout() -> list:
         [
             PySG.Fr(
                 layout=[[
-                    PySG.In(size=98, key="-INPUTFILEFOLDER-"),
+                    PySG.In(
+                        size=98,
+                        key="-INPUTFILEFOLDER-",
+                        disabled_readonly_background_color=(
+                            PySG.theme_input_background_color()
+                        ),
+                    ),
                     PySG.FileBrowse(
                         font=Font.NORMAL,
                         button_text="Browse File", key="-INPUTFILEBROWSER-",
@@ -107,7 +119,7 @@ def generate_layout() -> list:
                     ),
                 ]],
                 title=(
-                    "Select the file type or directory of the target file for"
+                    "Select the file type or directory of the target file for "
                     "parsing:"
                 ),
                 font=Font.FRAME),
@@ -115,7 +127,13 @@ def generate_layout() -> list:
         [
             PySG.Fr(
                 layout=[[
-                    PySG.In(size=113, key="-OUTPUTFOLDER-"),
+                    PySG.In(
+                        size=113,
+                        key="-OUTPUTFOLDER-",
+                        disabled_readonly_background_color=(
+                            PySG.theme_input_background_color()
+                        ),
+                    ),
                     PySG.FolderBrowse(
                         font=Font.NORMAL,
                         button_text="Browse Folder",
@@ -133,13 +151,40 @@ def generate_layout() -> list:
                 max_value=0,
                 orientation="h",
                 size=(85, 7),
-                key="-PROGRESSBAR-",
-                bar_color=("Red", "White"),
-                visible=True),
+                key="<PROGRESSBAR>",
+                bar_color=("Red", "White"),),
         ],
         [
-            PySG.Submit("Process", font=Font.NORMAL, disabled=True, key="-PROCESS-"),
-            PySG.B("Close", font=Font.NORMAL, key="<CLOSE>"),
+            PySG.Submit(
+                "Process",
+                font=Font.NORMAL,
+                disabled=True,
+                key="-PROCESS-",
+                size=(7, 1),
+            ),
+            PySG.B(
+                "Close",
+                font=Font.NORMAL,
+                key="<CLOSE>",
+                size=(5, 1),
+            ),
+            PySG.Col([[PySG.Multiline(
+                font=Font.NORMAL,
+                key="<REPORT URL>",
+                size=(70, 2),
+                no_scrollbar=True,
+                disabled=True,
+                enter_submits=False,
+                write_only=True,
+                visible=False,
+            )]], pad=(0, 0)),
+            PySG.B(
+                "Open Report",
+                font=Font.NORMAL,
+                key="<OPEN REPORT>",
+                disabled=True,
+                visible=False,
+            ),
         ],
     ]
 
@@ -164,7 +209,7 @@ def error_popup_no_modules():
                        border_width=0,),
              url(
                 url="https://github.com/flamusdiu/xleapp#readme",
-                title="xLEAPP Readme",),
+                title="xLEAPP Readme",)
              ],
             [PySG.Button('Error!', key="-ERROR-", button_color="Red", font=Font.NORMAL)],
         ], modal=True, disable_minimize=True, disable_close=True,

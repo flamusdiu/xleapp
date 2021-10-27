@@ -4,7 +4,6 @@ import time
 
 import xleapp.globals as g
 import xleapp.log as log
-import xleapp.report as report
 import xleapp.templating as templating
 
 from ._version import __project__, __version__
@@ -164,14 +163,10 @@ def _main(app: "XLEAPP"):
     @timed
     def process():
         logger_log.info(f"Processing {app.num_to_process} artifacts...")
-
         app.crunch_artifacts()
 
     run_time, _ = process()
-
     logger_log.info(f"\nCompleted processing artifacts in {run_time:.2f}s")
-    report.copy_static_files(app.report_folder)
-
     end_time = time.perf_counter()
 
     app.processing_time = end_time - start_time

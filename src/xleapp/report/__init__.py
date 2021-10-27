@@ -5,10 +5,11 @@ Reports Module
 
 import importlib
 import shutil
+
 from pathlib import Path
 
-from ._db import KmlDBManager, TimelineDBManager, TsvManager
-from ._webicons import WebIcon
+from .db import KmlDBManager, TimelineDBManager, TsvManager
+from .webicons import WebIcon
 
 
 def save_to_db(report_folder: Path, db_type: str, **options) -> None:

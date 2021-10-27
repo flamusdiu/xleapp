@@ -1,24 +1,23 @@
 import logging
 import re
+import time
 import typing as t
 import webbrowser
 
 from pathlib import Path
-from sre_constants import error
+from threading import Thread
 
 import PySimpleGUI as PySG
 
-from PySimpleGUI.PySimpleGUI import (
-    BUTTON_TYPE_CLOSES_WIN,
-    BUTTON_TYPE_CLOSES_WIN_ONLY,
-    Text,
-)
-
-import xleapp.gui.logging as gui_log
+import xleapp.gui.log as gui_log
 import xleapp.log as log
+import xleapp.templating as templating
 
 from xleapp.__main__ import _main
 from xleapp.artifacts.services import Artifacts
+from xleapp.gui.utils import disable_widgets
+from xleapp.helpers.search import search_providers
+from xleapp.helpers.strings import wraptext
 from xleapp.helpers.utils import ValidateInput
 
 from .layout import error_popup_no_modules, generate_artifact_list, generate_layout
@@ -28,14 +27,8 @@ if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
 
 regex = re.compile(r"^\w[\w\s]+\[(\w+)\]$")
-
-num_of_artifacts: int = 0
-
 window: PySG.Window = None
-
-
-def close_window(event):
-    window.close()
+logger = logging.getLogger("xleapp.log")
 
 
 def main(app: "XLEAPP") -> None:
@@ -45,15 +38,14 @@ def main(app: "XLEAPP") -> None:
 
     artifacts: "Artifacts" = None
     device_type: str = None
+    start_time: float() = 0.0
 
-    global window, valid_input
+    global window
     window = PySG.Window(
         f"xLEAPP Logs, Events, And Plists Parser - {app.version}",
         generate_layout(),
     ).finalize()
-
-    # Binds function to close button.
-    window["<CLOSE>"].Widget.bind("<Button-1>", close_window)
+    window['<REPORT URL>'].expand(True)
 
     if len(window["-DEVICETYPE-"].Values) > 0:
         device_type = window["-DEVICETYPE-"].Values[0]
@@ -67,75 +59,100 @@ def main(app: "XLEAPP") -> None:
         window["-DESELECTALL-"].update(disabled=False)
         window.refresh()
     else:
-        for widget in window.key_dict.keys():
-            if str(widget).startswith("-") and str(widget).endswith("-"):
-                try:
-                    window[f"{widget}"].update(disabled=True)
-                except TypeError:
-                    # Widget does not have an update function. Just skip it.
-                    pass
-
+        disable_widgets(window, disabled=True)
         window.refresh()
 
         error_popup_no_modules()
         window.close()
 
+    artifact_processor = Thread(target=app.crunch_artifacts, args=(window,), daemon=True)
+    window.refresh()
+
+    processing, stop, done = False, False, False
+
     while True:
         event, values = window.read()
 
-        if event == PySG.WIN_CLOSED:
-            break
-
-        if "-DEVICETYPE-" in values and values["-DEVICETYPE-"][0] != device_type:
+        if event in (PySG.WINDOW_CLOSE_ATTEMPTED_EVENT, "<CLOSE>"):
+            stop = True
+        elif "-DEVICETYPE-" in values and values["-DEVICETYPE-"][0] != device_type:
             device_type = values["-DEVICETYPE-"][0]
             artifacts = Artifacts.generate_artifact_enum(app=app, device_type=device_type)
             modules = generate_artifact_list(artifacts=artifacts)
             window["-MODULELIST-"].update(modules)
             window["-MODULELIST-"].set_value(())
-
-        if event == "-SELECTALL-":
+            window.refresh()
+        elif event == "-SELECTALL-":
             modulelist = window["-MODULELIST-"].get_list_values()
             window["-MODULELIST-"].set_value(modulelist)
             window.refresh()
-
         elif event == "-DESELECTALL-":
             window["-MODULELIST-"].set_value(())
             window.refresh()
-
         elif event == "-PROCESS-":
-            # check is selections made properly; if not we
-            # will return to input form without exiting
-            # app altogether
+            processing = True
 
-            # log.init()
+            disable_widgets(window, disabled=True)
 
-            # logging.getLogger("xleapp.log").addHandler(gui_log.Handler())
-
-            for artifact in app.artifacts:
-                window[f"-Artifact{artifact.name}-"].update(disabled=True)
+            start_time = time.perf_counter()
 
             input_path = values["-INPUTFILEFOLDER-"]
-            output_folder = values["-OUTPUTFOLDER-"]
+            output_path = values["-OUTPUTFOLDER-"]
 
             extraction_type = ValidateInput(
                 input_path=input_path,
-                output_folder=output_folder,
+                output_path=output_path,
             )
+
             app = app(
                 device_type=values["-DEVICETYPE-"][0],
                 input_path=input_path,
-                output_folder=output_folder,
+                output_path=output_path,
                 extraction_type=extraction_type,
             )
-            _main(app)
+
+            app.seeker = search_providers.create(
+                app.extraction_type.upper(),
+                directory=app.input_path,
+                temp_folder=app.temp_folder,
+            )
+
+            log.init()
+            window["<PROGRESSBAR>"].update(0, app.num_to_process)
+
+            logger.info(f"Processing {app.num_to_process} artifacts...")
+            artifact_processor.start()
+        elif event == "<THREAD>":
+            window["<PROGRESSBAR>"].update(values[event])
+        elif event == "<DONE>":
+            window.refresh()
+            time.sleep(1)
+
+            # logger.info(f"\nCompleted processing artifacts in {run_time:.2f}s")
+            end_time = time.perf_counter()
+            app.processing_time = end_time - start_time
+
+            logger.info("\nGenerating index file...")
+            templating.generate_index(app)
+            logger.info("-> Index file generated!")
+
+            app.generate_reports()
 
             report_path = Path(app.report_folder / "index.html").resolve()
+            str_report_path = str(report_path).replace("\\\\", "\\")
+            str_report_path = wraptext(str_report_path, "\\")
+            window["<OPEN REPORT>"].update(disabled=False, visible=True)
+            window['<REPORT URL>'].update(str_report_path, visible=True)
+            PySG.Popup("Processing completed")
 
-            locationmessage = f"Report name: {report_path}"
-            PySG.Popup("Processing completed", locationmessage)
+            done = True
+        elif event == "<OPEN REPORT>":
             webbrowser.open_new_tab(f"{report_path}")
+
+        if stop and done:
             break
 
-        window["-PROCESS-"].update(disabled=(len(window["-MODULELIST-"].get()) == 0))
+        if not processing:
+            window["-PROCESS-"].update(disabled=(len(window["-MODULELIST-"].get()) == 0))
 
     window.close()
