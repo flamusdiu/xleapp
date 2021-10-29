@@ -54,7 +54,7 @@ Second, `return_on_first_hit` ensures that the very first file found is returned
 <h2 id="skeleton">Skeleton Artifact</h2>
 
 ```python
-from xleapp import Artifact, WebIcon, Search, timed
+from xleapp import Artifact, WebIcon, Search
 
 
 class MyArtifact(Artifact):
