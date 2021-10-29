@@ -10,6 +10,8 @@ This framework is a complete rewrite of the excellent tool iLEAPP.Details of iLE
 
 xLEAPP is the framework created to merge several tools together. More information about the rewrite is given in by talk ([YouTube](https://www.youtube.com/watch?v=seTpCmSF0Gc)) at Black Hills Info Security&#39;s Wild West Hackin&#39; Fest (WWHF): Deadwood in 2021.
 
+<img src="https://user-images.githubusercontent.com/1879197/139466769-3155b3d9-75c6-4ef0-bbb0-73b77fdc349f.gif" width=700>
+
 ## Features
 
 * Provides a centralized and modular framework
