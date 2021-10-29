@@ -51,7 +51,11 @@ class FileHandler(logging.FileHandler):
         errors: t.Union[str, None] = None,
     ) -> None:
         super().__init__(
-            filename, mode=mode, encoding=encoding, delay=delay, errors=errors
+            filename,
+            mode=mode,
+            encoding=encoding,
+            delay=delay,
+            errors=errors,
         )
 
     def emit(self, record: logging.LogRecord):

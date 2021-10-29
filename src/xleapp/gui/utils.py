@@ -12,7 +12,13 @@ if t.TYPE_CHECKING:
 
 
 class ProcessThread(ABC, threading.Thread):
-    def __init__(self, app: "XLEAPP", window: PySG.Window = None, sleep_time: int = 0.1, daemon=True):
+    def __init__(
+        self,
+        app: "XLEAPP",
+        window: PySG.Window = None,
+        sleep_time: int = 0.1,
+        daemon=True,
+    ):
         self._stop_event = threading.Event()
         self._sleep_time = sleep_time
         self._app = app

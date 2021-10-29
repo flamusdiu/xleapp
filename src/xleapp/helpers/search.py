@@ -110,16 +110,16 @@ class FileHandles(UserDict):
         try:
             files = super().__getitem__(regex)
 
-            for num, file in enumerate(files, start=1):
+            for num, artifact_file in enumerate(files, start=1):
                 if regex not in self.logged:
                     if num == 1:
                         logger_process.info(f"\nFiles for {regex} located at:")
 
-                    logger_process.info(f"    {file.path}")
+                    logger_process.info(f"    {artifact_file.path}")
                     self.logged.append(regex)
 
-                if isinstance(file, IOBase):
-                    file.seek(0)
+                if isinstance(artifact_file, IOBase):
+                    artifact_file.seek(0)
             return files
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
@@ -128,8 +128,8 @@ class FileHandles(UserDict):
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
-                for file in files:
-                    file.close()
+                for artifact_file in files:
+                    artifact_file.close()
             else:
                 files.close()
 
@@ -163,7 +163,8 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def build_files_list(
-        self, folder: t.Optional[t.Union[str, Path]]
+        self,
+        folder: t.Optional[t.Union[str, Path]],
     ) -> t.Union[tuple[list, list], list]:
         """Finds files in directory"""
         pass

@@ -1,34 +1,33 @@
-
 import importlib
 import inspect
 
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from xleapp.artifacts.abstract import Artifact
 from xleapp.artifacts.services import Artifacts
 
 
 class Plugin(ABC):
-
     def __init__(self) -> None:
-        self.plugins = []
+        self._plugins: list[Artifact] = []
 
         for it in self.folder.glob("*.py"):
             if it.suffix == ".py" and it.stem not in ["__init__"]:
                 module_name = f'{".".join(self.folder.parts[-2:])}.{it.stem}'
                 module = importlib.import_module(module_name)
                 module_members = inspect.getmembers(module, inspect.isclass)
+                xleapp_cls: Artifact
                 for _, xleapp_cls in module_members:
                     # check MRO (Method Resolution Order) for
                     # Artifact classes. Also, insure
                     # we do not get an abstract class.
-                    artifact_mro = (
-                        {str(name).find("Artifact") for name in xleapp_cls.mro()}
-                    )
+                    artifact_mro = {
+                        str(name).find("Artifact") for name in xleapp_cls.mro()
+                    }
 
-                    if (
-                        len(artifact_mro - {-1}) != 0
-                        and not inspect.isabstract(xleapp_cls)
+                    if len(artifact_mro - {-1}) != 0 and not inspect.isabstract(
+                        xleapp_cls,
                     ):
                         self.plugins.append(xleapp_cls)
 
@@ -37,8 +36,8 @@ class Plugin(ABC):
         return self._plugins
 
     @plugins.setter
-    def plugins(self, value) -> None:
-        self._plugins = value
+    def plugins(self, plugins: list[Artifact]) -> None:
+        self._plugins = plugins
 
     @property
     @abstractmethod
@@ -53,8 +52,8 @@ class Plugin(ABC):
             def folder(self) -> Path:
                 return Path(__file__).parent
         """
-        NotImplementedError('Need to implement the `folder()` method!')
+        raise NotImplementedError("Need to implement the `folder()` method!")
 
     @abstractmethod
     def pre_process(self, artifacts: Artifacts) -> None:
-        NotImplementedError('Need to implement the pre_process_artifact()!')
+        raise NotImplementedError("Need to implement the pre_process_artifact()!")

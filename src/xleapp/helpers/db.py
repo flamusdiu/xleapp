@@ -49,10 +49,11 @@ def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
     try:
         query = (
             "SELECT name FROM sqlite_master "
-            f"WHERE type='table' AND name='{table_name}'"
+            "WHERE type='table' AND name= %(table_name)s",
+            {"table_name": table_name},
         )
         cursor = db.execute(query)
-        for row in cursor:
+        for _ in cursor:
             return True
     except sqlite3.Error as ex:
         logger_log.error(f"Query error, query={query} Error={str(ex)}")

@@ -1,4 +1,5 @@
 import jinja2
+
 from jinja2.ext import Extension
 
 
@@ -14,10 +15,10 @@ class IncludeLogFileExtension(Extension):
     def _render(self, filename):
         try:
             file_text = "".join(
-                (
-                    self.environment.loader.get_source(self.environment, filename)[0]
-                ).split("\r")
+                (self.environment.loader.get_source(self.environment, filename)[0]).split(
+                    "\r",
+                ),
             )
-        except:
+        except Exception:
             file_text = f"{filename} not found or missing! No logs available."
         return jinja2.Markup(f'<pre class="log-file">{file_text}</pre>')

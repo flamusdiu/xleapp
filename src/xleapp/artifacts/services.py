@@ -68,7 +68,7 @@ class Artifacts:
 
     def __init__(self, app: "XLEAPP") -> None:
         self.app = app
-        if 'type' in self.app.device:
+        if "type" in self.app.device:
             self = self(self.app.device["type"])
 
     def __call__(self, device_type: str) -> "Artifacts":
@@ -86,7 +86,7 @@ class Artifacts:
 
     def __getattr__(self, name: str) -> t.Any:
         try:
-            if name != 'data':
+            if name != "data":
                 return getattr(self.data, name)
         except AttributeError:
             raise AttributeError(
@@ -172,7 +172,11 @@ class Artifacts:
             type=Artifact,
         )
 
-    def crunch_artifacts(self, window: PySG.Window = None, thread: threading.Thread = None):
+    def crunch_artifacts(
+        self,
+        window: PySG.Window = None,
+        thread: threading.Thread = None,
+    ):
         num_processed = 0
         artifact: Artifact = None
         device_type = self.app.device["type"]

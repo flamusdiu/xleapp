@@ -138,7 +138,7 @@ def main(app: "XLEAPP") -> None:
             str_report_path = str(report_path).replace("\\\\", "\\")
             str_report_path = wraptext(str_report_path, "\\")
             window["<OPEN REPORT>"].update(disabled=False, visible=True)
-            window['<REPORT URL>'].update(str_report_path, visible=True)
+            window["<REPORT URL>"].update(str_report_path, visible=True)
             window["<STOP>"].update(visible=False)
             window["<RERUN>"].update(visible=True)
             PySG.Popup("Processing completed")

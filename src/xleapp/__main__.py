@@ -104,13 +104,15 @@ def get_parser():
         help=f"Runs {__project__} into graphical mode",
     )
     parser.add_argument(
-        "--version", action="version", version="f{__project__} v{__version__}"
+        "--version",
+        action="version",
+        version="f{__project__} v{__version__}",
     )
 
     return parser
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     args = parser.parse_args()
     artifacts = args.artifacts or ()
     g.app = XLEAPP()
@@ -140,7 +142,7 @@ def parse_args(parser: argparse.ArgumentParser):
     exit()
 
 
-def _main(app: "XLEAPP"):
+def _main(app: "XLEAPP") -> None:
 
     start_time = time.perf_counter()
 
@@ -178,7 +180,7 @@ def _main(app: "XLEAPP"):
     app.generate_reports()
 
 
-def cli():
+def cli() -> None:
     parser = get_parser()
     parse_args(parser)
 

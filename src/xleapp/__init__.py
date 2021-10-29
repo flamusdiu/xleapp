@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-xLEAPP 
+xLEAPP
 """
 
 from ._authors import __authors__, __contributors__
@@ -10,5 +10,6 @@ from .helpers.db import open_sqlite_db_readonly
 from .helpers.decorators import timed
 from .report import WebIcon
 from .templating import ArtifactHtmlReport, Template
+
 
 VERSION = f"{__project__} v{__version__}"

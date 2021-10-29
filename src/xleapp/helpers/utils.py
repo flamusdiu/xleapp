@@ -120,11 +120,11 @@ def generate_program_header(
     return header
 
 
-def filter_dict(d: dict, filter_string: str):
-    for key, val in d.items():
+def filter_dict(dictionary: dict, filter_string: str):
+    for key, item in dictionary.items():
         if filter_string not in key:
             continue
-        yield key, val
+        yield key, item
 
 
 def discovered_plugins() -> dict[set]:

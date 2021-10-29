@@ -3,7 +3,7 @@ import time
 import typing as t
 
 
-F = t.TypeVar('F', bound=t.Callable[..., t.Any])
+F = t.TypeVar("F", bound=t.Callable[..., t.Any])  # noqa: VNE001
 
 
 # timer function

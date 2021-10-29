@@ -16,16 +16,16 @@ class Options:
     def __set_name__(self, owner, name) -> None:
         self.name = str(name)
 
-    def __get__(self, obj, type=None) -> dict:
-        return obj.__dict__.get(self.name) or dict()
+    def __get__(self, obj, obj_type=None) -> dict:
+        return obj.__dict__.get(self.name) or {}
 
     def __set__(self, obj, options) -> None:
         if not isinstance(options, dict):
             raise TypeError(f"{self.name!r} is {type(options)!r} instead of {dict!r}!")
         obj.__dict__[self.name] = options["options"]
-        for option, val in options["options"].items():
-            if option in ["file", "data_list", "data_headers"]:
-                obj.__dict__[option] = val
+        for name, option in options["options"].items():
+            if name in ["file", "data_list", "data_headers"]:
+                obj.__dict__[name] = option
 
 
 class DBManager:

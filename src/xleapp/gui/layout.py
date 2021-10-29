@@ -152,7 +152,7 @@ def generate_layout() -> list:
                 orientation="h",
                 size=(85, 7),
                 key="<PROGRESSBAR>",
-                bar_color=("Red", "White"),),
+                bar_color=("Red", "White")),
         ],
         [
             PySG.Col([[
@@ -178,7 +178,7 @@ def generate_layout() -> list:
                     key="<RERUN>",
                     size=(7, 1),
                     visible=False,
-                )
+                ),
             ]]),
             PySG.B(
                 "Close",
@@ -224,10 +224,10 @@ def error_popup_no_modules():
         [
             [PySG.Text('There are no plugins installed! Please see:',
                        font=Font.NORMAL,
-                       border_width=0,),
+                       border_width=0),
              url(
                 url="https://github.com/flamusdiu/xleapp#readme",
-                title="xLEAPP Readme",)
+                title="xLEAPP Readme"),
              ],
             [PySG.Button('Error!', key="-ERROR-", button_color="Red", font=Font.NORMAL)],
         ], modal=True, disable_minimize=True, disable_close=True,

@@ -29,7 +29,8 @@ def generate_thumbnail(
     thumblist = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)
     thumbname = imDirectory.replace("/", "_") + "_" + imFilename + ".JPG"
     pathToThumb = os.path.join(
-        os.path.basename(os.path.abspath(report_folder)), thumbname
+        os.path.basename(os.path.abspath(report_folder)),
+        thumbname,
     )
     htmlThumbTag = '<img src="{0}"></img>'.format(pathToThumb)
     if thumblist:

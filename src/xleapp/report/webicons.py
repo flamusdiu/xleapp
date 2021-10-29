@@ -5,6 +5,7 @@
 """
 from enum import Enum
 
+
 WebIcon: Enum = Enum(  # type: ignore  # https://github.com/python/typeshed/issues/2305
     "WebIcon",
     (

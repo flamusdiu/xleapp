@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
 
+import xleapp.templating as templating
+
 from xleapp._authors import __authors__, __contributors__
 
-import xleapp.templating as templating
-from .._html import HtmlPage, Template
+from ..html import HtmlPage, Template
 
 
 @dataclass

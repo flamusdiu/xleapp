@@ -1,14 +1,13 @@
-from functools import cache, cached_property
 import typing as t
+
 from collections import defaultdict
 from os import PathLike
 from pathlib import Path
 
-# from xleapp.artifacts.services import ArtifactService
-
-from ._ext import IncludeLogFileExtension
-from ._html import ArtifactHtmlReport, Contributor, HtmlPage, NavigationItem, Template
 from ._partials.index import Index
+from .ext import IncludeLogFileExtension
+from .html import ArtifactHtmlReport, Contributor, HtmlPage, NavigationItem, Template
+
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
@@ -19,7 +18,11 @@ def generate_index(app: "XLEAPP") -> None:
     nav = generate_nav(app.report_folder, app.artifacts)
 
     index_page = Index(
-        app.report_folder, app.log_folder, app.extraction_type, app.processing_time, nav
+        app.report_folder,
+        app.log_folder,
+        app.extraction_type,
+        app.processing_time,
+        nav,
     )
     index_file = app.report_folder / "index.html"
     index_file.write_text(index_page.html())

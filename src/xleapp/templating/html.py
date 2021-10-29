@@ -11,7 +11,7 @@ import xleapp.report as report
 
 
 if t.TYPE_CHECKING:
-    from xleapp.artifacts._abstract import Artifact
+    from xleapp.artifacts.abstract import Artifact
     from xleapp.report import WebIcon
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -52,7 +52,7 @@ class Template:
             if not isinstance(cls, HtmlPage):
                 TypeError(
                     f"{cls.__name__!r} not {HtmlPage.__name__!r} class for"
-                    f" using {__name__!r} as a decorator!"
+                    f" using {__name__!r} as a decorator!",
                 )
             template_j = g.app.jinja_env.get_template(self._template)
             cls.template = template_j

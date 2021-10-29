@@ -22,5 +22,5 @@ class Validator(ABC):
     @abstractmethod
     def validator(self, value):
         raise NotImplementedError(
-            'Descriptors must create a `validator()` class that returns a boolean!'
+            "Descriptors must create a `validator()` class that returns a boolean!",
         )

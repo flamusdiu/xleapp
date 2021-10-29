@@ -38,7 +38,7 @@ class Device(UserDict):
 
 
 class OutputFolder(Validator):
-    def validator(self, value):
+    def validator(self, value) -> None:
         if not isinstance(value, (str, Path, os.PathLike)):
             raise TypeError(f"Expected {value!r} to be one of: str, Path, or Pathlike!")
         if not Path(value).exists():
@@ -110,7 +110,7 @@ class XLEAPP:
         self.create_output_folder()
         self.input_path = input_path
         self.extraction_type = extraction_type
-        self.device.update({'type': device_type})
+        self.device.update({"type": device_type})
 
         for artifact in self.artifacts:
             if artifacts and artifact in artifacts:
@@ -165,13 +165,13 @@ class XLEAPP:
     ) -> None:
         return self.artifacts.crunch_artifacts(window, thread)
 
-    def generate_artifact_table(self):
-        return artifacts.generate_artifact_table(self.artifacts)
+    def generate_artifact_table(self) -> None:
+        artifacts.generate_artifact_table(self.artifacts)
 
-    def generate_artifact_path_list(self):
-        return artifacts.generate_artifact_path_list(self.artifacts)
+    def generate_artifact_path_list(self) -> None:
+        artifacts.generate_artifact_path_list(self.artifacts)
 
-    def generate_reports(self):
+    def generate_reports(self) -> None:
         logger_log.info("\nGenerating artifact report files...")
         report.copy_static_files(self.report_folder)
         nav = templating.generate_nav(
@@ -203,13 +203,13 @@ class XLEAPP:
         logger_log.info(f"Report location: {self.output_path}")
 
     @property
-    def num_to_process(self):
+    def num_to_process(self) -> int:
         return len(
             {artifact.cls_name for artifact in self.artifacts if artifact.select},
         )
 
     @property
-    def num_of_categories(self):
+    def num_of_categories(self) -> int:
         return len(
             {artifact.value.category for artifact in self.artifacts if artifact.select},
         )
