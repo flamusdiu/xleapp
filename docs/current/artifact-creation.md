@@ -31,8 +31,8 @@ Below, I have layed out a basic artifact pulling a SQLite database. Things to re
             pass
         ```
 
-    * long_running_process: these artifacts must be selected manually.
-      * mark as following:
+   * long_running_process: these artifacts must be selected manually.
+     * mark as following:
 
         ```python
         @long_running_process
@@ -65,7 +65,6 @@ class MyArtifact(Artifact):
         self.web_icon = WebIcon.GRID
         self.report_headers = ("Column 1", "Column 2", "Column 3")
 
-    @timed
     @Search("**/database.sqlite")
     def process(self):
         for fp in self.found:
