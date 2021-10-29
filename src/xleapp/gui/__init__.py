@@ -14,8 +14,8 @@ import xleapp.log as log
 import xleapp.templating as templating
 
 from xleapp.__main__ import _main
-from xleapp.artifacts.services import Artifacts
-from xleapp.gui.utils import disable_widgets
+from xleapp.artifacts.services import ArtifactError, Artifacts
+from xleapp.gui.utils import ArtifactProcessor, disable_widgets
 from xleapp.helpers.search import search_providers
 from xleapp.helpers.strings import wraptext
 from xleapp.helpers.utils import ValidateInput
@@ -45,7 +45,6 @@ def main(app: "XLEAPP") -> None:
         f"xLEAPP Logs, Events, And Plists Parser - {app.version}",
         generate_layout(),
     ).finalize()
-    window['<REPORT URL>'].expand(True)
 
     if len(window["-DEVICETYPE-"].Values) > 0:
         device_type = window["-DEVICETYPE-"].Values[0]
@@ -65,17 +64,14 @@ def main(app: "XLEAPP") -> None:
         error_popup_no_modules()
         window.close()
 
-    artifact_processor = Thread(target=app.crunch_artifacts, args=(window,), daemon=True)
-    window.refresh()
-
     processing, stop, done = False, False, False
 
     while True:
         event, values = window.read()
 
-        if event in (PySG.WINDOW_CLOSE_ATTEMPTED_EVENT, "<CLOSE>"):
+        if event in (PySG.WINDOW_CLOSE_ATTEMPTED_EVENT, "<CLOSE>", "<STOP>"):
             stop = True
-        elif "-DEVICETYPE-" in values and values["-DEVICETYPE-"][0] != device_type:
+        elif event == "-DEVICETYPE-" and values["-DEVICETYPE-"][0] != device_type:
             device_type = values["-DEVICETYPE-"][0]
             artifacts = Artifacts.generate_artifact_enum(app=app, device_type=device_type)
             modules = generate_artifact_list(artifacts=artifacts)
@@ -91,11 +87,13 @@ def main(app: "XLEAPP") -> None:
             window.refresh()
         elif event == "-PROCESS-":
             processing = True
+            artifact_processor = ArtifactProcessor(app=app, window=window, daemon=True)
 
             disable_widgets(window, disabled=True)
 
             start_time = time.perf_counter()
-
+            window["-PROCESS-"].update(disabled=True, visible=False)
+            window["<STOP>"].update(visible=True)
             input_path = values["-INPUTFILEFOLDER-"]
             output_path = values["-OUTPUTFOLDER-"]
 
@@ -118,7 +116,6 @@ def main(app: "XLEAPP") -> None:
             )
 
             log.init()
-            window["<PROGRESSBAR>"].update(0, app.num_to_process)
 
             logger.info(f"Processing {app.num_to_process} artifacts...")
             artifact_processor.start()
@@ -128,7 +125,6 @@ def main(app: "XLEAPP") -> None:
             window.refresh()
             time.sleep(1)
 
-            # logger.info(f"\nCompleted processing artifacts in {run_time:.2f}s")
             end_time = time.perf_counter()
             app.processing_time = end_time - start_time
 
@@ -143,14 +139,35 @@ def main(app: "XLEAPP") -> None:
             str_report_path = wraptext(str_report_path, "\\")
             window["<OPEN REPORT>"].update(disabled=False, visible=True)
             window['<REPORT URL>'].update(str_report_path, visible=True)
+            window["<STOP>"].update(visible=False)
+            window["<RERUN>"].update(visible=True)
             PySG.Popup("Processing completed")
 
             done = True
         elif event == "<OPEN REPORT>":
             webbrowser.open_new_tab(f"{report_path}")
+        elif event == "<RERUN>":
+            disable_widgets(window, False)
+            window["<RERUN>"].update(visible=False)
+            window["-PROCESS-"].update(visible=True)
+            window["<PROGRESSBAR>"].update(0)
+            window["<LOG>"].update("")
 
         if stop and done:
             break
+
+        if stop:
+            if artifact_processor.is_alive():
+                logger.info("Stopping processing artifacts!")
+                artifact_processor.join(1)
+            if event != "<STOP>":
+                break
+            logger.info("Program Termindated!")
+            window["<STOP>"].update(visible=False)
+            window["<RERUN>"].update(visible=True)
+            del app.artifacts
+            app.seeker.clear()
+            processing, stop = False, False
 
         if not processing:
             window["-PROCESS-"].update(disabled=(len(window["-MODULELIST-"].get()) == 0))

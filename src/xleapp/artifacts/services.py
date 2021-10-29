@@ -1,12 +1,10 @@
-import importlib
-import inspect
 import itertools
 import logging
+import threading
 import typing as t
 
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
 from queue import PriorityQueue
 
 import PySimpleGUI as PySG
@@ -14,7 +12,6 @@ import wrapt
 
 from xleapp.helpers.decorators import timed
 from xleapp.helpers.strings import split_camel_case
-from xleapp.helpers.utils import discovered_plugins
 
 
 if t.TYPE_CHECKING:
@@ -151,44 +148,20 @@ class Artifacts:
     @staticmethod
     def generate_artifact_enum(app: "XLEAPP", device_type: str):
         members = {}
-        plugins = discovered_plugins()
-
-        for plugin in plugins[device_type]:
-            # Plugins return a str which is the plugin direction to
-            # find plugins inside of. This direction is loading
-            # that directory. Then, all the plugins are loaded.
-            module_dir = Path(plugin.load()())
-
-            for it in module_dir.glob("*.py"):
-                if it.suffix == ".py" and it.stem not in ["__init__"]:
-                    module_name = f'{".".join(module_dir.parts[-2:])}.{it.stem}'
-                    module = importlib.import_module(module_name)
-                    module_members = inspect.getmembers(module, inspect.isclass)
-                    for _, xleapp_cls in module_members:
-                        # check MRO (Method Resolution Order) for
-                        # Artifact classes. Also, insure
-                        # we do not get an abstract class.
-                        if (
-                            len(
-                                {str(name).find("Artifact") for name in xleapp_cls.mro()}
-                                - {-1},
-                            )
-                            != 0
-                            and not inspect.isabstract(xleapp_cls)
-                        ):
-
-                            artifact: "Artifact" = dataclass(
-                                xleapp_cls,
-                            )()
-                            artifact_name = "_".join(
-                                split_camel_case(artifact.cls_name),
-                            ).upper()
-                            artifact.app = app
-                            artifact_proxy = ArtifactProxy(artifact)
-                            members[artifact_proxy] = [
-                                artifact_name,
-                                artifact.cls_name,
-                            ]
+        plugins = list(app.plugins[device_type])[0]
+        for xleapp_cls in plugins.plugins:
+            artifact: "Artifact" = dataclass(
+                xleapp_cls,
+            )()
+            artifact_name = "_".join(
+                split_camel_case(artifact.cls_name),
+            ).upper()
+            artifact.app = app
+            artifact_proxy = ArtifactProxy(artifact)
+            members[artifact_proxy] = [
+                artifact_name,
+                artifact.cls_name,
+            ]
 
         return Enum(
             value=f"{device_type.title()}Artifact",
@@ -199,11 +172,19 @@ class Artifacts:
             type=Artifact,
         )
 
-    def crunch_artifacts(self, window: PySG.Window):
+    def crunch_artifacts(self, window: PySG.Window = None, thread: threading.Thread = None):
         num_processed = 0
         artifact: Artifact = None
+        device_type = self.app.device["type"]
+        plugins = list(self.app.plugins[device_type])[0]
 
-        while not self.queue.empty():
+        if hasattr(plugins, "pre_process"):
+            plugins.pre_process(self)
+
+        if window:
+            window["<PROGRESSBAR>"].update(0, self.app.num_to_process)
+
+        while not self.queue.empty() and not thread.stopped:
             _, artifact = self.queue.get()
 
             if not artifact.select:
@@ -212,6 +193,8 @@ class Artifacts:
 
             artifact.process()
             num_processed += 1
-            window.write_event_value("<THREAD>", num_processed)
+            if window:
+                window.write_event_value("<THREAD>", num_processed)
             self.queue.task_done()
-        window.write_event_value("<DONE>", None)
+        if window and not thread.stopped:
+            window.write_event_value("<DONE>", None)

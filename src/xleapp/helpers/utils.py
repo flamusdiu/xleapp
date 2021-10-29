@@ -131,7 +131,7 @@ def discovered_plugins() -> dict[set]:
     plugins = defaultdict(set)
     try:
         for plugin in entry_points()["xleapp.plugins"]:
-            plugins[plugin.name].add(plugin)
+            plugins[plugin.name].add(plugin.load()())
         return plugins
     except KeyError:
         return None

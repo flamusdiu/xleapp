@@ -155,13 +155,31 @@ def generate_layout() -> list:
                 bar_color=("Red", "White"),),
         ],
         [
-            PySG.Submit(
-                "Process",
-                font=Font.NORMAL,
-                disabled=True,
-                key="-PROCESS-",
-                size=(7, 1),
-            ),
+            PySG.Col([[
+                PySG.Submit(
+                    "Process",
+                    font=Font.NORMAL,
+                    disabled=True,
+                    key="-PROCESS-",
+                    size=(7, 1),
+                ),
+                PySG.B(
+                    "Stop",
+                    font=Font.NORMAL,
+                    key="<STOP>",
+                    size=(7, 1),
+                    visible=False,
+                    button_color="red",
+                ),
+                PySG.B(
+                    "Re-Run",
+                    button_color=("green", "black"),
+                    font=Font.NORMAL,
+                    key="<RERUN>",
+                    size=(7, 1),
+                    visible=False,
+                )
+            ]]),
             PySG.B(
                 "Close",
                 font=Font.NORMAL,
@@ -171,7 +189,7 @@ def generate_layout() -> list:
             PySG.Col([[PySG.Multiline(
                 font=Font.NORMAL,
                 key="<REPORT URL>",
-                size=(70, 2),
+                size=(75, 2),
                 no_scrollbar=True,
                 disabled=True,
                 enter_submits=False,

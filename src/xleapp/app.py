@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import threading
 import typing as t
 
 from collections import UserDict
@@ -9,16 +10,18 @@ from functools import cached_property
 from pathlib import Path
 
 import jinja2
+import PySimpleGUI as PySG
 
 from jinja2 import Environment
 
 import xleapp.artifacts as artifacts
-import PySimpleGUI as PySG
 import xleapp.report as report
 import xleapp.templating as templating
 
 from xleapp.artifacts.abstract import Artifact
 from xleapp.helpers.descriptors import Validator
+from xleapp.helpers.utils import discovered_plugins
+from xleapp.plugins import Plugin
 
 from ._version import __project__, __version__
 from .artifacts.services import Artifacts
@@ -78,6 +81,7 @@ class XLEAPP:
     output_path = OutputFolder()
     processing_time: float
     project: str
+    plugins: list[Plugin]
     report_folder: Path
     seeker: FileSeekerBase
     version: str
@@ -91,6 +95,8 @@ class XLEAPP:
 
         self.project = __project__
         self.version = __version__
+
+        self.plugins = discovered_plugins()
 
     def __call__(
         self,
@@ -152,8 +158,12 @@ class XLEAPP:
     def artifacts(self) -> Enum:
         return Artifacts(self)
 
-    def crunch_artifacts(self, window: PySG.Window) -> None:
-        return self.artifacts.crunch_artifacts(window)
+    def crunch_artifacts(
+        self,
+        window: PySG.Window = None,
+        thread: threading.Thread = None,
+    ) -> None:
+        return self.artifacts.crunch_artifacts(window, thread)
 
     def generate_artifact_table(self):
         return artifacts.generate_artifact_table(self.artifacts)

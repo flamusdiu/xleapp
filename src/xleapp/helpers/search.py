@@ -102,6 +102,10 @@ class FileHandles(UserDict):
             if file_handle:
                 self[regex].add(file_handle)
 
+    def clear(self):
+        self.data = {}
+        self.logged = []
+
     def __getitem__(self, regex: str) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
@@ -124,8 +128,8 @@ class FileHandles(UserDict):
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
-                for f in files:
-                    f.close()
+                for file in files:
+                    file.close()
             else:
                 files.close()
 
@@ -183,6 +187,9 @@ class FileSeekerBase(ABC):
     @property
     def file_handles(self) -> FileHandles:
         return self._file_handles
+
+    def clear(self) -> None:
+        self.file_handles.clear()
 
 
 class FileSeekerDir(FileSeekerBase):
