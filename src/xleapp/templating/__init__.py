@@ -1,16 +1,22 @@
 import typing as t
 
 from collections import defaultdict
-from os import PathLike
 from pathlib import Path
 
+from xleapp.artifacts.services import ArtifactEnum
+
 from ._partials.index import Index
-from .ext import IncludeLogFileExtension
-from .html import ArtifactHtmlReport, Contributor, HtmlPage, NavigationItem, Template
+from .ext import IncludeLogFileExtension as IncludeLogFileExtension
+from .html import ArtifactHtmlReport as ArtifactHtmlReport
+from .html import Contributor
+from .html import HtmlPage as HtmlPage
+from .html import NavigationItem
+from .html import Template as Template
 
 
 if t.TYPE_CHECKING:
     from xleapp.app import XLEAPP
+    from xleapp.artifacts.services import Artifacts
 
 
 def generate_index(app: "XLEAPP") -> None:
@@ -18,17 +24,18 @@ def generate_index(app: "XLEAPP") -> None:
     nav = generate_nav(app.report_folder, app.artifacts)
 
     index_page = Index(
-        app.report_folder,
-        app.log_folder,
-        app.extraction_type,
-        app.processing_time,
-        nav,
+        report_folder=app.report_folder,
+        log_folder=app.log_folder,
+        extraction_type=app.extraction_type,
+        processing_time=app.processing_time,
+        navigation=nav,
     )
+
     index_file = app.report_folder / "index.html"
     index_file.write_text(index_page.html())
 
 
-def get_contributors(contributors: list) -> list[Contributor]:
+def get_contributors(contributors: list[list[str]]) -> list[Contributor]:
     """Returns a list of Contributors from `xleapp.__contributors__`
 
     Args:
@@ -44,12 +51,15 @@ def get_contributors(contributors: list) -> list[Contributor]:
     return contrib_list
 
 
-def generate_nav(report_folder: PathLike, artifacts) -> dict:
+def generate_nav(
+    report_folder: Path,
+    artifacts: "Artifacts",
+) -> dict[str, set[NavigationItem]]:
     """Generates a dictionary containing the navigation of the
        report.
 
     Args:
-        report_folder (PathLike): Report folder where Artifact HTML Reports
+        report_folder (Path): Report folder where Artifact HTML Reports
             are saved.
         artifacts (ArtifactService): service containing all artifacts
             Artifacts for the report
@@ -59,14 +69,12 @@ def generate_nav(report_folder: PathLike, artifacts) -> dict:
     """
     nav = defaultdict(set)
 
-    for artifact in artifacts:
+    for artifact in artifacts.data:
         if not artifact.core and artifact.select:
             temp_item = NavigationItem(
-                name=artifact.value.name,
-                web_icon=artifact.value.web_icon.value,
-                href=(
-                    report_folder / f"{artifact.value.category} - {artifact.name}.html"
-                ),
+                name=artifact.name,
+                web_icon=artifact.web_icon.value,
+                href=str(report_folder / f"{artifact.category} - {artifact.name}.html"),
             )
-            nav[artifact.value.category].add(temp_item)
+            nav[artifact.category].add(temp_item)
     return nav

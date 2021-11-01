@@ -1,14 +1,16 @@
 import functools
 import logging
 import sqlite3
+import typing as t
 
+from ..helpers.types import DecoratedFunc
 from .abstract import Artifact
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def core_artifact(cls: Artifact):
+def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
     """Decorator to mark a core artifact
 
     Args:
@@ -32,10 +34,10 @@ def core_artifact(cls: Artifact):
                 f'Error setting property "core_artifact" on class!',
             )
 
-    return core_wrapper(cls)
+    return t.cast(DecoratedFunc, core_wrapper(cls))
 
 
-def long_running_process(cls: Artifact):
+def long_running_process(cls: DecoratedFunc) -> DecoratedFunc:
     """Decorator to mark an artifact as long running
 
     Args:
@@ -59,7 +61,7 @@ def long_running_process(cls: Artifact):
                 f'Error setting property "long_running_process" on class!',
             )
 
-    return lrp_wrapper(cls)
+    return t.cast(DecoratedFunc, lrp_wrapper(cls))
 
 
 class Search:

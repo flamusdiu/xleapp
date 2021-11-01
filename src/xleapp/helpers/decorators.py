@@ -2,12 +2,11 @@ import functools
 import time
 import typing as t
 
-
-F = t.TypeVar("F", bound=t.Callable[..., t.Any])  # noqa: VNE001
+from .types import DecoratedFunc
 
 
 # timer function
-def timed(func: F) -> F:
+def timed(func: DecoratedFunc) -> DecoratedFunc:
     """Print the runtime of the decorated function"""
 
     @functools.wraps(func)
@@ -18,4 +17,4 @@ def timed(func: F) -> F:
         run_time = end_time - start_time
         return run_time, value
 
-    return timed_wrapper
+    return t.cast(DecoratedFunc, timed_wrapper)

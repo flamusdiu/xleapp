@@ -23,6 +23,8 @@ from pathlib import Path
 
 import xleapp.artifacts as artifacts
 
+from xleapp.helpers.search import Handle
+
 from .descriptors import FoundFiles, ReportHeaders, WebIcon
 
 
@@ -148,7 +150,7 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
         self.regex = regex
 
         for artifact_regex in self.regex:
-            results = set()
+            results: t.Optional[t.Union[set[Path], set[Handle]]]
 
             if artifact_regex in global_regex:
                 results = files[artifact_regex]
@@ -159,12 +161,12 @@ class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
                     else:
                         results = set(seeker.search(artifact_regex))
                 except StopIteration:
-                    results = set()
+                    results = None
 
-                if bool(results):
+                if results:
                     files.add(artifact_regex, results, file_names_only)
 
-            if bool(results):
+            if results:
                 if return_on_first_hit or len(results) == 1:
                     self.found = {files[artifact_regex].copy().pop()}
                 else:

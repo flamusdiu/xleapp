@@ -4,23 +4,22 @@ import time
 import typing as t
 import webbrowser
 
+from enum import Enum
 from pathlib import Path
-from threading import Thread
 
 import PySimpleGUI as PySG
 
-import xleapp.gui.log as gui_log
 import xleapp.log as log
 import xleapp.templating as templating
 
-from xleapp.__main__ import _main
-from xleapp.artifacts.services import ArtifactError, Artifacts
-from xleapp.gui.utils import ArtifactProcessor, disable_widgets
-from xleapp.helpers.search import search_providers
-from xleapp.helpers.strings import wraptext
-from xleapp.helpers.utils import ValidateInput
+from xleapp.artifacts.services import ArtifactEnum
 
+from ..artifacts import Artifacts
+from ..helpers.search import search_providers
+from ..helpers.strings import wraptext
+from ..helpers.utils import ValidateInput
 from .layout import error_popup_no_modules, generate_artifact_list, generate_layout
+from .utils import ArtifactProcessor, disable_widgets
 
 
 if t.TYPE_CHECKING:
@@ -36,9 +35,9 @@ def main(app: "XLEAPP") -> None:
     # sets theme for GUI
     PySG.theme("DarkAmber")
 
-    artifacts: "Artifacts" = None
-    device_type: str = None
-    start_time: float() = 0.0
+    artifacts: t.Type[ArtifactEnum]
+    device_type: str
+    start_time: float = 0.0
 
     global window
     window = PySG.Window(
@@ -47,8 +46,8 @@ def main(app: "XLEAPP") -> None:
     ).finalize()
 
     if len(window["-DEVICETYPE-"].Values) > 0:
-        device_type = window["-DEVICETYPE-"].Values[0]
-        artifacts = app.artifacts(device_type=device_type)
+        device_type = app.device["type"] = window["-DEVICETYPE-"].Values[0]
+        artifacts = app.artifacts.data
         window["-DEVICETYPE-"].update(set_to_index=0, scroll_to_index=0)
         window["-MODULELIST-"].update(
             values=generate_artifact_list(artifacts),

@@ -5,11 +5,14 @@
 import codecs
 import csv
 import sqlite3
+import typing as t
 
 from abc import abstractmethod
 from pathlib import Path
 
 import simplekml
+
+from xleapp.helpers.descriptors import Validator
 
 
 class Options:
@@ -28,13 +31,35 @@ class Options:
                 obj.__dict__[name] = option
 
 
-class DBManager:
-    connection = None
-    report_folder: Path = None
-    db_file: Path = None
-    options: dict = Options()
+class DBFile(Validator):
+    def validator(self, value):
+        if isinstance(value, (Path, str)):
+            file_path = Path(value)
+            if file_path.exists():
+                self._create()
+            else:
+                raise FileExistsError(
+                    f"Folder {value!r} does not exists! Failed to create database file!"
+                )
+        else:
+            raise TypeError(f"Expected {value!r} to be Path or str!")
 
-    def __init__(self, report_folder: Path, db_folder: Path, options: dict) -> None:
+
+class DBManager:
+    connection: t.Union[sqlite3.Connection, codecs.StreamReaderWriter]
+    report_folder: Path
+    db_file: DBFile = DBFile()
+    options: Options = Options()
+    data_list: list
+    data_headers: t.Union[list[tuple], tuple]
+    name: str
+
+    def __init__(
+        self,
+        report_folder: Path,
+        db_folder: t.Union[Path, str],
+        options: dict,
+    ) -> None:
         self.report_folder = report_folder / db_folder
         self.report_folder.mkdir(parents=True, exist_ok=True)
         self.options = options
@@ -44,17 +69,17 @@ class DBManager:
         self.connection.row_factory = sqlite3.Row
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.connection.commit()
 
     @abstractmethod
-    def save(self, *args) -> None:
+    def save(self) -> None:
         """Saves files to database
 
         Returns:
             None
         """
-        NotImplementedError(f"{self.__name__} requires a `save()` function!")
+        NotImplementedError(f"{self!r} requires a `save()` function!")
 
     @abstractmethod
     def _create(self) -> None:
@@ -63,7 +88,7 @@ class DBManager:
         Returns:
             None
         """
-        NotImplementedError(f"{self.__name__} requires a `_create()` function!")
+        NotImplementedError(f"{self!r} requires a `_create()` function!")
 
 
 class KmlDBManager(DBManager):
@@ -75,6 +100,7 @@ class KmlDBManager(DBManager):
         )
         self.db_file = self.report_folder / "_latlong.db"
 
+    def _create(self):
         if not self.db_file.exists():
             db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
@@ -123,6 +149,7 @@ class TimelineDBManager(DBManager):
         )
         self.db_file = self.report_folder / "t1.db"
 
+    def _create(self):
         if not self.db_file.exists():
             db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
@@ -157,11 +184,14 @@ class TsvManager(DBManager):
         )
         self.db_file = f"{self.db_file}.tsv"
 
+    def _create(self):
+        pass
+
     def __enter__(self):
         self.connection = codecs.open(self.db_file, "a", "utf-8-sig")
         return self.connection
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.connection.close()
 
     def save(self):

@@ -1,11 +1,8 @@
 import datetime
 import logging
-import os
-import threading
 import typing as t
 
 from collections import UserDict
-from enum import Enum
 from functools import cached_property
 from pathlib import Path
 
@@ -18,29 +15,34 @@ import xleapp.artifacts as artifacts
 import xleapp.report as report
 import xleapp.templating as templating
 
-from xleapp.artifacts.abstract import Artifact
-from xleapp.helpers.descriptors import Validator
-from xleapp.helpers.utils import discovered_plugins
-from xleapp.plugins import Plugin
-
 from ._version import __project__, __version__
-from .artifacts.services import Artifacts
+from .gui.utils import ProcessThread
+from .helpers.descriptors import Validator
 from .helpers.search import FileSeekerBase
-from .templating._ext import IncludeLogFileExtension
+from .helpers.utils import discovered_plugins
+from .templating.ext import IncludeLogFileExtension
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 
+if t.TYPE_CHECKING:
+    from .artifacts import Artifact, Artifacts
+    from .artifacts.services import ArtifactEnum
 
-class Device(UserDict):
-    def table(self):
+    BaseUserDict = UserDict[str, t.Any]
+else:
+    BaseUserDict = UserDict
+
+
+class Device(BaseUserDict):
+    def table(self) -> list[list[t.Any]]:
         return [[key, value] for key, value in self.data.items()]
 
 
 class OutputFolder(Validator):
-    def validator(self, value) -> None:
-        if not isinstance(value, (str, Path, os.PathLike)):
-            raise TypeError(f"Expected {value!r} to be one of: str, Path, or Pathlike!")
+    def validator(self, value: t.Union[str, Path]) -> None:
+        if not isinstance(value, (str, Path)):
+            raise TypeError(f"Expected {value!r} to be one of: str, Path!")
         if not Path(value).exists():
             raise FileNotFoundError(f"{value!r} must already exists!")
 
@@ -81,7 +83,7 @@ class XLEAPP:
     output_path = OutputFolder()
     processing_time: float
     project: str
-    plugins: list[Plugin]
+    plugins: t.Optional[dict[str, set[t.Any]]]
     report_folder: Path
     seeker: FileSeekerBase
     version: str
@@ -100,24 +102,24 @@ class XLEAPP:
 
     def __call__(
         self,
-        *artifacts: t.Optional[list[Artifact]],
+        *artifacts_list: t.Optional[list["Artifact"]],
         device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
-        input_path: t.Optional[Path] = None,
-        extraction_type: t.Optional[str] = None,
-    ) -> None:
+        input_path: Path,
+        extraction_type: str,
+    ) -> "XLEAPP":
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
         self.extraction_type = extraction_type
         self.device.update({"type": device_type})
-
-        for artifact in self.artifacts:
-            if artifacts and artifact in artifacts:
-                self.artifacts[artifact.name].select = True
-
-            if not artifacts:
-                self.artifacts[artifact.name].select = True
+        artifacts_enum = self.artifacts.data
+        artifact: ArtifactEnum
+        for artifact in artifacts_enum:
+            if artifacts_list and artifact in artifacts_enum:
+                artifacts_enum[artifact.name].select = True
+            else:
+                artifacts_enum[artifact.name].select = True
 
         return self
 
@@ -125,7 +127,7 @@ class XLEAPP:
     def jinja_env(self) -> Environment:
         return self.create_jinja_environment()
 
-    def create_output_folder(self):
+    def create_output_folder(self) -> None:
         now = datetime.datetime.now()
         current_time = now.strftime("%Y-%m-%d_%A_%H%M%S")
 
@@ -142,7 +144,7 @@ class XLEAPP:
         template_loader = jinja2.PackageLoader("xleapp.templating", "templates")
         log_file_loader = jinja2.FileSystemLoader(self.log_folder)
 
-        options = {
+        options: dict[str, t.Any] = {
             "loader": jinja2.ChoiceLoader([template_loader, log_file_loader]),
             "autoescape": jinja2.select_autoescape(["html", "xml"]),
             "extensions": [jinja2.ext.do, IncludeLogFileExtension],
@@ -155,15 +157,15 @@ class XLEAPP:
         return rv
 
     @cached_property
-    def artifacts(self) -> Enum:
-        return Artifacts(self)
+    def artifacts(self) -> "Artifacts":
+        return artifacts.Artifacts(self)
 
     def crunch_artifacts(
         self,
-        window: PySG.Window = None,
-        thread: threading.Thread = None,
+        window: t.Optional[PySG.Window],
+        thread: t.Optional[ProcessThread],
     ) -> None:
-        return self.artifacts.crunch_artifacts(window, thread)
+        self.artifacts.crunch_artifacts(window=window, thread=thread)
 
     def generate_artifact_table(self) -> None:
         artifacts.generate_artifact_table(self.artifacts)
@@ -178,7 +180,8 @@ class XLEAPP:
             report_folder=self.report_folder,
             artifacts=self.artifacts,
         )
-        for artifact in artifacts.filter_artifacts(self.artifacts):
+        artifact: ArtifactEnum
+        for artifact in artifacts.filter_artifacts(self.artifacts.data):
             msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
             if not artifact.core:
                 if artifact.report:
@@ -188,6 +191,7 @@ class XLEAPP:
                         extraction_type=self.extraction_type,
                         navigation=nav,
                     )
+
                     if html_report(artifact).report:
                         logger_log.info(f"{msg_artifact}")
                 else:
@@ -205,11 +209,11 @@ class XLEAPP:
     @property
     def num_to_process(self) -> int:
         return len(
-            {artifact.cls_name for artifact in self.artifacts if artifact.select},
+            {artifact.cls_name for artifact in self.artifacts.data if artifact.select},
         )
 
     @property
     def num_of_categories(self) -> int:
         return len(
-            {artifact.value.category for artifact in self.artifacts if artifact.select},
+            {artifact.category for artifact in self.artifacts.data if artifact.select},
         )

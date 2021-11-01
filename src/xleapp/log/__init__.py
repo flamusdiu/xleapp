@@ -1,4 +1,4 @@
-import importlib
+import importlib.util
 import logging
 import logging.config
 import os
@@ -47,7 +47,7 @@ class FileHandler(logging.FileHandler):
         filename: StrPath,
         mode: str = "a",
         encoding: t.Union[str, None] = None,
-        delay: bool = 0,
+        delay: bool = False,
         errors: t.Union[str, None] = None,
     ) -> None:
         super().__init__(
@@ -85,32 +85,40 @@ class FileHandlerWithHeader(logging.FileHandler):
         logging.FileHandler.emit(self, record)
 
 
-def init():
-    logConfig = Path(importlib.util.find_spec(__name__).origin).parent / "log_config.yaml"
-    with open(logConfig, "r") as file:
-        config = yaml.safe_load(file.read())
+def init() -> None:
+    mod = importlib.util.find_spec(__name__)
 
-    if not g.app.log_folder.exists():
-        g.app.log_folder.mkdir(parents=True, exist_ok=True)
+    if not mod:
+        raise FileNotFoundError("Missing package 'log_config.yaml' to configure logging!")
 
-    info_log_file = config["handlers"]["info_file_handler"]["filename"]
-    config["handlers"]["info_file_handler"]["filename"] = g.app.log_folder / info_log_file
-    config["handlers"]["info_file_handler"]["header"] = generate_program_header(
-        project_version=f"{g.app.project} v{g.app.version}",
-        input_path=g.app.input_path,
-        output_path=g.app.output_path,
-        num_to_process=g.app.num_to_process,
-        num_of_categories=g.app.num_of_categories,
-    )
+    if mod.origin:
+        logConfig = Path(mod.origin).parent / "log_config.yaml"
+        with open(logConfig, "r") as file:
+            config = yaml.safe_load(file.read())
 
-    process_log_file = config["handlers"]["process_file_handler"]["filename"]
-    config["handlers"]["process_file_handler"]["filename"] = (
-        g.app.log_folder / process_log_file
-    )
+        if not g.app.log_folder.exists():
+            g.app.log_folder.mkdir(parents=True, exist_ok=True)
 
-    debug_log_file = config["handlers"]["debug_file_handler"]["filename"]
-    config["handlers"]["debug_file_handler"]["filename"] = (
-        g.app.log_folder / debug_log_file
-    )
+        info_log_file = config["handlers"]["info_file_handler"]["filename"]
+        config["handlers"]["info_file_handler"]["filename"] = (
+            g.app.log_folder / info_log_file
+        )
+        config["handlers"]["info_file_handler"]["header"] = generate_program_header(
+            project_version=f"{g.app.project} v{g.app.version}",
+            input_path=g.app.input_path,
+            output_path=g.app.output_path,
+            num_to_process=g.app.num_to_process,
+            num_of_categories=g.app.num_of_categories,
+        )
 
-    logging.config.dictConfig(config)
+        process_log_file = config["handlers"]["process_file_handler"]["filename"]
+        config["handlers"]["process_file_handler"]["filename"] = (
+            g.app.log_folder / process_log_file
+        )
+
+        debug_log_file = config["handlers"]["debug_file_handler"]["filename"]
+        config["handlers"]["debug_file_handler"]["filename"] = (
+            g.app.log_folder / debug_log_file
+        )
+
+        logging.config.dictConfig(config)

@@ -21,16 +21,21 @@ from .utils import is_platform_windows
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
 
+if t.TYPE_CHECKING:
+    BaseUserDict = UserDict[str, t.Any]
+else:
+    BaseUserDict = UserDict
+
 
 class PathValidator(Validator):
-    def validator(self, value):
+    def validator(self, value: Path) -> Path:
         if not isinstance(value, (Path, os.PathLike, str)):
             raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
         return value.resolve()
 
 
 class HandleValidator(Validator):
-    def validator(self, value) -> None:
+    def validator(self, value: t.Union[Path, sqlite3.Connection, IOBase]) -> None:
         if isinstance(value, (str, Path)):
             return None
         elif not isinstance(value, (sqlite3.Connection, IOBase)):
@@ -48,7 +53,7 @@ class Handle:
         self.path = path
         self.file_handle = found_file
 
-    def __call__(self):
+    def __call__(self) -> t.Union[HandleValidator, PathValidator]:
         return self.file_handle or self.path
 
 
@@ -62,14 +67,19 @@ class FileHandles(UserDict):
     def __len__(self) -> int:
         return sum(count for count in self.values())
 
-    def add(self, regex: str, files: list, file_names_only: bool = False) -> None:
-
-        if self.get(regex):
-            return
+    def add(
+        self,
+        regex: str,
+        files: t.Union[set[Handle], set[Path]],
+        file_names_only: bool = False,
+    ) -> None:
 
         for item in files:
             file_handle = None
-            path = Path(item.resolve())
+            if isinstance(item, Path):
+                path = Path(item.resolve())
+            elif isinstance(item, Handle):
+                path = Path(item.path.resolve())
 
             """
             If we have more then 10 files, then set only
@@ -78,11 +88,12 @@ class FileHandles(UserDict):
             probably have less then 5 files they will read/use.
             """
 
+            extended_path: t.Optional[Path] = None
             if len(files) > 10 or file_names_only:
                 file_handle = Handle(found_file=item, path=path)
             else:
-                if item.drive.startswith("\\\\?\\"):
-                    extended_path = Path(item)
+                if path.drive.startswith("\\\\?\\"):
+                    extended_path = Path(path)
 
                 try:
                     db = sqlite3.connect(
@@ -95,14 +106,17 @@ class FileHandles(UserDict):
                     db.row_factory = sqlite3.Row
                     file_handle = Handle(found_file=db, path=path)
                 except (sqlite3.DatabaseError):
-                    fp = open(extended_path, "rb")
+                    if extended_path:
+                        fp = open(extended_path, "rb")
+                    else:
+                        fp = open(path, "rb")
                     file_handle = Handle(found_file=fp, path=path)
                 except FileNotFoundError:
                     raise FileNotFoundError(f"File {path!r} was not found!")
             if file_handle:
                 self[regex].add(file_handle)
 
-    def clear(self):
+    def clear(self) -> None:
         self.data = {}
         self.logged = []
 
@@ -149,10 +163,7 @@ class FileSeekerBase(ABC):
     _file_handles = FileHandles()
 
     @abstractmethod
-    def search(
-        self,
-        filepattern_to_search: str,
-    ) -> t.Iterator[t.Any]:
+    def search(self, filepattern_to_search: str) -> t.Iterator[Path]:
         """Returns a list of paths for files/folders that matched"""
         pass
 
@@ -163,8 +174,7 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def build_files_list(
-        self,
-        folder: t.Optional[t.Union[str, Path]],
+        self, folder: t.Optional[t.Union[str, Path]]
     ) -> t.Union[tuple[list, list], list]:
         """Finds files in directory"""
         pass
@@ -223,12 +233,16 @@ class FileSeekerDir(FileSeekerBase):
     def search(self, filepattern, return_on_first_hit=False):
         return iter(fnmatch.filter(self.all_files, filepattern))
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         pass
 
 
 class FileSeekerItunes(FileSeekerBase):
-    def __init__(self, directory, temp_folder) -> None:
+    def __init__(
+        self,
+        directory: t.Union[str, Path],
+        temp_folder: t.Union[str, Path],
+    ) -> None:
 
         self.directory = Path(directory)
         self.temp_folder = Path(temp_folder)
@@ -263,7 +277,7 @@ class FileSeekerItunes(FileSeekerBase):
         # does not return any values for this FileSeeker
         return []
 
-    def search(self, filepattern, return_on_first_hit=False):
+    def search(self, filepattern):
         pathlist = []
         matching_keys = fnmatch.filter(self._all_files, filepattern)
         for relative_path in matching_keys:
@@ -285,7 +299,7 @@ class FileSeekerTar(FileSeekerBase):
         self.tar_file = tarfile.open(directory, mode)
         self.temp_folder = Path(temp_folder)
 
-    def search(self, filepattern):
+    def search(self, filepattern: str) -> t.Iterator[Path]:
         for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, filepattern):
 
@@ -302,21 +316,25 @@ class FileSeekerTar(FileSeekerBase):
                     os.utime(full_path, (member.mtime, member.mtime))
                 yield full_path
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         self.tar_file.close()
 
-    def build_files_list(self) -> list[tarfile.TarInfo]:
+    def build_files_list(self, folder=None) -> list[tarfile.TarInfo]:
         return self.tar_file.getmembers()
 
 
 class FileSeekerZip(FileSeekerBase):
-    def __init__(self, zip_file_path, temp_folder):
+    def __init__(self, zip_file_path: t.Union[str, Path], temp_folder: Path):
         self.zip_file = ZipFile(zip_file_path)
         self.name_list = self.zip_file.namelist()
         self.temp_folder = temp_folder
 
-    def search(self, filepattern, return_on_first_hit=False):
-        pathlist = []
+    def search(
+        self,
+        filepattern: str,
+        return_on_first_hit: bool = False,
+    ) -> t.Iterator[str]:
+        pathlist: list[str] = []
         for member in self.name_list:
             if fnmatch.fnmatch(member, filepattern):
                 try:
@@ -330,23 +348,23 @@ class FileSeekerZip(FileSeekerBase):
                     # logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
         return iter(pathlist)
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         self.zip_file.close()
 
 
-class FileSearchProvider(UserDict):
+class FileSearchProvider(BaseUserDict):
     def __init__(self) -> None:
-        self.data = {}
-        self._items = 0
+        self.data: dict[str, t.Any] = {}
+        self._items: int = 0
 
     def __len__(self) -> int:
         return self._items
 
-    def register_builder(self, key, builder) -> None:
+    def register_builder(self, key: str, builder) -> None:
         self._items = self._items + 1
         self.data[key] = builder
 
-    def create(self, key, **kwargs) -> FileSeekerBase:
+    def create(self, key, **kwargs):
         builder = self.data.get(key)
         if not builder:
             raise ValueError(key)

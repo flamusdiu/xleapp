@@ -3,16 +3,18 @@
 Reports Module
 """
 
-import importlib
+import importlib.util
 import shutil
 
 from pathlib import Path
 
-from .db import KmlDBManager, TimelineDBManager, TsvManager
-from .webicons import WebIcon
+from .db import DBManager, KmlDBManager, TimelineDBManager, TsvManager
+from .webicons import WebIcon as WebIcon
 
 
 def save_to_db(report_folder: Path, db_type: str, **options) -> None:
+    db: DBManager
+
     if db_type in ["kml", "timeline", "tsv"] and getattr(options, "data_list", []):
         if db_type == "kml":
             db = KmlDBManager(report_folder=report_folder, **options)
@@ -30,8 +32,10 @@ def copy_static_files(report_folder: Path) -> None:
     Returns:
         None
     """
-    html_report_root = Path(importlib.util.find_spec(__name__).origin).parent
-    static_folder = html_report_root / "_static"
-    report_folder = report_folder / "_static"
+    mod = importlib.util.find_spec(__name__)
+    if mod and mod.origin:
+        html_report_root = Path(mod.origin).parent
+        static_folder = html_report_root / "_static"
+        report_folder = report_folder / "_static"
 
-    shutil.copytree(static_folder, report_folder, dirs_exist_ok=True)
+        shutil.copytree(static_folder, report_folder, dirs_exist_ok=True)

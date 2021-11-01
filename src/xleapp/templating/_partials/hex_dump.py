@@ -11,10 +11,10 @@ from xleapp.templating.html import HtmlPage, Template
 @dataclass
 class HexDumpHtml(HtmlPage):
     @Template("hexdump")
-    def html(self, data, char_per_row=5):
+    def html(self, data, char_per_row=5) -> str:
         """Retuns HTML table of the hexdump of the passed in data."""
         data_hex = binascii.hexlify(data).decode("utf-8")
-        str_raw = istrings.strings_raw(data)
+        str_raw = istrings.raw(data)
         str_hex = ""
         str_ascii = ""
 

@@ -17,7 +17,7 @@ from .helpers.utils import ValidateInput, generate_program_header
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def get_parser():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=__project__.lower(),
         description="xLEAPP: iOS Logs, Events, and Plists Parser.",
@@ -122,9 +122,9 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
 
         gui.main(g.app)
     elif args.artifact_paths:
-        generate_artifact_path_list()
+        generate_artifact_path_list(artifacts)
     elif args.artifact_table:
-        generate_artifact_table()
+        generate_artifact_table(artifacts)
     else:
         extraction_type = ValidateInput(
             args.input_path,
@@ -134,7 +134,7 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
         g.app(
             *artifacts,
             device_type=args.device_type,
-            output_folder=args.output_folder,
+            output_path=args.output_folder,
             input_path=args.input_path,
             extraction_type=extraction_type,
         )
@@ -165,8 +165,9 @@ def _main(app: "XLEAPP") -> None:
     @timed
     def process():
         logger_log.info(f"Processing {app.num_to_process} artifacts...")
-        app.crunch_artifacts()
+        app.crunch_artifacts(thread=None, window=None)
 
+    run_time: float
     run_time, _ = process()
     logger_log.info(f"\nCompleted processing artifacts in {run_time:.2f}s")
     end_time = time.perf_counter()

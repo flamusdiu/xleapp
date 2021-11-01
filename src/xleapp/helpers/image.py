@@ -27,7 +27,7 @@ def generate_thumbnail(
     """
     thumb = f"{g.app.default_configs.get('thumbnail_root')}/{imDirectory}/{imFilename}"
     thumblist = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)
-    thumbname = imDirectory.replace("/", "_") + "_" + imFilename + ".JPG"
+    thumbname = f"{str(imDirectory.resolve()).replace('/', '_')}_{imFilename}.JPG"
     pathToThumb = os.path.join(
         os.path.basename(os.path.abspath(report_folder)),
         thumbname,
@@ -40,7 +40,6 @@ def generate_thumbnail(
         # TODO: handle videos and HEIC
         files = seeker.search(
             f"{g.app.default_configs.get('MEDIA_ROOT')}/{imDirectory}/{imFilename}",
-            return_on_first_hit=True,
         )
         if files:
             try:

@@ -2,7 +2,6 @@ import logging
 import shutil
 import typing as t
 
-from os import PathLike
 from pathlib import Path
 from textwrap import TextWrapper
 
@@ -10,13 +9,14 @@ import prettytable
 
 import xleapp.helpers.utils as utils
 
-from .abstract import Artifact
-from .decorators import Search, core_artifact, long_running_process
-from .services import ArtifactError
+from .abstract import Artifact as Artifact
+from .decorators import Search as Search
+from .decorators import core_artifact as core_artifact
+from .decorators import long_running_process as long_running_process
+from .services import ArtifactEnum as ArtifactEnum
+from .services import ArtifactError as ArtifactError
+from .services import Artifacts as Artifacts
 
-
-if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
 
 logger_log = logging.getLogger("xleapp.logfile")
 
@@ -33,7 +33,8 @@ def generate_artifact_path_list(artifacts) -> None:
         regex_list = []
         for artifact in artifacts:
             if isinstance(artifact.search_dirs, tuple):
-                [regex_list.append(item) for item in artifact.search_dirs]
+                for item in artifact.search_dirs:
+                    regex_list.append(item)
             else:
                 regex_list.append(artifact.search_dirs)
         # Create a single list removing duplications
@@ -74,7 +75,7 @@ def generate_artifact_table(artifacts) -> None:
 def copyfile(
     report_folder: Path,
     name: str,
-    input_file: t.Union[PathLike, str],
+    input_file: Path,
     output_file: str,
 ) -> Path:
     """Exports file to report folder
@@ -97,10 +98,10 @@ def copyfile(
     if utils.is_platform_windows():
         input_file = Path(f"\\\\?\\{input_file.resolve()}")
 
-    output_file = Path(output_folder / output_file)
-    shutil.copy2(input_file, output_file)
-    logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
-    return output_file
+    output_file_path = Path(output_folder / output_file)
+    shutil.copy2(input_file, output_file_path)
+    logger_log.debug(f"File {input_file.name} copied to " f"{output_file_path}")
+    return output_file_path
 
 
 def filter_artifacts(artifact_list: t.Iterable) -> filter:

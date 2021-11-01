@@ -16,7 +16,7 @@ class ProcessThread(ABC, threading.Thread):
         self,
         app: "XLEAPP",
         window: PySG.Window = None,
-        sleep_time: int = 0.1,
+        sleep_time: float = 0.1,
         daemon=True,
     ):
         self._stop_event = threading.Event()

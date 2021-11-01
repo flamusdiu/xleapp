@@ -6,7 +6,7 @@ from xleapp.helpers.descriptors import Validator
 class FoundFiles(Validator):
     """Descriptor ensuring 'foundfiles' type"""
 
-    default_value = set()
+    default_value: set = set()
 
     def validator(self, value):
         if not isinstance(value, set):
@@ -16,7 +16,7 @@ class FoundFiles(Validator):
 class WebIcon(Validator):
     """Descriptor ensuring 'web_icon' type"""
 
-    default_value = web.WebIcon.ALERT_TRIANGLE
+    default_value: web.WebIcon = web.WebIcon["ALERT_TRIANGLE"]
 
     def validator(self, value):
         if not isinstance(value, (web.WebIcon, WebIcon)):

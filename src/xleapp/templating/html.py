@@ -6,12 +6,16 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import jinja2
+
 import xleapp.globals as g
 import xleapp.report as report
 
+from ..helpers.types import DecoratedFunc
+
 
 if t.TYPE_CHECKING:
-    from xleapp.artifacts.abstract import Artifact
+    from xleapp.artifacts.services import ArtifactEnum
     from xleapp.report import WebIcon
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -43,12 +47,12 @@ class Template:
              Must be in template folder.
     """
 
-    def __init__(self, template: str):
+    def __init__(self, template: str) -> None:
         self._template = f"{template}.jinja"
 
-    def __call__(self, func):
+    def __call__(self, func: DecoratedFunc) -> DecoratedFunc:
         @functools.wraps(func)
-        def template_wrapper(cls, *args):
+        def template_wrapper(cls: HtmlPage) -> t.Any:
             if not isinstance(cls, HtmlPage):
                 TypeError(
                     f"{cls.__name__!r} not {HtmlPage.__name__!r} class for"
@@ -58,16 +62,26 @@ class Template:
             cls.template = template_j
             return func(cls)
 
-        return template_wrapper
+        return t.cast(DecoratedFunc, template_wrapper)
+
+
+class HtmlPageBase(ABC):
+    @abstractmethod
+    def html(self) -> str:
+        raise NotImplementedError('HtmlPage objects must implement "html()" method!')
 
 
 @dataclass
-class _HtmlPageBase:
+class HtmlPageMixin:
+    artifact: "ArtifactEnum" = field(init=False)
+    report_folder: Path = field(init=True)
+    log_folder: Path = field(init=True)
     device: object = field(init=False)
+    template: jinja2.Template = field(init=False, repr=False)
 
 
 @dataclass
-class _HtmlPageDefaults:
+class HtmlPageMixinDefaults:
     """HTML page defaults for the HTML page
 
     Attributes:
@@ -83,24 +97,19 @@ class _HtmlPageDefaults:
         navigation (dict): Navigation of the HTML report
     """
 
-    artifact: "Artifact" = field(default=None, init=False)
-    report_folder: Path = field(default="", init=True)
-    log_folder: Path = field(default="", init=True)
-    extraction_type: str = field(default="fs", init=True)
+    extraction_type: t.Optional[str] = field(default="fs", init=True)
     processing_time: float = field(default=0.0, init=True)
-    navigation: dict = field(default_factory=lambda: {}, init=True)
+    navigation: dict[str, set["NavigationItem"]] = field(
+        default_factory=lambda: {},
+        init=True,
+    )
 
 
-@dataclass
-class HtmlPage(ABC, _HtmlPageDefaults, _HtmlPageBase):
-    def __call__(self, artifact: "Artifact"):
+class HtmlPage(HtmlPageMixinDefaults, HtmlPageMixin, HtmlPageBase):
+    def __call__(self, artifact: "ArtifactEnum") -> "HtmlPage":
         self.artifact = artifact
         self.data = getattr(artifact, "data", None)
         return self
-
-    @abstractmethod
-    def html(self):
-        raise NotImplementedError('HtmlPage objects must implement "html()" method!')
 
 
 @dataclass
@@ -141,7 +150,9 @@ class NavigationItem:
     def __hash__(self) -> int:
         return hash(self.name)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, NavigationItem):
+            return NotImplemented
         return self.name == other.name
 
 
@@ -150,7 +161,7 @@ class ArtifactHtmlReport(HtmlPage):
     """Base Artifact HTML Report"""
 
     @Template("report_base")
-    def html(self):
+    def html(self) -> str:
         """Returns HTML str of artifact report
 
         The :func:`@Template("report_base")` is the default Jinja2 template used for
@@ -167,15 +178,14 @@ class ArtifactHtmlReport(HtmlPage):
         """Generates report information (html, tsv, kml, and timeline)"""
         html = self.html()
         output_file = (
-            self.report_folder
-            / f"{self.artifact.category} - {self.artifact.value.name}.html"
+            self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
         )
         output_file.write_text(html)
 
         if self.artifact.processed and hasattr(self.artifact, "data"):
             options = (
                 {
-                    "name": self.artifact.value.name,
+                    "name": self.artifact.name,
                     "data_list": self.data,
                     "data_headers": self.artifact.report_headers,
                 },
@@ -202,5 +212,5 @@ class ArtifactHtmlReport(HtmlPage):
         return True
 
     @property
-    def artifact_cls(self) -> str:
+    def artifact_cls(self) -> t.Any:
         return self.artifact.cls_name

@@ -7,6 +7,7 @@ from importlib.metadata import entry_points
 from pathlib import Path
 
 from xleapp import __authors__
+from xleapp.plugins import Plugin
 
 
 class ParseError(Exception):
@@ -57,7 +58,7 @@ def get_next_unused_name(path: str) -> str:
 def ValidateInput(
     input_path: str,
     output_path: str,
-) -> t.Optional[str]:
+) -> str:
     """
     Returns tuple (success, extraction_type)
     """
@@ -127,11 +128,12 @@ def filter_dict(dictionary: dict, filter_string: str):
         yield key, item
 
 
-def discovered_plugins() -> dict[set]:
-    plugins = defaultdict(set)
+def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
+    plugins: dict[str, set[Plugin]] = defaultdict(set)
     try:
         for plugin in entry_points()["xleapp.plugins"]:
-            plugins[plugin.name].add(plugin.load()())
+            xleapp_plugin: Plugin = plugin.load()()
+            plugins[plugin.name].add(xleapp_plugin)
         return plugins
     except KeyError:
         return None

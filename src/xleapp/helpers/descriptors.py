@@ -1,7 +1,11 @@
+import typing as t
+
 from abc import ABC, abstractmethod
 
 
 class Validator(ABC):
+    default_value: t.Any = ...
+
     def __set_name__(self, owner, name):
         self.private_name = f"_{name}"
 
@@ -20,7 +24,7 @@ class Validator(ABC):
             setattr(obj, self.private_name, value)
 
     @abstractmethod
-    def validator(self, value):
+    def validator(self, value: t.Any) -> t.Any:
         raise NotImplementedError(
             "Descriptors must create a `validator()` class that returns a boolean!",
         )
