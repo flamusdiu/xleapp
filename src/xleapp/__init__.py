@@ -16,4 +16,4 @@ from .templating import ArtifactHtmlReport as ArtifactHtmlReport
 from .templating import Template as Template
 
 
-VERSION = f"{__project__} v{__version__}"
+VERSION = f"{__project__} {__version__}"

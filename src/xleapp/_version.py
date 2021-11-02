@@ -1,2 +1,2 @@
-__version__ = "v0.1.0a3"
+__version__ = "v0.1.0"
 __project__ = "xLEAPP"
