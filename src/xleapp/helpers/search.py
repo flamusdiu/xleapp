@@ -28,14 +28,40 @@ else:
 
 
 class PathValidator(Validator):
+    """Validates if a Pathlike object was set."""
+
     def validator(self, value) -> Path:
+        """Validates this property
+
+        Args:
+            value: value attempting to be set
+
+        Raises:
+            TypeError: raises error if not Path or Pathlike object.
+
+        Returns:
+            :obj:`Path`.
+        """
         if not isinstance(value, (Path, os.PathLike, str)):
             raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
         return Path(value).resolve()
 
 
 class HandleValidator(Validator):
+    """Ensures only sqlite3.Connection or IOBase is set."""
+
     def validator(self, value) -> None:
+        """Validates this property
+
+        Args:
+            value: value attempting to be set
+
+        Raises:
+            TypeError: raises error if not sqlite3.Connection or IOBase object.
+
+        Returns:
+            :obj:`Path`.
+        """
         if isinstance(value, Path):
             return None
         elif not isinstance(value, (sqlite3.Connection, IOBase)):
@@ -46,6 +72,21 @@ class HandleValidator(Validator):
 
 
 class Handle:
+    """Handles file objects.
+
+    Attributes:
+        file_handle: sets the file or database connection
+        path: location of the file or database. Set seperatly to ensure the path can be
+            resolved as early as possible.
+
+    Args:
+        found_file: Object of the file from searching.
+        path: Path of the file
+
+    Returns:
+        sqlite3.Connection, IOBase, or Path object.
+    """
+
     file_handle = HandleValidator()
     path = PathValidator()
 
@@ -61,7 +102,18 @@ class Handle:
 
 
 class FileHandles(UserDict):
-    logged: list = []
+    """Container to hold file information for artifacts.
+
+    Args:
+        *args:
+        **kwargs:
+
+    Attributes:
+        logged: keeps track of which regex strings have been logged. This ensures
+            only one log out put per regex when evaluating each one.
+    """
+
+    logged: set[str] = set()
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(self, *args, **kwargs)
@@ -76,7 +128,13 @@ class FileHandles(UserDict):
         files: t.Union[set[Handle], set[Path]],
         file_names_only: bool = False,
     ) -> None:
+        """Adds files for each regex to be tracked
 
+        Args:
+            regex: string used to find the files
+            files: set of handels or paths to track
+            file_names_only: keep only file names/paths but no file objects.
+        """
         for item in files:
             file_handle: Handle
             path: t.Optional[Path] = None
@@ -125,8 +183,9 @@ class FileHandles(UserDict):
                 self[regex].add(file_handle)
 
     def clear(self) -> None:
+        """Resets the tracked files."""
         self.data = {}
-        self.logged = []
+        self.logged = set()
 
     def __getitem__(self, regex: str) -> set[Handle]:
         try:
@@ -138,7 +197,7 @@ class FileHandles(UserDict):
                         logger_process.info(f"\nFiles for {regex} located at:")
 
                     logger_process.info(f"    {artifact_file.path}")
-                    self.logged.append(regex)
+                    self.logged.add(regex)
 
                 if isinstance(artifact_file, IOBase):
                     artifact_file.seek(0)
@@ -164,11 +223,19 @@ class FileHandles(UserDict):
 
 
 class FileSeekerBase(ABC):
+    """Base class to search files
+
+    Attributes:
+        temp_folder: temporary folder to store files
+    """
 
     temp_folder: Path
     _all_files: list[str] = []
     _directory: Path
     _file_handles = FileHandles()
+
+    def __init__(self, *args, **kwargs) -> None:
+        pass
 
     @abstractmethod
     def search(self, filepattern_to_search: str) -> t.Iterator[Path]:
@@ -184,11 +251,23 @@ class FileSeekerBase(ABC):
     def build_files_list(
         self, folder: t.Optional[t.Union[str, Path]]
     ) -> t.Union[tuple[list, list], list]:
-        """Finds files in directory"""
+        """Builds a file list to search
+
+        Args:
+            folder: folder to get files from if required
+
+        Returns:
+            A list of files
+        """
         pass
 
     @property
     def directory(self) -> Path:
+        """Directory to search
+
+        Returns:
+            The path to directory
+        """
         return self._directory
 
     @directory.setter
@@ -197,6 +276,11 @@ class FileSeekerBase(ABC):
 
     @property
     def all_files(self) -> list[str]:
+        """List of all files searched
+
+        Returns:
+            A list of files
+        """
         return self._all_files
 
     @all_files.setter
@@ -205,13 +289,21 @@ class FileSeekerBase(ABC):
 
     @property
     def file_handles(self) -> FileHandles:
+        """File handles and path found per regex
+
+        Returns:
+            A list of files or paths
+        """
         return self._file_handles
 
     def clear(self) -> None:
+        """Clears the list of file handles"""
         self.file_handles.clear()
 
 
 class FileSeekerDir(FileSeekerBase):
+    """Searches directory for files."""
+
     def __init__(self, directory, temp_folder=None):
         self.directory = Path(directory)
         logger_log.info("Building files listing...")
@@ -221,8 +313,6 @@ class FileSeekerDir(FileSeekerBase):
         logger_log.info(f"File listing complete - {len(self._all_files)} files")
 
     def build_files_list(self, folder):
-        """Populates all paths in directory into _all_files"""
-
         subfolders, files = [], []
 
         for item in os.scandir(folder):
@@ -246,6 +336,8 @@ class FileSeekerDir(FileSeekerBase):
 
 
 class FileSeekerItunes(FileSeekerBase):
+    """Searches iTunes Backup for files."""
+
     def __init__(
         self,
         directory: t.Union[str, Path],
@@ -301,6 +393,8 @@ class FileSeekerItunes(FileSeekerBase):
 
 
 class FileSeekerTar(FileSeekerBase):
+    """Searches tar backup for files."""
+
     def __init__(self, directory, temp_folder):
         self.is_gzip = Path(directory).suffix == ".gz"
         mode = "r:gz" if self.is_gzip else "r"
@@ -332,7 +426,13 @@ class FileSeekerTar(FileSeekerBase):
 
 
 class FileSeekerZip(FileSeekerBase):
-    def __init__(self, zip_file_path: t.Union[str, Path], temp_folder: Path):
+    """Search backup zip file for files."""
+
+    def __init__(
+        self,
+        zip_file_path: t.Union[str, Path],
+        temp_folder: Path,
+    ) -> None:
         self.zip_file = ZipFile(zip_file_path)
         self.name_list = self.zip_file.namelist()
         self.temp_folder = temp_folder
@@ -340,7 +440,6 @@ class FileSeekerZip(FileSeekerBase):
     def search(
         self,
         filepattern: str,
-        return_on_first_hit: bool = False,
     ) -> t.Iterator[str]:
         pathlist: list[str] = []
         for member in self.name_list:
@@ -361,19 +460,48 @@ class FileSeekerZip(FileSeekerBase):
 
 
 class FileSearchProvider(BaseUserDict):
+    """Search provider to control which kind of location is being searched
+
+    Attributes:
+        data: dictionary containing all the search providers
+        _items: number of search providers
+    """
+
+    data: dict[str, t.Type[FileSeekerBase]]
+    _items: int
+
     def __init__(self) -> None:
-        self.data: dict[str, t.Any] = {}
+        self.data = {}
         self._items: int = 0
 
     def __len__(self) -> int:
         return self._items
 
     def register_builder(self, key: str, builder) -> None:
+        """Register a search builder
+
+        Args:
+            key: short name of search builder
+            builder: object to perform the search
+        """
         self._items = self._items + 1
         self.data[key] = builder
 
-    def create(self, key, **kwargs):
-        builder = self.data.get(key)
+    def create(self, key: str, **kwargs: t.Any):
+        """Creates or returns the search provider
+
+        Args:
+            key: short name for the file seeker
+            **kwargs: options for the search provider
+
+        Raises:
+            ValueError: raises error if builder has not been register
+
+        Returns:
+            FileSearchBase.
+        """
+        builder: t.Optional[t.Type[FileSeekerBase]] = self.data.get(key)
+
         if not builder:
             raise ValueError(key)
         return builder(**kwargs)

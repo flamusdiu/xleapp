@@ -13,6 +13,8 @@ The class order ABC > AbstractArtifactDefaults > AbstractBase ensures this is co
 
 """
 
+from __future__ import annotations
+
 import logging
 import typing as t
 
@@ -34,24 +36,12 @@ if t.TYPE_CHECKING:
 
 @dataclass
 class AbstractBase:
-    """Base class to set any properties for
-    `Artifact` Class. This properties do not
-    have a default value.
-
-    Attributes:
-        category (str): Category the artifact falls into. This also is used for the area
-            the artifacts appears under for the end report.
-        description (str): Short description of the artifact.
-        name (str): full name of the artifact.
-        data (list): list of data from the `process()`.
-        regex (list): search strings set by the `@Search()` decorator.
-        _log (logging.Logger). Logger attached to artifact for output to log files.
-    """
+    """Base class to set any properties for :obj: `Artifact` Class."""
 
     description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
     data: list = field(init=False, repr=False, compare=False)
-    regex: set = field(init=False, repr=False, compare=False)
+    regex: set[str] = field(init=False, repr=False, compare=False)
     app: "XLEAPP" = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
@@ -63,27 +53,6 @@ class AbstractArtifactDefaults:
 
     Attributes core, long_running_process, and selected are used
     to track artifacts internally for certain actions.
-
-    Args:
-        app (XLEAPP): attached app instance to each artifact. Default is None.
-        core (bool): artifacts require to always run. Default is False.
-        found (set): set of files found from a `FileSeeker`.
-        hide_html_report_path_table (bool): bool to hide displaying paths
-            when then report is generated. Note: Any artifact processing 10
-            or more files will ignore this value.
-        html_report (ArtifactHtmlReport): holds the html report object
-        kml (bool): True or False to generate kml (location files) information.
-            Default is False.
-        long_running_process (bool): artifacts which takes an extremely long time to run
-            and should be deselected by default. Default is False
-        processing_time(float): Seconds of time it takes to process this artifact.
-            Default is 0.0.
-        report (bool): True or False. sets to generate HTML report. Default True.
-        report_headers (list or tuple): headers for the report table during
-            report generation.
-        select: artifacts selected to be run. Default is False.
-        timeline(bool): True or False to add data to the timeline database. Default is False.
-        web_icon (Icon): FeatherJS icon used for the report navgation menu. Default is `Icon.TRIANGLE`.
     """
 
     category: str = field(init=False, default="Unknown")
@@ -119,7 +88,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         regex: set[str],
         file_names_only: bool = False,
         return_on_first_hit: bool = True,
-    ) -> t.Iterator["Artifact"]:
+    ) -> t.Iterator[Artifact]:
         """Creates a contaxt manager for an artifact.
 
         This will automatically search and add the regex and files to an artifact when
@@ -128,24 +97,16 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         Example:
             This can be used with `with` blocks::
 
-                with Artifact.context({'*/myregex*'}, file_names_only=True) as artifact:
+            >>> with Artifact.context({'*/myregex*'}, file_names_only=True) as artifact:
                     artifact.name = 'New Name'
                     artifact.process()
 
-
-        Args:
-            regex (list[str]): Globs regex expressions
-            file_names_only (bool, optional): True or False. Returns a list of file
-                names (true) or list of objects (false) . Defaults to False.
-            return_on_first_hit (bool, optional): True or False. Returns first match on
-                a regex search. Defaults to True.
-
         Yields:
-            Iterator[Artifact]: returns self
+            Artifact: Updated object
         """
         seeker = self.app.seeker
         files = seeker.file_handles
-        global_regex = files.keys()
+        global_regex = files
 
         self.regex = regex
 
@@ -173,10 +134,10 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                     self.found = self.found | files[artifact_regex]
         yield self
 
-    def __enter__(self):
+    def __enter__(self) -> Artifact:
         return self
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (self.name == other.name) and (self.category == self.category)
 
     @property
@@ -189,6 +150,21 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         return type(self).__name__
 
     def copyfile(self, input_file: Path, output_file: str):
+        """Exports file to report folder
+
+        File will be located under report_folder\\export\\artifact_class
+
+        A shortcut for :func:`artifacts.copyfile()` inforcing the save
+        location for each file.
+
+        Args:
+            names: name of the artifact class
+            input_file: input file name/path
+            output_file: output file name
+
+        Returns:
+            output_file: Path object of the file save location and name.
+        """
         return artifacts.copyfile(
             report_folder=self.app.report_folder,
             name=self.cls_name,
@@ -201,6 +177,15 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         level: int = logging.INFO,
         message: object = None,
     ):
+        """Log message for this artifact
+
+        Args:
+            level: Logging message level. Defaults to logging.INFO.
+            message: Message to log. Defaults to None.
+
+        Raises:
+            AttributeError: Error messae if :attr:`message` is not set.
+        """
         if not hasattr(self, "_log"):
             self._log = logging.getLogger("xleapp.logfile")
 

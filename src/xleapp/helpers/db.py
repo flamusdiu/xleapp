@@ -11,8 +11,13 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 def open_sqlite_db_readonly(path: t.Union[Path, str]) -> sqlite3.Connection:
-    """Opens an sqlite db in read-only mode, so original db
-    (and -wal/journal are intact)
+    """Opens an sqlite db in read-only mode, so original db (and -wal/journal are intact)
+
+    Args:
+        path: Path of the database file.
+
+    Returns:
+        Sqlite3.Connection to database as readonly.
     """
     if isinstance(path, str):
         path = Path(path)
@@ -40,7 +45,16 @@ def does_column_exist_in_db(
     table_name: str,
     col_name: str,
 ) -> bool:
-    """Checks if a specific col exists"""
+    """Checks if a specific col exists
+
+    Args:
+        db: :obj:`sqlite3.Connection` object of the database
+        table_name: string of the table to check
+        col_name: string of the column to check
+
+    Returns:
+        True if exists. False otherwise.
+    """
     col_name = col_name.lower()
     try:
         db.row_factory = sqlite3.Row  # For fetching columns by name
@@ -57,7 +71,15 @@ def does_column_exist_in_db(
 
 
 def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
-    """Checks if a table with specified name exists in an sqlite db"""
+    """Checks if a table with specified name exists in an sqlite db
+
+    Args:
+        db: :obj:`sqlite3.Connection` object of the database
+        table_name: string of the table to check
+
+    Returns:
+        True if exists. False otherwise.
+    """
     try:
         query = (
             "SELECT name FROM sqlite_master WHERE type='table' AND name= %(table_name)s"

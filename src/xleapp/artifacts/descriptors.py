@@ -26,7 +26,7 @@ class WebIcon(Validator):
 class ReportHeaders(Validator):
     """Descriptor ensuring 'report_headers' type"""
 
-    default_value = ("Key", "Value")
+    default_value: tuple = ("Key", "Value")
 
     def validator(self, value) -> None:
         if not ReportHeaders._check_list_of_tuples(value, bool_list=[]):
@@ -52,8 +52,8 @@ class ReportHeaders(Validator):
             Anything else should fail to set.
 
         Args:
-            values (list): values to be checked
-            bool_list (list, optional): list of booleans of values checked.
+            values: values to be checked
+            bool_list: list of booleans of values checked.
                 Defaults to [].
 
         Returns:

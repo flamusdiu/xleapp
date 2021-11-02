@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import logging
 import typing as t
@@ -14,6 +16,8 @@ from jinja2 import Environment
 import xleapp.artifacts as artifacts
 import xleapp.report as report
 import xleapp.templating as templating
+
+from xleapp.plugins import Plugin
 
 from ._version import __project__, __version__
 from .gui.utils import ProcessThread
@@ -83,7 +87,7 @@ class XLEAPP:
     output_path = OutputFolder()
     processing_time: float
     project: str
-    plugins: t.Optional[dict[str, set[t.Any]]]
+    plugins: t.Optional[dict[str, set[Plugin]]]
     report_folder: Path
     seeker: FileSeekerBase
     version: str
@@ -116,16 +120,16 @@ class XLEAPP:
 
         artifacts_enum = self.artifacts.data
         artifact: ArtifactEnum
-        artifacts_str_list: list[str]
+        artifacts_str_list: t.Sequence[str]
         if artifacts_list:
             artifacts_str_list = [selected.lower() for selected in artifacts_list]
         for artifact in artifacts_enum:
             if artifacts_list and artifact.cls_name.lower() in artifacts_str_list:
-                artifacts_enum[artifact.name].select = True
+                artifacts_enum[artifact.name].select = True  # type: ignore
             elif not artifacts_list:
-                artifacts_enum[artifact.name].select = True
+                artifacts_enum[artifact.name].select = True  # type: ignore
             else:
-                artifacts_enum[artifact.name].select = False
+                artifacts_enum[artifact.name].select = False  # type: ignore
 
         return self
 
@@ -163,7 +167,7 @@ class XLEAPP:
         return rv
 
     @cached_property
-    def artifacts(self) -> "Artifacts":
+    def artifacts(self) -> Artifacts:
         return artifacts.Artifacts(self)
 
     def crunch_artifacts(
@@ -198,7 +202,7 @@ class XLEAPP:
                         navigation=nav,
                     )
 
-                    if html_report(artifact).report:
+                    if html_report(artifact).report:  # type: ignore
                         logger_log.info(f"{msg_artifact}")
                 else:
                     logger_log.warn(

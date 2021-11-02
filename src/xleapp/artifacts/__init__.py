@@ -21,35 +21,31 @@ from .services import Artifacts as Artifacts
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def generate_artifact_path_list(artifacts) -> None:
+def generate_artifact_path_list(artifacts: Artifacts) -> None:
     """Generates path file for usage with Autopsy
 
     Args:
-        artifacts(list): List of artifacts to get regex from.
+        artifacts: List of artifacts to get regex from.
     """
     logger_log.info("Artifact path list generation started.")
 
     with open("path_list.txt", "w") as paths:
-        regex_list = []
-        for artifact in artifacts:
-            if isinstance(artifact.search_dirs, tuple):
-                for item in artifact.search_dirs:
-                    regex_list.append(item)
-            else:
-                regex_list.append(artifact.search_dirs)
+        regex_list: set[str] = set()
+        for artifact in artifacts.data:
+            regex_list = regex_list | artifact.regex
         # Create a single list removing duplications
-        ordered_regex_list = "\n".join(set(regex_list))
+        ordered_regex_list = "\n".join(regex_list)
         logger_log.info(ordered_regex_list)
         paths.write(ordered_regex_list)
 
         logger_log.info("Artifact path list generation completed")
 
 
-def generate_artifact_table(artifacts) -> None:
+def generate_artifact_table(artifacts: Artifacts) -> None:
     """Generates artifact list table.
 
     Args:
-        artifacts(list): List of artifacts to get regex from.
+        artifacts: List of artifacts to get regex from.
     """
     headers = ["Short Name", "Full Name", "Search Regex"]
     wrapper = TextWrapper(expand_tabs=False, replace_whitespace=False, width=60)
@@ -60,13 +56,12 @@ def generate_artifact_table(artifacts) -> None:
     logger_log.info("Artifact table generation started.")
 
     with open(output_file, "w") as paths:
-        for key, value in artifacts:
-            short_name = key
-            full_name = value.cls.name
-            search_regex = value.cls.search_dirs
-            if isinstance(search_regex, tuple):
-                search_regex = "\n".join(search_regex)
-            output_table.add_row([short_name, full_name, wrapper.fill(search_regex)])
+        for artifact in artifacts.data:
+            short_name: str = artifact.cls_name
+            full_name: str = artifact.value.name
+            search_regex: set[str] = artifact.regex
+            search_regex_list = "\n".join(search_regex)
+            output_table.add_row([short_name, full_name, wrapper.fill(search_regex_list)])
         paths.write(output_table.get_string(title="Artifact List", sortby="Short Name"))
     logger_log.info(f"Table saved to: {output_file}")
     logger_log.info("Artifact table generation completed")
@@ -83,12 +78,12 @@ def copyfile(
     File will be located under report_folder\\export\\artifact_class
 
     Args:
-        names(str): name of the artifact class
-        input_file (str): input file name/path
-        output_file (str): output file name
+        names: name of the artifact class
+        input_file: input file name/path
+        output_file: output file name
 
     Returns:
-        output_file (Path): Path object of the file save location and name.
+        output_file: Path object of the file save location and name.
     """
     report_folder = report_folder
     artifact_folder = name

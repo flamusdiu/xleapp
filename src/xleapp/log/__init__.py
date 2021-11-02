@@ -122,3 +122,8 @@ def init() -> None:
         )
 
         logging.config.dictConfig(config)
+    else:
+        raise FileNotFoundError(
+            "Package found! Missing 'log_config.yaml' to "
+            "configure logging! Reinstall package.",
+        )

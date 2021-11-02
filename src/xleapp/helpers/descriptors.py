@@ -4,6 +4,12 @@ from abc import ABC, abstractmethod
 
 
 class Validator(ABC):
+    """Abstract class for validator descriptors
+
+    Attributes:
+        default_value: sets default value for the concrete class
+    """
+
     default_value: t.Any = ...
 
     def __set_name__(self, owner, name):
@@ -25,6 +31,10 @@ class Validator(ABC):
 
     @abstractmethod
     def validator(self, value: t.Any) -> t.Any:
+        """Function ran to validate a value.
+
+        Validators may return non boolean values.
+        """
         raise NotImplementedError(
             "Descriptors must create a `validator()` class that returns a boolean!",
         )

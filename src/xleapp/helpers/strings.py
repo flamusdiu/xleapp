@@ -25,7 +25,9 @@ def split_camel_case(value: str) -> list[str]:
     return re.sub("([A-Z][a-z]+)", r" \1", re.sub("([A-Z]+)", r" \1", value)).split()
 
 
-def wraptext(source_text, separator_chars, width=70, keep_separators=True):
+def wraptext(
+    source_text: str, separator_chars: str, width: int = 70, keep_separators: bool = True
+):
     current_length = 0
     latest_separator = -1
     current_chunk_start = 0

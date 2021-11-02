@@ -11,14 +11,16 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
-    """Decorator to mark a core artifact
+    """Decorator to mark an artifact as 'core'
 
     Args:
-        cls: Artifact class object
+        cls: The aritfact object
 
     Raises:
-        AttributeError
+        AttributeError: Raises and error if a :obj:`Artifact` is not decorated.
 
+    Returns:
+        DecoratedFunc: The decorated object
     """
 
     @functools.wraps(cls)
@@ -38,16 +40,19 @@ def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
 
 
 def long_running_process(cls: DecoratedFunc) -> DecoratedFunc:
-    """Decorator to mark an artifact as long running
+    """Marks an artifact as a 'long running process'.
+
+    Artifacts marked with this decorator must be manually selected either throug
+    `--artifact` option in the CLI or in the GUI list. They are never selected manually.
 
     Args:
-        cls: Artifact class object
+        cls: The artifact object
 
     Raises:
-        AttributeError
+        AttributeError: Raises and error if a :obj:`Artifact` is not decorated.
 
     Returns:
-        Artifact: Artifact is marked as long running process
+        DecoratedFunc: The decorated object
     """
 
     @functools.wraps(cls)
@@ -65,6 +70,14 @@ def long_running_process(cls: DecoratedFunc) -> DecoratedFunc:
 
 
 class Search:
+    """Decorator for searching files for an artifact.
+
+    Args:
+       file_names_only: Returns only file names (:obj:`Path` objects).
+           Defaults to False.
+       return_on_first_hit: Returns only the first found file. Defaults to True.
+    """
+
     def __init__(
         self,
         *args,

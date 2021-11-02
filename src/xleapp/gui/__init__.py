@@ -30,7 +30,12 @@ window: PySG.Window = None
 logger = logging.getLogger("xleapp.log")
 
 
-def main(app: "XLEAPP") -> None:
+def main(app: XLEAPP) -> None:
+    """Main function for the GUI
+
+    Args:
+        app: application instance
+    """
 
     # sets theme for GUI
     PySG.theme("DarkAmber")

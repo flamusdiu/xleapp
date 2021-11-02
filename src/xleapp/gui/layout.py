@@ -14,6 +14,8 @@ from xleapp.artifacts.services import ArtifactEnum
 
 
 class Font(Enum):
+    """Enumeration to hold font options for GUI"""
+
     URL = ("Helvetica", 12, "underline")
     NORMAL = ("Helvetica", 12)
     FRAME = ("Helvetica", 14, "bold")
@@ -32,6 +34,14 @@ def get_title(device_type: str):
 
 
 def generate_artifact_list(artifacts: t.Type[ArtifactEnum]) -> list[str]:
+    """Generates artifact list for GUI
+
+    Args:
+        artifacts: enum of artifacts
+
+    Returns:
+        The string of artifacts.
+    """
     return [
         f"{artifact.category} [{artifact.cls_name}]"
         for artifact in artifacts
@@ -39,19 +49,32 @@ def generate_artifact_list(artifacts: t.Type[ArtifactEnum]) -> list[str]:
     ]
 
 
-def generate_device_list():
+def generate_device_list() -> list[str]:
+    """Generates a list of devices based on installed plugins
+
+    Returns:
+        The list of devices
+    """
     regex = re.compile(r"^(\w+)-?")
     plugins = utils.discovered_plugins()
-    device_types = {
-        regex.match(plugin).group(1) for plugin in plugins.keys() if regex.match(plugin)
-    }
+    device_types: set[str] = set()
+    if plugins:
+        for plugin in plugins:
+            match = regex.match(plugin)
+            if match:
+                device_types.add(match.group(1))
     return list(device_types)
 
 
 # Disabled formatting from 'Black' so these PySG layouts are more compressed and
 # easier to read.
 # fmt: off
-def layout_right_column():
+def layout_right_column() -> PySG.Column:
+    """Returns the layout for the right column of the GUI
+
+    Returns:
+         The column layout
+    """
     layout = [
         [PySG.Fr(
             layout=[
@@ -70,7 +93,12 @@ def layout_right_column():
     return PySG.Col(layout, pad=((0, 2), (0, 0)))
 
 
-def layout_left_column():
+def layout_left_column() -> PySG.Column:
+    """Returns the layout for the left side of the GUI
+
+    Returns:
+        The column layout
+    """
     layout = [
         [PySG.Fr(
             layout=[
@@ -87,12 +115,22 @@ def layout_left_column():
     return PySG.Col(layout)
 
 
-def generate_menu() -> list:
+def generate_menu() -> list[PySG.Menu]:
+    """Returns the optionsn on the menu bar
+
+    Returns:
+        The PySG.Menu options
+    """
     menu_def = [["&Help", ["&Online Documentation...", "&About..."]]]
     return [PySG.Menu(menu_def, tearoff=False)]
 
 
-def generate_layout() -> list:
+def generate_layout() -> list[t.Any]:
+    """Returns the complete layout for the GUI
+
+    Returns:
+        The GUI layout
+    """
     return [
         [generate_menu()],
         [
@@ -206,6 +244,17 @@ def generate_layout() -> list:
 
 
 def url(url: str, title: str) -> PySG.Text:
+    """A clickable URL using a Text element.
+
+    This is the same as `<a href="https://www.google.com">Google</google>`
+
+    Args:
+        url: HTTP/HTTPS link to the web page
+        title (str): text disabled for the URL
+
+    Returns:
+        PySG.Text of the URL
+    """
     return PySG.Text(
         title,
         tooltip=url,
@@ -216,7 +265,9 @@ def url(url: str, title: str) -> PySG.Text:
     )
 
 
-def error_popup_no_modules():
+def error_popup_no_modules() -> None:
+    """Error popup if no plugins are installed for application.
+    """
     dialog = PySG.Window(
         "Error!",
         [

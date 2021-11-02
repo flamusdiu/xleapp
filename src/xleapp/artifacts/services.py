@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools
 import logging
 import typing as t
@@ -24,19 +26,46 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 
 class ArtifactProxy(wrapt.ObjectProxy):
-    def __hash__(self):
+    """Object proxy to support hashing :obj:`ArtifactEnum`"""
+
+    def __hash__(self) -> int:
         return hash((self.__wrapped__.name, self.__wrapped__.category))
 
 
 class ArtifactError(Exception):
+    """Basic exception for Artifacts"""
+
     pass
 
 
 class ArtifactEnum(Enum):
-    def __lt__(self, other):
+    """Enum for Artifacts
+
+    This class holds all the installed artifacts in a :obj:`enum` for search searching
+    and modifying of artifact attributes.
+    """
+
+    def __lt__(self, other: ArtifactEnum) -> bool:
         return self.name < other.name
 
     def __getattr__(self, name: str) -> t.Any:
+        """Wraps the :attr:`_value_` of the Enum object.
+
+        Attributes can be assessed through dot notation `X.name` which will check the
+        Enum.value for the property and return that property.
+
+        Meaning that:
+            X.name == X.value.name
+
+        Args:
+            name: Name of the property.
+
+        Raises:
+            AttributeError: If property does not exists.
+
+        Returns:
+            Any: Returns the value of the property which could be anything.
+        """
         if "_value_" in self.__dict__.keys() and hasattr(self.value, name):
             return getattr(self.value, name)
         elif name in self.__dict__:
@@ -47,6 +76,7 @@ class ArtifactEnum(Enum):
             ) from None
 
     def process(self) -> None:
+        """Processes and log the artifact"""
         msg_artifact = f"{self.value.category} [{self.cls_name}] artifact"
         logger_log.info(f"\n{msg_artifact} processing...")
         self.value.process_time, _ = timed(self.value.process)()
@@ -56,17 +86,32 @@ class ArtifactEnum(Enum):
 
 
 class Artifacts:
+    """Service controlling all the artifacts
+
+    Attributes:
+        data: Enum for artifacts for this service
+        app: Application instance attached to this service
+        queue: Priority queue for processing the artifacts.
+    """
 
     data: ArtifactEnum
-    app: "XLEAPP"
+    app: XLEAPP
     queue: PriorityQueue
 
-    def __init__(self, app: "XLEAPP") -> None:
+    def __init__(self, app: XLEAPP) -> None:
         self.app = app
         if "type" in self.app.device:
             self = self(self.app.device["type"])
 
-    def __call__(self, device_type: str) -> "Artifacts":
+    def __call__(self, device_type: str) -> Artifacts:
+        """Updates the :attr:`data` for artifacts for the :attr:`device_type`.
+
+        Args:
+            device_type: type of device being parsed
+
+        Returns:
+            Artifacts: updated service object
+        """
         self.queue = PriorityQueue()
         self.data = Artifacts.generate_artifact_enum(
             app=self.app,
@@ -96,13 +141,24 @@ class Artifacts:
 
     @property
     def installed(self) -> list[str]:
+        """Returns the list of installed artifacts
+
+        Returns:
+            The list of artifacts.
+        """
         return [artifact.cls_name for artifact in self.data]
 
     @property
     def selected(self) -> list[str]:
+        """Returns the list of selected artifacts for processing
+
+        Returns:
+            The list of selected artifacts.
+        """
         return [artifact.cls_name for artifact in self.data if artifact.select]
 
     def reset(self) -> None:
+        """Resets the list of selected artifacts."""
         for artifact in self.data:
             if not artifact.core:
                 artifact.selected = False
@@ -114,6 +170,17 @@ class Artifacts:
         long_running_process: t.Optional[bool] = False,
         all: t.Optional[bool] = False,
     ) -> None:
+        """Selects one or more artifacts to be processed.
+
+        Args:
+            selected: Boolean to select or deselect an artifact. Defaults to True.
+            long_running_process: Select long running processes. Use the
+                :func:`@long_running_process` decorator to mark it as 'long_running_process'. Defaults to False.
+            all: Select all artifacts except 'long_running_processes'. To select long running processing set both :attr:`long_running_process` and :attr:`all` to True. Defaults to False.
+
+        Raises:
+            KeyError: Raises error if artifact does not exists.
+        """
         if all:
             for artifact in self.data:
                 if not artifact.core:
@@ -129,7 +196,16 @@ class Artifacts:
                 raise KeyError(f"Artifact[{item!r}] does not exist!")
 
     @staticmethod
-    def generate_artifact_enum(app: "XLEAPP", device_type: str) -> t.Type[ArtifactEnum]:
+    def generate_artifact_enum(app: XLEAPP, device_type: str) -> t.Type[ArtifactEnum]:
+        """Generates a Enumeration object for all artifacts based on supplied device type.
+
+        Args:
+            app: Application object to attached to each artifact
+            device_type: type of device being processed
+
+        Returns:
+            An Enumeration.
+        """
         members = {}
         plugins: "Plugin" = list(app.plugins[device_type])[0]
         for xleapp_cls in plugins.plugins:
@@ -162,8 +238,14 @@ class Artifacts:
     def crunch_artifacts(
         self,
         window: PySG.Window = None,
-        thread: "ProcessThread" = None,
+        thread: ProcessThread = None,
     ) -> None:
+        """Processes all the selected artifacts
+
+        Args:
+            window: :mod:`PySimpleGUI` window when running the GUI. Defaults to None.
+            thread: :mod:`threading` instance for processing artifacts. Defaults to None.
+        """
         num_processed = 0
         artifact: ArtifactEnum
         device_type: str = self.app.device["type"]

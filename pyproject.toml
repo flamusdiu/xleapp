@@ -53,7 +53,6 @@ pyinstaller = "^4.5.1"
 types-PyYAML = "^5.4.11"
 black = "^21.9b0"
 types-Jinja2 = "^2.11.8"
-xleapp-ios = {path = "plugins/xleapp-ios"}
 
 
 [tool.poetry.scripts]
@@ -109,6 +108,8 @@ pyflakes = ["-F401", "-E501"]
 [tool.flakehell.exceptions."**/gui/__init__.py"]
 mccabe = ["-C901"]
 
+[tool.flakehell.exceptions."**/types.py"]
+pyflakes = ["-F401"]
 
 [tool.isort]
 profile = "black"
