@@ -234,7 +234,11 @@ class FileSeekerBase(ABC):
     _directory: Path
     _file_handles = FileHandles()
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        directory_or_file: t.Optional[Path],
+        temp_folder: t.Optional[Path],
+    ) -> None:
         pass
 
     @abstractmethod
@@ -304,10 +308,10 @@ class FileSeekerBase(ABC):
 class FileSeekerDir(FileSeekerBase):
     """Searches directory for files."""
 
-    def __init__(self, directory, temp_folder=None):
-        self.directory = Path(directory)
+    def __init__(self, directory_or_file, temp_folder=None):
+        self.directory = Path(directory_or_file)
         logger_log.info("Building files listing...")
-        subfolders, files = self.build_files_list(directory)
+        subfolders, files = self.build_files_list(directory_or_file)
         self.all_files.extend(subfolders)
         self.all_files.extend(files)
         logger_log.info(f"File listing complete - {len(self._all_files)} files")
@@ -328,7 +332,7 @@ class FileSeekerDir(FileSeekerBase):
 
         return subfolders, files
 
-    def search(self, filepattern, return_on_first_hit=False):
+    def search(self, filepattern):
         return iter(fnmatch.filter(self.all_files, filepattern))
 
     def cleanup(self) -> None:
@@ -340,11 +344,11 @@ class FileSeekerItunes(FileSeekerBase):
 
     def __init__(
         self,
-        directory: t.Union[str, Path],
-        temp_folder: t.Union[str, Path],
+        directory_or_file,
+        temp_folder,
     ) -> None:
 
-        self.directory = Path(directory)
+        self.directory = Path(directory_or_file)
         self.temp_folder = Path(temp_folder)
 
         self.build_files_list()
@@ -395,10 +399,10 @@ class FileSeekerItunes(FileSeekerBase):
 class FileSeekerTar(FileSeekerBase):
     """Searches tar backup for files."""
 
-    def __init__(self, directory, temp_folder):
-        self.is_gzip = Path(directory).suffix == ".gz"
+    def __init__(self, direcctory_or_file, temp_folder):
+        self.is_gzip = Path(direcctory_or_file).suffix == ".gz"
         mode = "r:gz" if self.is_gzip else "r"
-        self.tar_file = tarfile.open(directory, mode)
+        self.tar_file = tarfile.open(direcctory_or_file, mode)
         self.temp_folder = Path(temp_folder)
 
     def search(self, filepattern: str) -> t.Iterator[Path]:
@@ -430,11 +434,10 @@ class FileSeekerZip(FileSeekerBase):
 
     def __init__(
         self,
-        zip_file_path: t.Union[str, Path],
-        temp_folder: Path,
+        directory_or_file,
+        temp_folder,
     ) -> None:
-        self.zip_file = ZipFile(zip_file_path)
-        self.name_list = self.zip_file.namelist()
+        self.zip_file = ZipFile(directory_or_file)
         self.temp_folder = temp_folder
 
     def search(
@@ -442,7 +445,7 @@ class FileSeekerZip(FileSeekerBase):
         filepattern: str,
     ) -> t.Iterator[str]:
         pathlist: list[str] = []
-        for member in self.name_list:
+        for member in self.build_files_list():
             if fnmatch.fnmatch(member, filepattern):
                 try:
                     extracted_path = (
@@ -454,6 +457,9 @@ class FileSeekerZip(FileSeekerBase):
                     member = member.lstrip("/")
                     # logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
         return iter(pathlist)
+
+    def build_files_list(self, folder=None):
+        return self.zip_file.namelist()
 
     def cleanup(self) -> None:
         self.zip_file.close()

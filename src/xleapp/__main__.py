@@ -158,7 +158,7 @@ def _main(app: "XLEAPP") -> None:
 
     app.seeker = search_providers.create(
         app.extraction_type.upper(),
-        directory=app.input_path,
+        directory_or_file=app.input_path,
         temp_folder=app.temp_folder,
     )
 
