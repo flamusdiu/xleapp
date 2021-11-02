@@ -3,11 +3,11 @@
 
 Python requires that attributes with out default values come after attributes with defaults.
 
-The class order ABC > _AbstractArtifactDefaults > _AbstractBase ensures this is correct.
+The class order ABC > AbstractArtifactDefaults > AbstractBase ensures this is correct.
 
-:obj:`_AbstractBase` contains all attributes without a default. Please place any extra attributes that do not require defaults within this class. Also ensure to use `field(init=false)` for each attribute so they are not required when the class is first created.
+:obj:`AbstractBase` contains all attributes without a default. Please place any extra attributes that do not require defaults within this class. Also ensure to use `field(init=false)` for each attribute so they are not required when the class is first created.
 
-:obj:`_AbstractArtifactDefaults` provides any attributes with defaults. Also, use `field(init=False)` for each one as before.
+:obj:`AbstractArtifactDefaults` provides any attributes with defaults. Also, use `field(init=False)` for each one as before.
 
 :obj:`Artifact` is the class every artifact needs to be subclassed from.
 
@@ -33,7 +33,7 @@ if t.TYPE_CHECKING:
 
 
 @dataclass
-class _AbstractBase:
+class AbstractBase:
     """Base class to set any properties for
     `Artifact` Class. This properties do not
     have a default value.
@@ -57,7 +57,7 @@ class _AbstractBase:
 
 
 @dataclass
-class _AbstractArtifactDefaults:
+class AbstractArtifactDefaults:
     """Class to set defaults to any properties for the
     :obj:`Artifact` class.
 
@@ -101,7 +101,7 @@ class _AbstractArtifactDefaults:
 
 
 @dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
-class Artifact(ABC, _AbstractArtifactDefaults, _AbstractBase):
+class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
     """Abstract class for creating Artifacts"""
 
     @abstractmethod
