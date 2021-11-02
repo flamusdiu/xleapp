@@ -28,15 +28,15 @@ else:
 
 
 class PathValidator(Validator):
-    def validator(self, value: Path) -> Path:
+    def validator(self, value) -> Path:
         if not isinstance(value, (Path, os.PathLike, str)):
             raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
-        return value.resolve()
+        return Path(value).resolve()
 
 
 class HandleValidator(Validator):
-    def validator(self, value: t.Union[Path, sqlite3.Connection, IOBase]) -> None:
-        if isinstance(value, (str, Path)):
+    def validator(self, value) -> None:
+        if isinstance(value, Path):
             return None
         elif not isinstance(value, (sqlite3.Connection, IOBase)):
             raise TypeError(
@@ -51,7 +51,10 @@ class Handle:
 
     def __init__(self, found_file: t.Any, path: Path = None) -> None:
         self.path = path
-        self.file_handle = found_file
+        if isinstance(found_file, str):
+            self.file_handle = Path(found_file)
+        else:
+            self.file_handle = found_file
 
     def __call__(self) -> t.Union[HandleValidator, PathValidator]:
         return self.file_handle or self.path
@@ -75,11 +78,16 @@ class FileHandles(UserDict):
     ) -> None:
 
         for item in files:
-            file_handle = None
-            if isinstance(item, Path):
-                path = Path(item.resolve())
+            file_handle: Handle
+            path: t.Optional[Path] = None
+
+            if isinstance(item, (Path, str)):
+                path = Path(item)
             elif isinstance(item, Handle):
-                path = Path(item.path.resolve())
+                path = Path(item.path)
+
+            if path:
+                path = path.resolve()
 
             """
             If we have more then 10 files, then set only

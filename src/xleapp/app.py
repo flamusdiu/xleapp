@@ -26,7 +26,7 @@ from .templating.ext import IncludeLogFileExtension
 logger_log = logging.getLogger("xleapp.logfile")
 
 if t.TYPE_CHECKING:
-    from .artifacts import Artifact, Artifacts
+    from .artifacts import Artifacts
     from .artifacts.services import ArtifactEnum
 
     BaseUserDict = UserDict[str, t.Any]
@@ -102,7 +102,7 @@ class XLEAPP:
 
     def __call__(
         self,
-        *artifacts_list: t.Optional[list["Artifact"]],
+        *artifacts_list: str,
         device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
         input_path: Path,
@@ -113,13 +113,19 @@ class XLEAPP:
         self.input_path = input_path
         self.extraction_type = extraction_type
         self.device.update({"type": device_type})
+
         artifacts_enum = self.artifacts.data
         artifact: ArtifactEnum
+        artifacts_str_list: list[str]
+        if artifacts_list:
+            artifacts_str_list = [selected.lower() for selected in artifacts_list]
         for artifact in artifacts_enum:
-            if artifacts_list and artifact in artifacts_enum:
+            if artifacts_list and artifact.cls_name.lower() in artifacts_str_list:
+                artifacts_enum[artifact.name].select = True
+            elif not artifacts_list:
                 artifacts_enum[artifact.name].select = True
             else:
-                artifacts_enum[artifact.name].select = True
+                artifacts_enum[artifact.name].select = False
 
         return self
 
