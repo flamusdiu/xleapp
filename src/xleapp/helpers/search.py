@@ -33,7 +33,7 @@ else:
 class PathValidator(Validator):
     """Validates if a Pathlike object was set."""
 
-    def validator(self, value) -> Path:
+    def validator(self, value: t.Any) -> Path:
         """Validates this property
 
         Args:
@@ -53,7 +53,7 @@ class PathValidator(Validator):
 class HandleValidator(Validator):
     """Ensures only sqlite3.Connection or IOBase is set."""
 
-    def validator(self, value) -> None:
+    def validator(self, value: t.Any) -> None:
         """Validates this property
 
         Args:
@@ -77,7 +77,7 @@ class HandleValidator(Validator):
 class InputPathValidation(Validator):
     def validator(self, value: t.Any) -> t.Any:
         if isinstance(value, str):
-            value = Path(str).resolve()
+            value = Path(value).resolve()
 
         if isinstance(value, Path) and value.exists():
             if not value.is_dir():
@@ -107,14 +107,14 @@ class Handle:
     file_handle = HandleValidator()
     path = PathValidator()
 
-    def __init__(self, found_file: t.Any, path: Path = None) -> None:
+    def __init__(self, found_file: t.Any, path: Path | None = None) -> None:
         self.path = path
         if isinstance(found_file, str):
             self.file_handle = Path(found_file)
         else:
             self.file_handle = found_file
 
-    def __call__(self) -> t.Union[HandleValidator, PathValidator]:
+    def __call__(self) -> sqlite3.Connection | IOBase | Path | None:
         return self.file_handle or self.path
 
     def __repr__(self) -> str:
@@ -142,12 +142,7 @@ class FileHandles(UserDict):
     def __len__(self) -> int:
         return sum(count for count in self.values())
 
-    def add(
-        self,
-        regex: str,
-        files: t.Union[set[Handle], set[Path]],
-        file_names_only: bool = False,
-    ) -> None:
+    def add(self, regex: str, files, file_names_only: bool = False) -> None:
         """Adds files for each regex to be tracked
 
         Args:
@@ -157,7 +152,7 @@ class FileHandles(UserDict):
         """
         for item in files:
             file_handle: Handle
-            path: t.Optional[Path] = None
+            path: Path
 
             if isinstance(item, (Path, str)):
                 path = Path(item)
@@ -174,7 +169,6 @@ class FileHandles(UserDict):
             probably have less then 5 files they will read/use.
             """
 
-            extended_path: t.Optional[Path] = None
             if len(files) > 10 or file_names_only:
                 file_handle = Handle(found_file=item, path=path)
             else:
@@ -258,13 +252,16 @@ class FileSeekerBase(ABC):
     @abstractmethod
     def __call__(
         self,
-        directory_or_file: t.Optional[Path],
-        temp_folder: t.Optional[Path],
+        directory_or_file: Path | None,
+        temp_folder: Path | None,
     ) -> t.Type[FileSeekerBase]:
         pass
 
     @abstractmethod
-    def search(self, filepattern_to_search: str) -> t.Iterator[Path]:
+    def search(
+        self,
+        filepattern_to_search: str,
+    ):
         """Returns a list of paths for files/folders that matched"""
         pass
 
@@ -321,11 +318,8 @@ class FileSeekerBase(ABC):
 
     @cached_property
     @abstractmethod
-    def validate(self, input_path: t.Union[Path, str]) -> bool:
+    def validate(self) -> bool:
         """Validates input for this seeker
-
-        Args:
-            input: input file or path to check
 
         Returns:
             Returns True if validated or Falses if fails.
@@ -431,24 +425,21 @@ class FileSeekerZip(FileSeekerBase):
         self,
         directory_or_file,
         temp_folder,
-    ) -> None:
+    ):
         self.input_path = Path(directory_or_file)
         if self.validate:
             self.input_file = ZipFile(directory_or_file, "r")
             self.temp_folder = temp_folder
         return self
 
-    def search(
-        self,
-        filepattern: str,
-    ) -> t.Iterator[str]:
+    def search(self, filepattern: str):
         pathlist: list[str] = []
         for member in self.build_files_list():
             if fnmatch.fnmatch(member, filepattern):
                 try:
                     extracted_path = (
                         # already replaces illegal chars with _ when exporting
-                        self.zip_file.extract(member, path=self.temp_folder)
+                        self.input_file.extract(member, path=self.temp_folder)
                     )
                     pathlist.append(extracted_path)
                 except Exception:
@@ -457,10 +448,10 @@ class FileSeekerZip(FileSeekerBase):
         return iter(pathlist)
 
     def build_files_list(self, folder=None):
-        return self.zip_file.namelist()
+        return self.input_file.namelist()
 
     def cleanup(self) -> None:
-        self.zip_file.close()
+        self.input_file.close()
 
     @cached_property
     def validate(self) -> bool:
@@ -480,7 +471,7 @@ class FileSearchProvider(BaseUserDict):
         _items: number of search providers
     """
 
-    data: dict[str, t.Type[FileSeekerBase]]
+    data: dict[str, FileSeekerBase]
     _items: int
 
     def __init__(self) -> None:
@@ -490,7 +481,7 @@ class FileSearchProvider(BaseUserDict):
     def __len__(self) -> int:
         return self._items
 
-    def register_builder(self, key: str, builder) -> None:
+    def register_builder(self, key: str, builder: FileSeekerBase) -> None:
         """Register a search builder
 
         Args:
@@ -513,7 +504,7 @@ class FileSearchProvider(BaseUserDict):
         Returns:
             FileSearchBase.
         """
-        builder: t.Optional[t.Type[FileSeekerBase]] = self.data.get(extraction_type)
+        builder: t.Optional[FileSeekerBase] = self.data.get(extraction_type)
 
         if not builder:
             raise ValueError(extraction_type)

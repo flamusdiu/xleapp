@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-import itertools
 import logging
 import typing as t
 
@@ -117,12 +116,6 @@ class XLEAPP:
         self.input_path = input_path
         self.device.update({"type": device_type})
 
-        if self.plugins:
-            plugin: t.Type[Plugin]
-            plugins = itertools.chain(*self.plugins.values())
-            for plugin in plugins:
-                if hasattr(plugin, "register_seekers"):
-                    plugin.register_seekers(search_providers)
         sorted_plugins = sorted(
             search_providers.data.items(),
             key=lambda kv: kv[1].priorty,

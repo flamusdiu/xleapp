@@ -103,7 +103,7 @@ def main(app: XLEAPP) -> None:
             input_path = values["-INPUTFILEFOLDER-"]
             output_path = values["-OUTPUTFOLDER-"]
 
-            extraction_type = ValidateInput(
+            ValidateInput(
                 input_path=input_path,
                 output_path=output_path,
             )
@@ -112,13 +112,6 @@ def main(app: XLEAPP) -> None:
                 device_type=values["-DEVICETYPE-"][0],
                 input_path=input_path,
                 output_path=output_path,
-                extraction_type=extraction_type,
-            )
-
-            app.seeker = search_providers.create(
-                app.extraction_type.upper(),
-                directory=app.input_path,
-                temp_folder=app.temp_folder,
             )
 
             log.init()

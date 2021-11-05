@@ -150,7 +150,8 @@ module = [
   "PySimpleGUI",
   "simplekml",
   "prettytable",
-  "wrapt"
+  "wrapt",
+  "magic"
 ]
 ignore_missing_imports = true
 
