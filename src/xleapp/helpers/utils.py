@@ -77,17 +77,6 @@ def ValidateInput(
         if not o_path.exists():
             raise ParseError("OUTPUT does not exist!")
 
-    if i_path.is_dir() and (i_path / "Manifest.db").exists():
-        ext_type = "itunes"
-    elif i_path.is_dir():
-        ext_type = "fs"
-    else:  # must be an existing file then
-        ext_type = i_path.suffix[1:].lower()
-        if ext_type not in ["tar", "zip", "gz"]:
-            raise ParseError(f"Input file is not a supported archive! \n {i_path}")
-
-    return ext_type
-
 
 def generate_program_header(
     project_version: str,
@@ -128,6 +117,12 @@ def filter_dict(dictionary: dict, filter_string: str):
         yield key, item
 
 
+class PluginMissingError(RuntimeError):
+    """Raised when no modules are installed!"""
+
+    pass
+
+
 def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
     plugins: dict[str, set[Plugin]] = defaultdict(set)
     try:
@@ -136,4 +131,4 @@ def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
             plugins[plugin.name].add(xleapp_plugin)
         return plugins
     except KeyError:
-        return None
+        raise PluginMissingError("No plugins installed! Exiting!")

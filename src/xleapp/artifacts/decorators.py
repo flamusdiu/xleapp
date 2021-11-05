@@ -96,7 +96,8 @@ class Search:
                     file_names_only=self.file_names_only,
                     return_on_first_hit=self.return_on_first_hit,
                 ) as artifact:
-                    func(artifact)
+                    if artifact.found:
+                        func(artifact)
                     cls.processed = True
             except sqlite3.OperationalError as ex:
                 logger_log.error(f"-> Error {ex}")

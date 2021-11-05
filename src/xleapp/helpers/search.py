@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import fnmatch
 import logging
 import os
@@ -7,14 +9,15 @@ import typing as t
 
 from abc import ABC, abstractmethod
 from collections import UserDict
+from functools import cached_property
 from io import IOBase
 from pathlib import Path
-from shutil import copyfile
 from zipfile import ZipFile
+
+import magic
 
 from xleapp.helpers.descriptors import Validator
 
-from .db import open_sqlite_db_readonly
 from .utils import is_platform_windows
 
 
@@ -60,7 +63,7 @@ class HandleValidator(Validator):
             TypeError: raises error if not sqlite3.Connection or IOBase object.
 
         Returns:
-            :obj:`Path`.
+            None if value is :obj:`Path`.
         """
         if isinstance(value, Path):
             return None
@@ -69,6 +72,20 @@ class HandleValidator(Validator):
                 f"Expected {value!r} to be one of: string, Path, sqlite3.Connection"
                 " or IOBase.",
             )
+
+
+class InputPathValidation(Validator):
+    def validator(self, value: t.Any) -> t.Any:
+        if isinstance(value, str):
+            value = Path(str).resolve()
+
+        if isinstance(value, Path) and value.exists():
+            if not value.is_dir():
+                return magic.from_file(str(value), mime=True), value
+            else:
+                return "dir", value
+
+        raise TypeError(f"Expected {value!r} to be one of: str or Path.")
 
 
 class Handle:
@@ -99,6 +116,9 @@ class Handle:
 
     def __call__(self) -> t.Union[HandleValidator, PathValidator]:
         return self.file_handle or self.path
+
+    def __repr__(self) -> str:
+        return f"<Handle file_handle={self.file_handle!r}, path={self.path!r}>"
 
 
 class FileHandles(UserDict):
@@ -227,18 +247,20 @@ class FileSeekerBase(ABC):
 
     Attributes:
         temp_folder: temporary folder to store files
+        input_path: file or direction for the extraction
     """
 
     temp_folder: Path
-    _all_files: list[str] = []
-    _directory: Path
+    input_path: InputPathValidation = InputPathValidation()
+    _all_files: t.Union[list[str], dict[str, str]] = []
     _file_handles = FileHandles()
 
-    def __init__(
+    @abstractmethod
+    def __call__(
         self,
         directory_or_file: t.Optional[Path],
         temp_folder: t.Optional[Path],
-    ) -> None:
+    ) -> t.Type[FileSeekerBase]:
         pass
 
     @abstractmethod
@@ -253,8 +275,9 @@ class FileSeekerBase(ABC):
 
     @abstractmethod
     def build_files_list(
-        self, folder: t.Optional[t.Union[str, Path]]
-    ) -> t.Union[tuple[list, list], list]:
+        self,
+        folder: t.Optional[t.Union[str, Path]],
+    ) -> t.Union[tuple[list, list], list, dict]:
         """Builds a file list to search
 
         Args:
@@ -266,29 +289,21 @@ class FileSeekerBase(ABC):
         pass
 
     @property
-    def directory(self) -> Path:
-        """Directory to search
-
-        Returns:
-            The path to directory
-        """
-        return self._directory
-
-    @directory.setter
-    def directory(self, directory: t.Union[str, Path]):
-        self._directory = Path(directory)
+    @abstractmethod
+    def priorty(self) -> int:
+        raise NotImplementedError(f"Need to set a priorty for {self!r}")
 
     @property
-    def all_files(self) -> list[str]:
+    def all_files(self) -> t.Union[list[str], dict[str, str]]:
         """List of all files searched
 
         Returns:
-            A list of files
+            A list or a dictionary of files
         """
         return self._all_files
 
     @all_files.setter
-    def all_files(self, files: list[str]):
+    def all_files(self, files: t.Union[list[str], dict[str, str]]):
         self._all_files = files
 
     @property
@@ -304,17 +319,32 @@ class FileSeekerBase(ABC):
         """Clears the list of file handles"""
         self.file_handles.clear()
 
+    @cached_property
+    @abstractmethod
+    def validate(self, input_path: t.Union[Path, str]) -> bool:
+        """Validates input for this seeker
+
+        Args:
+            input: input file or path to check
+
+        Returns:
+            Returns True if validated or Falses if fails.
+        """
+        raise NotImplementedError(f"Need validate property for {self!r}!")
+
 
 class FileSeekerDir(FileSeekerBase):
     """Searches directory for files."""
 
-    def __init__(self, directory_or_file, temp_folder=None):
-        self.directory = Path(directory_or_file)
-        logger_log.info("Building files listing...")
-        subfolders, files = self.build_files_list(directory_or_file)
-        self.all_files.extend(subfolders)
-        self.all_files.extend(files)
-        logger_log.info(f"File listing complete - {len(self._all_files)} files")
+    def __call__(self, directory_or_file, temp_folder=None):
+        self.input_path = Path(directory_or_file)
+        if self.validate:
+            logger_log.info("Building files listing...")
+            subfolders, files = self.build_files_list(directory_or_file)
+            self.all_files.extend(subfolders)
+            self.all_files.extend(files)
+            logger_log.info(f"File listing complete - {len(self._all_files)} files")
+        return self
 
     def build_files_list(self, folder):
         subfolders, files = [], []
@@ -338,72 +368,25 @@ class FileSeekerDir(FileSeekerBase):
     def cleanup(self) -> None:
         pass
 
+    @property
+    def priorty(self) -> int:
+        return 20
 
-class FileSeekerItunes(FileSeekerBase):
-    """Searches iTunes Backup for files."""
-
-    def __init__(
-        self,
-        directory_or_file,
-        temp_folder,
-    ) -> None:
-
-        self.directory = Path(directory_or_file)
-        self.temp_folder = Path(temp_folder)
-
-        self.build_files_list()
-
-    def build_files_list(self, folder=None) -> list:
-        """Populates paths from Manifest.db files into _all_files"""
-
-        directory = self.directory
-
-        db = open_sqlite_db_readonly(directory / "Manifest.db")
-        cursor = db.cursor()
-        cursor.execute(
-            """
-            SELECT
-            fileID,
-            relativePath
-            FROM
-            Files
-            WHERE
-            flags=1
-            """,
-        )
-        all_rows = cursor.fetchall()
-        for row in all_rows:
-            hash_filename = row[0]
-            relative_path = row[1]
-            self._all_files[relative_path] = hash_filename
-        db.close()
-
-        # does not return any values for this FileSeeker
-        return []
-
-    def search(self, filepattern):
-        pathlist = []
-        matching_keys = fnmatch.filter(self._all_files, filepattern)
-        for relative_path in matching_keys:
-            hash_filename = self._all_files[relative_path]
-            original_location = Path(self.directory) / hash_filename[:2] / hash_filename
-            temp_location = Path(self.temp_folder) / relative_path
-
-            temp_location.mkdir(parents=True, exist_ok=True)
-            copyfile(original_location, temp_location)
-            pathlist.append(temp_location)
-
-        return iter(pathlist)
+    @cached_property
+    def validate(self) -> bool:
+        mime, _ = self.input_path
+        return mime == "dir"
 
 
 class FileSeekerTar(FileSeekerBase):
     """Searches tar backup for files."""
 
-    def __init__(self, direcctory_or_file, temp_folder):
-        self.is_gzip = Path(direcctory_or_file).suffix == ".gz"
-        mode = "r:gz" if self.is_gzip else "r"
-        self.tar_file = tarfile.open(direcctory_or_file, mode)
-        self.temp_folder = Path(temp_folder)
+    def __call__(self, directory_or_file, temp_folder):
+        self.input_path = Path(directory_or_file)
+        if self.validate:
+            self.input_file = tarfile.open(directory_or_file, "r:*")
+            self.temp_folder = Path(temp_folder)
+        return self
 
     def search(self, filepattern: str) -> t.Iterator[Path]:
         for member in self.build_files_list():
@@ -417,28 +400,43 @@ class FileSeekerTar(FileSeekerBase):
                 if not member.isdir():
                     full_path.parent.mkdir(parents=True, exist_ok=True)
                     full_path.write_bytes(
-                        tarfile.ExFileObject(self.tar_file, member).read(),
+                        tarfile.ExFileObject(self.input_file, member).read(),
                     )
                     os.utime(full_path, (member.mtime, member.mtime))
                 yield full_path
 
     def cleanup(self) -> None:
-        self.tar_file.close()
+        self.input_file.close()
 
     def build_files_list(self, folder=None) -> list[tarfile.TarInfo]:
-        return self.tar_file.getmembers()
+        return self.input_file.getmembers()
+
+    @cached_property
+    def validate(self) -> bool:
+        mime, _ = self.input_path
+        # "inode/blockdevice" seems to be the file magic number on some iOS tar
+        # extractions could manually pull the magic numbers instead of this for
+        # tar file.
+        return mime in ["application/x-gzip", "application/x-tar", "inode/blockdevice"]
+
+    @property
+    def priorty(self) -> int:
+        return 20
 
 
 class FileSeekerZip(FileSeekerBase):
     """Search backup zip file for files."""
 
-    def __init__(
+    def __call__(
         self,
         directory_or_file,
         temp_folder,
     ) -> None:
-        self.zip_file = ZipFile(directory_or_file)
-        self.temp_folder = temp_folder
+        self.input_path = Path(directory_or_file)
+        if self.validate:
+            self.input_file = ZipFile(directory_or_file, "r")
+            self.temp_folder = temp_folder
+        return self
 
     def search(
         self,
@@ -463,6 +461,15 @@ class FileSeekerZip(FileSeekerBase):
 
     def cleanup(self) -> None:
         self.zip_file.close()
+
+    @cached_property
+    def validate(self) -> bool:
+        mime, _ = self.input_path
+        return mime == "application/zip"
+
+    @property
+    def priorty(self) -> int:
+        return 20
 
 
 class FileSearchProvider(BaseUserDict):
@@ -493,7 +500,7 @@ class FileSearchProvider(BaseUserDict):
         self._items = self._items + 1
         self.data[key] = builder
 
-    def create(self, key: str, **kwargs: t.Any):
+    def __call__(self, extraction_type: str, *, input_path: Path, **kwargs: t.Any):
         """Creates or returns the search provider
 
         Args:
@@ -506,15 +513,14 @@ class FileSearchProvider(BaseUserDict):
         Returns:
             FileSearchBase.
         """
-        builder: t.Optional[t.Type[FileSeekerBase]] = self.data.get(key)
+        builder: t.Optional[t.Type[FileSeekerBase]] = self.data.get(extraction_type)
 
         if not builder:
-            raise ValueError(key)
-        return builder(**kwargs)
+            raise ValueError(extraction_type)
+        return builder(directory_or_file=input_path, **kwargs)
 
 
 search_providers = FileSearchProvider()
-search_providers.register_builder("FS", FileSeekerDir)
-search_providers.register_builder("ITUNES", FileSeekerItunes)
-search_providers.register_builder("TAR", FileSeekerTar)
-search_providers.register_builder("ZIP", FileSeekerZip)
+search_providers.register_builder("FS", FileSeekerDir())
+search_providers.register_builder("TAR", FileSeekerTar())
+search_providers.register_builder("ZIP", FileSeekerZip())

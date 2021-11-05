@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import itertools
 import logging
 import typing as t
 
@@ -22,7 +23,7 @@ from xleapp.plugins import Plugin
 from ._version import __project__, __version__
 from .gui.utils import ProcessThread
 from .helpers.descriptors import Validator
-from .helpers.search import FileSeekerBase
+from .helpers.search import FileSeekerBase, search_providers
 from .helpers.utils import discovered_plugins
 from .templating.ext import IncludeLogFileExtension
 
@@ -110,13 +111,32 @@ class XLEAPP:
         device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
         input_path: Path,
-        extraction_type: str,
-    ) -> "XLEAPP":
+    ) -> XLEAPP:
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
-        self.extraction_type = extraction_type
         self.device.update({"type": device_type})
+
+        if self.plugins:
+            plugin: t.Type[Plugin]
+            plugins = itertools.chain(*self.plugins.values())
+            for plugin in plugins:
+                if hasattr(plugin, "register_seekers"):
+                    plugin.register_seekers(search_providers)
+        sorted_plugins = sorted(
+            search_providers.data.items(),
+            key=lambda kv: kv[1].priorty,
+        )
+        for extraction_type, _ in sorted_plugins:
+            provider: FileSeekerBase = search_providers(
+                extraction_type=extraction_type.upper(),
+                input_path=input_path,
+                temp_folder=self.temp_folder,
+            )
+            if provider.validate:
+                self.seeker = provider
+                self.extraction_type = extraction_type
+                break
 
         artifacts_enum = self.artifacts.data
         artifact: ArtifactEnum
@@ -194,7 +214,7 @@ class XLEAPP:
         for artifact in artifacts.filter_artifacts(self.artifacts.data):
             msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
             if not artifact.core:
-                if artifact.report:
+                if artifact.report and artifact.select:
                     html_report = templating.ArtifactHtmlReport(
                         report_folder=self.report_folder,
                         log_folder=self.log_folder,

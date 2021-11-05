@@ -10,8 +10,7 @@ from ._version import __project__, __version__
 from .app import XLEAPP
 from .artifacts import generate_artifact_path_list, generate_artifact_table
 from .helpers.decorators import timed
-from .helpers.search import search_providers
-from .helpers.utils import ValidateInput, generate_program_header
+from .helpers.utils import generate_program_header
 
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -126,17 +125,11 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     elif args.artifact_table:
         generate_artifact_table(artifacts)
     else:
-        extraction_type = ValidateInput(
-            args.input_path,
-            args.output_folder,
-        )
-
         g.app(
             *artifacts,
             device_type=args.device_type,
             output_path=args.output_folder,
             input_path=args.input_path,
-            extraction_type=extraction_type,
         )
         return args
     exit()
@@ -154,12 +147,6 @@ def _main(app: "XLEAPP") -> None:
             app.num_to_process,
             app.num_of_categories,
         ),
-    )
-
-    app.seeker = search_providers.create(
-        app.extraction_type.upper(),
-        directory_or_file=app.input_path,
-        temp_folder=app.temp_folder,
     )
 
     @timed
