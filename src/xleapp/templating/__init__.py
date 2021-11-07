@@ -3,8 +3,6 @@ import typing as t
 from collections import defaultdict
 from pathlib import Path
 
-from xleapp.artifacts.services import ArtifactEnum
-
 from ._partials.index import Index
 from .ext import IncludeLogFileExtension as IncludeLogFileExtension
 from .html import ArtifactHtmlReport as ArtifactHtmlReport
@@ -15,11 +13,11 @@ from .html import Template as Template
 
 
 if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
+    from xleapp.app import Application
     from xleapp.artifacts.services import Artifacts
 
 
-def generate_index(app: "XLEAPP") -> None:
+def generate_index(app: "Application") -> None:
 
     nav = generate_nav(app.report_folder, app.artifacts)
 

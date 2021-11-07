@@ -51,7 +51,7 @@ class OutputFolder(Validator):
             raise FileNotFoundError(f"{value!r} must already exists!")
 
 
-class XLEAPP:
+class Application:
     """Main application
 
     Attributes:
@@ -110,7 +110,7 @@ class XLEAPP:
         device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
         input_path: Path,
-    ) -> XLEAPP:
+    ) -> Application:
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path

@@ -25,14 +25,14 @@ from .utils import ArtifactProcessor, disable_widgets
 
 
 if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
+    from xleapp.app import Application
 
 regex = re.compile(r"^\w[\w\s]+\[(\w+)\]$")
 window: PySG.Window = None
 logger = logging.getLogger("xleapp.log")
 
 
-def main(app: XLEAPP) -> None:
+def main(app: Application) -> None:
     """Main function for the GUI
 
     Args:

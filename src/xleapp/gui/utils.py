@@ -8,7 +8,7 @@ import PySimpleGUI as PySG
 
 
 if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
+    from xleapp.app import Application
 
 
 class ProcessThread(ABC, threading.Thread):
@@ -23,7 +23,7 @@ class ProcessThread(ABC, threading.Thread):
 
     def __init__(
         self,
-        app: "XLEAPP",
+        app: "Application",
         window: PySG.Window = None,
         sleep_time: float = 0.1,
         daemon=True,
