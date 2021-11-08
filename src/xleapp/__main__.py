@@ -82,7 +82,7 @@ def get_parser() -> argparse.ArgumentParser:
             "Allowed: core, <check artifact list in documentation>"
         ),
         metavar=None,
-        nargs="*",
+        nargs="+",
     )
     parser.add_argument(
         "-p",
