@@ -6,7 +6,7 @@ from typing import Any, Optional, Type
 import PySimpleGUI as PySG
 import wrapt
 
-from xleapp.app import XLEAPP
+from xleapp.app import Application
 from xleapp.gui.utils import ProcessThread
 
 class ArtifactProxy(wrapt.ObjectProxy):
@@ -22,7 +22,7 @@ class ArtifactError:
 
 class Artifacts:
     data: Type[ArtifactEnum]
-    def __init__(self, app: XLEAPP) -> None: ...
+    def __init__(self, app: Application) -> None: ...
     def __call__(self, device_type: str) -> Artifacts: ...
     def __getattr__(self, name: str) -> Any: ...
     def __iter__(self) -> ArtifactEnum: ...
@@ -42,7 +42,9 @@ class Artifacts:
         all: Optional[bool],
     ) -> None: ...
     @staticmethod
-    def generate_artifact_enum(app: XLEAPP, device_type: str) -> Type[ArtifactEnum]: ...
+    def generate_artifact_enum(
+        app: Application, device_type: str
+    ) -> Type[ArtifactEnum]: ...
     def crunch_artifacts(
         self,
         window: Optional[PySG.Window],

@@ -58,7 +58,7 @@ def get_next_unused_name(path: str) -> str:
 def ValidateInput(
     input_path: str,
     output_path: str,
-) -> str:
+) -> None:
     """
     Returns tuple (success, extraction_type)
     """

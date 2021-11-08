@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-import itertools
 import logging
 import typing as t
 
@@ -52,7 +51,7 @@ class OutputFolder(Validator):
             raise FileNotFoundError(f"{value!r} must already exists!")
 
 
-class XLEAPP:
+class Application:
     """Main application
 
     Attributes:
@@ -111,18 +110,12 @@ class XLEAPP:
         device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
         input_path: Path,
-    ) -> XLEAPP:
+    ) -> Application:
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
         self.device.update({"type": device_type})
 
-        if self.plugins:
-            plugin: t.Type[Plugin]
-            plugins = itertools.chain(*self.plugins.values())
-            for plugin in plugins:
-                if hasattr(plugin, "register_seekers"):
-                    plugin.register_seekers(search_providers)
         sorted_plugins = sorted(
             search_providers.data.items(),
             key=lambda kv: kv[1].priorty,
@@ -149,7 +142,8 @@ class XLEAPP:
             elif not artifacts_list:
                 artifacts_enum[artifact.name].select = True  # type: ignore
             else:
-                artifacts_enum[artifact.name].select = False  # type: ignore
+                if not artifact.core:
+                    artifacts_enum[artifact.name].select = False  # type: ignore
 
         return self
 

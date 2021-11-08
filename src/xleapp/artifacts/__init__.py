@@ -68,35 +68,31 @@ def generate_artifact_table(artifacts: Artifacts) -> None:
 
 
 def copyfile(
-    report_folder: Path,
-    name: str,
     input_file: Path,
-    output_file: str,
+    output_file: Path,
 ) -> Path:
     """Exports file to report folder
 
     File will be located under report_folder\\export\\artifact_class
 
     Args:
-        names: name of the artifact class
         input_file: input file name/path
         output_file: output file name
 
     Returns:
         output_file: Path object of the file save location and name.
     """
-    report_folder = report_folder
-    artifact_folder = name
-    output_folder = Path(report_folder / "export" / artifact_folder)
-    output_folder.mkdir(parents=True, exist_ok=True)
+    if input_file.is_file():
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        output_file.mkdir(parents=True, exist_ok=True)
 
     if utils.is_platform_windows():
         input_file = Path(f"\\\\?\\{input_file.resolve()}")
 
-    output_file_path = Path(output_folder / output_file)
-    shutil.copy2(input_file, output_file_path)
-    logger_log.debug(f"File {input_file.name} copied to " f"{output_file_path}")
-    return output_file_path
+    shutil.copy2(input_file, output_file)
+    logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
+    return output_file
 
 
 def filter_artifacts(artifact_list: t.Iterable) -> filter:

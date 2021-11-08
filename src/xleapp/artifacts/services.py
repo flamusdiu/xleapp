@@ -18,7 +18,7 @@ from ..helpers.strings import split_camel_case
 _T = t.TypeVar("_T")
 
 if t.TYPE_CHECKING:
-    from ..app import XLEAPP
+    from ..app import Application
     from ..gui.utils import ProcessThread
     from ..plugins import Plugin
 
@@ -95,10 +95,10 @@ class Artifacts:
     """
 
     data: ArtifactEnum
-    app: XLEAPP
+    app: Application
     queue: PriorityQueue
 
-    def __init__(self, app: XLEAPP) -> None:
+    def __init__(self, app: Application) -> None:
         self.app = app
         if "type" in self.app.device:
             self = self(self.app.device["type"])
@@ -196,7 +196,9 @@ class Artifacts:
                 raise KeyError(f"Artifact[{item!r}] does not exist!")
 
     @staticmethod
-    def generate_artifact_enum(app: XLEAPP, device_type: str) -> t.Type[ArtifactEnum]:
+    def generate_artifact_enum(
+        app: Application, device_type: str
+    ) -> t.Type[ArtifactEnum]:
         """Generates a Enumeration object for all artifacts based on supplied device type.
 
         Args:

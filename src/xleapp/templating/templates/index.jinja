@@ -5,7 +5,7 @@
     {{ super() }}
     {% block add_scripts %}{% endblock %}
 {% endblock %}
-{% block title %}{% endblock %}
+{% block title %}{{g.project}} {{g.version}}{% endblock %}
 {% block navigation %}{{ nav(navigation) }}{% endblock %}
 {% block report_data %}
                 <div class="card bg-white" style="padding: 20px;">

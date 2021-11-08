@@ -1,7 +1,7 @@
 {% extends 'base.jinja' %}
 {% from 'macros.jinja' import table %}
 {% from "nav_artifacts.jinja" import nav %}
-{% block title %}{{artifact.name}}{% endblock %}
+{% block title %}{{artifact.value.name}}{% endblock %}
 {% block navigation %}{{ nav(navigation) }}{% endblock %}
 {% block report_data %}
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

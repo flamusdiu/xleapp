@@ -115,6 +115,3 @@ docs/source/_build/
 
 # ignore plugins
 plugins/
-
-# ignore local py testing scripts
-tests/
