@@ -13,9 +13,6 @@ import xleapp.globals as g
 from ..helpers.utils import generate_program_header
 
 
-if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
-
 StrPath = t.Union[str, os.PathLike[str]]
 
 

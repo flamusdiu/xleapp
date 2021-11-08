@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import logging
 import time
@@ -7,7 +9,7 @@ import xleapp.log as log
 import xleapp.templating as templating
 
 from ._version import __project__, __version__
-from .app import XLEAPP
+from .app import Application
 from .artifacts import generate_artifact_path_list, generate_artifact_table
 from .helpers.decorators import timed
 from .helpers.utils import generate_program_header
@@ -80,7 +82,7 @@ def get_parser() -> argparse.ArgumentParser:
             "Allowed: core, <check artifact list in documentation>"
         ),
         metavar=None,
-        nargs="*",
+        nargs="+",
     )
     parser.add_argument(
         "-p",
@@ -114,7 +116,7 @@ def get_parser() -> argparse.ArgumentParser:
 def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     args = parser.parse_args()
     artifacts = args.artifacts or ()
-    g.app = XLEAPP()
+    g.app = Application()
 
     if args.gui:
         import xleapp.gui as gui
@@ -135,7 +137,7 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     exit()
 
 
-def _main(app: "XLEAPP") -> None:
+def _main(app: Application) -> None:
 
     start_time = time.perf_counter()
 

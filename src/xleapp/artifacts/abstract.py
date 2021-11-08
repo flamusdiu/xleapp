@@ -25,13 +25,11 @@ from pathlib import Path
 
 import xleapp.artifacts as artifacts
 
-from xleapp.helpers.search import Handle
-
 from .descriptors import FoundFiles, ReportHeaders, WebIcon
 
 
 if t.TYPE_CHECKING:
-    from xleapp.app import XLEAPP
+    from xleapp.app import Application
 
 
 @dataclass
@@ -40,9 +38,9 @@ class AbstractBase:
 
     description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
-    data: list = field(init=False, repr=False, compare=False)
+    data: list[t.Any] = field(init=False, repr=False, compare=False)
     regex: set[str] = field(init=False, repr=False, compare=False)
-    app: "XLEAPP" = field(init=False, repr=False)
+    app: Application = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
@@ -107,14 +105,12 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         seeker = self.app.seeker
         files = seeker.file_handles
         global_regex = files
-
         self.regex = regex
-
         for artifact_regex in self.regex:
-            results: t.Optional[t.Union[set[Path], set[Handle]]]
-
+            handles = None
+            results = None
             if artifact_regex in global_regex:
-                results = files[artifact_regex]
+                handles = files[artifact_regex]
             else:
                 try:
                     if return_on_first_hit:
@@ -127,9 +123,9 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                 if results:
                     files.add(artifact_regex, results, file_names_only)
 
-            if results:
+            if handles or results:
                 if return_on_first_hit or len(results) == 1:
-                    self.found = {files[artifact_regex].copy().pop()}
+                    self.found = self.found | {files[artifact_regex].copy().pop()}
                 else:
                     self.found = self.found | files[artifact_regex]
         yield self
@@ -149,7 +145,16 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         """
         return type(self).__name__
 
-    def copyfile(self, input_file: Path, output_file: str):
+    @property
+    def data_save_folder(self) -> Path:
+        """Locate to save files from this artifact
+
+        Returns:
+            Path to the folder to save files
+        """
+        return Path(self.app.report_folder / "export" / self.cls_name)
+
+    def copyfile(self, input_file: Path, output_file: str) -> Path:
         """Exports file to report folder
 
         File will be located under report_folder\\export\\artifact_class
@@ -158,7 +163,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         location for each file.
 
         Args:
-            names: name of the artifact class
             input_file: input file name/path
             output_file: output file name
 
@@ -166,17 +170,11 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
             output_file: Path object of the file save location and name.
         """
         return artifacts.copyfile(
-            report_folder=self.app.report_folder,
-            name=self.cls_name,
             input_file=input_file,
-            output_file=output_file,
+            output_file=self.data_save_folder / output_file,
         )
 
-    def log(
-        self,
-        level: int = logging.INFO,
-        message: object = None,
-    ):
+    def log(self, level: int = logging.INFO, message: object = None) -> None:
         """Log message for this artifact
 
         Args:

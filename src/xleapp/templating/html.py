@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import logging
 import typing as t
@@ -106,7 +108,7 @@ class HtmlPageMixinDefaults:
 
 
 class HtmlPage(HtmlPageMixinDefaults, HtmlPageMixin, HtmlPageBase):
-    def __call__(self, artifact: "ArtifactEnum") -> "HtmlPage":
+    def __call__(self, artifact: ArtifactEnum) -> HtmlPage:
         self.artifact = artifact
         self.data = getattr(artifact, "data", None)
         return self
@@ -178,9 +180,10 @@ class ArtifactHtmlReport(HtmlPage):
         """Generates report information (html, tsv, kml, and timeline)"""
         html = self.html()
         output_file = (
-            self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
+            self.report_folder
+            / f"{self.artifact.category} - {self.artifact.value.name}.html"
         )
-        output_file.write_text(html)
+        output_file.write_text(html, encoding='UTF-8')
 
         if self.artifact.processed and hasattr(self.artifact, "data"):
             options = (

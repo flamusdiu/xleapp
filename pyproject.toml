@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xleapp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Multiplaform Logs, Events, And Plists Parser"
 authors = ["Jesse Spangenberger <azuleonyx@digitalforensics.io>"]
 license = "MIT"
@@ -53,6 +53,7 @@ pyinstaller = "^4.5.1"
 types-PyYAML = "^5.4.11"
 black = "^21.9b0"
 types-Jinja2 = "^2.11.8"
+xleapp-ios = {path = "plugins/xleapp-ios"}
 
 
 [tool.poetry.scripts]
@@ -149,7 +150,8 @@ module = [
   "PySimpleGUI",
   "simplekml",
   "prettytable",
-  "wrapt"
+  "wrapt",
+  "magic"
 ]
 ignore_missing_imports = true
 
