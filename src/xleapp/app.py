@@ -142,7 +142,8 @@ class Application:
             elif not artifacts_list:
                 artifacts_enum[artifact.name].select = True  # type: ignore
             else:
-                artifacts_enum[artifact.name].select = False  # type: ignore
+                if not artifact.core:
+                    artifacts_enum[artifact.name].select = False  # type: ignore
 
         return self
 

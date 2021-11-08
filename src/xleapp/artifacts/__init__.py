@@ -82,8 +82,10 @@ def copyfile(
     Returns:
         output_file: Path object of the file save location and name.
     """
-    if output_file.is_file():
+    if input_file.is_file():
         output_file.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        output_file.mkdir(parents=True, exist_ok=True)
 
     if utils.is_platform_windows():
         input_file = Path(f"\\\\?\\{input_file.resolve()}")

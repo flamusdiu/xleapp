@@ -8,7 +8,7 @@ import tarfile
 import typing as t
 
 from abc import ABC, abstractmethod
-from collections import UserDict
+from collections import UserDict, defaultdict
 from functools import cached_property
 from io import IOBase
 from pathlib import Path
@@ -16,9 +16,9 @@ from zipfile import ZipFile
 
 import magic
 
-from xleapp.helpers.descriptors import Validator
+import xleapp.helpers.utils as utils
 
-from .utils import is_platform_windows
+from xleapp.helpers.descriptors import Validator
 
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -85,7 +85,9 @@ class InputPathValidation(Validator):
             else:
                 return "dir", value
 
-        raise TypeError(f"Expected {value!r} to be one of: str or Path.")
+        if not value.exists():
+            raise FileNotFoundError(f"File/Folder {str(value)} not found!")
+        raise TypeError(f"Expected {str(value)} to be one of: str or Path.")
 
 
 class Handle:
@@ -133,7 +135,7 @@ class FileHandles(UserDict):
             only one log out put per regex when evaluating each one.
     """
 
-    logged: set[str] = set()
+    logged: defaultdict = defaultdict(int)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(self, *args, **kwargs)
@@ -150,17 +152,17 @@ class FileHandles(UserDict):
             files: set of handels or paths to track
             file_names_only: keep only file names/paths but no file objects.
         """
+        if self.logged[regex] == 0:
+            logger_process.info(f"\nFiles for {regex} located at:")
         for item in files:
             file_handle: Handle
-            path: Path
+            path: Path = None
+            extended_path: Path = None
 
             if isinstance(item, (Path, str)):
-                path = Path(item)
+                path = Path(item).resolve()
             elif isinstance(item, Handle):
-                path = Path(item.path)
-
-            if path:
-                path = path.resolve()
+                path = Path(item.path).resolve()
 
             """
             If we have more then 10 files, then set only
@@ -175,25 +177,29 @@ class FileHandles(UserDict):
                 if path.drive.startswith("\\\\?\\"):
                     extended_path = Path(path)
 
-                try:
-                    db = sqlite3.connect(
-                        f"file:{path}?mode=ro",
-                        uri=True,
-                    )
-                    cursor = db.cursor()
-                    # This will fail if not a database file
-                    cursor.execute("PRAGMA page_count").fetchone()
-                    db.row_factory = sqlite3.Row
-                    file_handle = Handle(found_file=db, path=path)
-                except (sqlite3.DatabaseError):
-                    if extended_path:
-                        fp = open(extended_path, "rb")
-                    else:
-                        fp = open(path, "rb")
-                    file_handle = Handle(found_file=fp, path=path)
-                except FileNotFoundError:
-                    raise FileNotFoundError(f"File {path!r} was not found!")
+                if path.is_dir():
+                    file_handle = Handle(found_file=item, path=path)
+                else:
+                    try:
+                        db = sqlite3.connect(
+                            f"file:{path}?mode=ro",
+                            uri=True,
+                        )
+                        cursor = db.cursor()
+                        # This will fail if not a database file
+                        cursor.execute("PRAGMA page_count").fetchone()
+                        db.row_factory = sqlite3.Row
+                        file_handle = Handle(found_file=db, path=path)
+                    except (sqlite3.DatabaseError):
+                        if extended_path:
+                            fp = open(extended_path, "rb")
+                        else:
+                            fp = open(path, "rb")
+                        file_handle = Handle(found_file=fp, path=path)
+                    except FileNotFoundError:
+                        raise FileNotFoundError(f"File {path!r} was not found!")
             if file_handle:
+                logger_process.info(f"    {file_handle.path}")
                 self[regex].add(file_handle)
 
     def clear(self) -> None:
@@ -204,15 +210,7 @@ class FileHandles(UserDict):
     def __getitem__(self, regex: str) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
-
-            for num, artifact_file in enumerate(files, start=1):
-                if regex not in self.logged:
-                    if num == 1:
-                        logger_process.info(f"\nFiles for {regex} located at:")
-
-                    logger_process.info(f"    {artifact_file.path}")
-                    self.logged.add(regex)
-
+            for artifact_file in files:
                 if isinstance(artifact_file, IOBase):
                     artifact_file.seek(0)
             return files
@@ -261,7 +259,7 @@ class FileSeekerBase(ABC):
     def search(
         self,
         filepattern_to_search: str,
-    ):
+    ) -> t.Iterator:
         """Returns a list of paths for files/folders that matched"""
         pass
 
@@ -386,17 +384,17 @@ class FileSeekerTar(FileSeekerBase):
         for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, filepattern):
 
-                if is_platform_windows():
-                    full_path = Path(f"\\\\?\\{self.temp_folder / member.name}")
+                full_sanitize_name = utils.sanitize_file_path(str(member.name))
+                if utils.is_platform_windows():
+                    full_path = Path(f"\\\\?\\{self.temp_folder / full_sanitize_name}")
                 else:
-                    full_path = self.temp_folder / member.name
+                    full_path = self.temp_folder / full_sanitize_name
 
                 if not member.isdir():
                     full_path.parent.mkdir(parents=True, exist_ok=True)
                     full_path.write_bytes(
                         tarfile.ExFileObject(self.input_file, member).read(),
                     )
-                    os.utime(full_path, (member.mtime, member.mtime))
                 yield full_path
 
     def cleanup(self) -> None:

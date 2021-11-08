@@ -107,12 +107,14 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         global_regex = files
         self.regex = regex
         for artifact_regex in self.regex:
+            handles = None
+            results = None
             if artifact_regex in global_regex:
                 handles = files[artifact_regex]
             else:
                 try:
                     if return_on_first_hit:
-                        results = set(next(seeker.search(artifact_regex)))
+                        results = {next(seeker.search(artifact_regex))}
                     else:
                         results = set(seeker.search(artifact_regex))
                 except StopIteration:
@@ -123,7 +125,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
 
             if handles or results:
                 if return_on_first_hit or len(results) == 1:
-                    self.found = {files[artifact_regex].copy().pop()}
+                    self.found = self.found | {files[artifact_regex].copy().pop()}
                 else:
                     self.found = self.found | files[artifact_regex]
         yield self

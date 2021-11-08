@@ -70,9 +70,11 @@ def generate_nav(
     for artifact in artifacts.data:
         if not artifact.core and artifact.select:
             temp_item = NavigationItem(
-                name=artifact.name,
+                name=artifact.value.name,
                 web_icon=artifact.web_icon.value,
-                href=str(report_folder / f"{artifact.category} - {artifact.name}.html"),
+                href=str(
+                    report_folder / f"{artifact.category} - {artifact.value.name}.html"
+                ),
             )
             nav[artifact.category].add(temp_item)
     return nav
