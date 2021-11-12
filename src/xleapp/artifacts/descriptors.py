@@ -1,6 +1,5 @@
-import xleapp.report.webicons as web
-
 from xleapp.helpers.descriptors import Validator
+from xleapp.report import WebIcon
 
 
 class FoundFiles(Validator):
@@ -13,14 +12,14 @@ class FoundFiles(Validator):
             raise TypeError(f"Expected {value!r} to be a set!")
 
 
-class WebIcon(Validator):
+class Icon(Validator):
     """Descriptor ensuring 'web_icon' type"""
 
-    default_value: web.WebIcon = web.WebIcon["ALERT_TRIANGLE"]
+    default_value: WebIcon = WebIcon["ALERT_TRIANGLE"]
 
     def validator(self, value):
-        if not isinstance(value, (web.WebIcon, WebIcon)):
-            raise TypeError(f"Expected {value!r} to be {web.WebIcon!r}! ")
+        if value not in WebIcon:
+            raise TypeError(f"Expected {str(value)} to be {repr(WebIcon)}! ")
 
 
 class ReportHeaders(Validator):

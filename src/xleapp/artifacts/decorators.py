@@ -28,7 +28,6 @@ def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
         if issubclass(cls, Artifact):
             cls.core = True
             cls.select = True
-            cls.report = False
             return cls
         else:
             raise AttributeError(

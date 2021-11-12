@@ -11,14 +11,13 @@ from pathlib import Path
 import jinja2
 
 import xleapp.globals as g
-import xleapp.report as report
 
 from ..helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
     from xleapp.artifacts.services import ArtifactEnum
-    from xleapp.report import WebIcon
+    from xleapp.report import Icon
 
 logger_log = logging.getLogger("xleapp.logfile")
 
@@ -144,7 +143,7 @@ class NavigationItem:
 
     name: str
     href: str
-    web_icon: "WebIcon"
+    web_icon: "Icon"
 
     def __str__(self) -> str:
         return f'<a class="nav-link" href="{self.href}"><span data-feather="{self.web_icon}"></span>{self.name}</a>'
@@ -185,33 +184,6 @@ class ArtifactHtmlReport(HtmlPage):
         )
         output_file.write_text(html, encoding='UTF-8')
 
-        if self.artifact.processed and hasattr(self.artifact, "data"):
-            options = (
-                {
-                    "name": self.artifact.name,
-                    "data_list": self.data,
-                    "data_headers": self.artifact.report_headers,
-                },
-            )
-            report.save_to_db(
-                report_folder=self.report_folder,
-                db_type="tsv",
-                options=options,
-            )
-
-            if self.artifact.kml:
-                report.save_to_db(
-                    report_folder=self.report_folder,
-                    db_type="kml",
-                    options=options,
-                )
-
-            if self.artifact.timeline:
-                report.save_to_db(
-                    report_folder=self.report_folder,
-                    db_type="timeline",
-                    options=options,
-                )
         return True
 
     @property

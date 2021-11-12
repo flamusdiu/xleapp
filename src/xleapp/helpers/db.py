@@ -93,3 +93,12 @@ def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
     except sqlite3.Error as ex:
         logger_log.error(f"Query error, query={query} Error={str(ex)}")
     return False
+
+
+def dict_from_row(row: sqlite3.Row) -> dict[str, t.Any]:
+    """Takes a :obj:`sqlite3.Row` object and returns a dict
+
+    Returns:
+        a dict based on the row data
+    """
+    return dict(zip(row.keys(), row))

@@ -31,8 +31,8 @@ Below, I have layed out a basic artifact pulling a SQLite database. Things to re
             pass
         ```
 
-   * long_running_process: these artifacts must be selected manually.
-     * mark as following:
+  * long_running_process: these artifacts must be selected manually.
+    * mark as following:
 
         ```python
         @long_running_process
@@ -82,12 +82,9 @@ class MyArtifact(Artifact):
             #
             # Note: Either syntax works => row['column1'] == row[0]
             all_rows = cursor.fetchall()
-            usageentries = len(all_rows)
-            if usageentries > 0:
-                data_list = []
+            if all_rows:
                 for row in all_rows:
-                    data_list.append((row['column1'], row['column2'], row['column3']))
-                self.data = data_list
+                    self.data.append((row['column1'], row['column2'], row['column3']))
 
 ```
 
@@ -158,7 +155,21 @@ self.data = [
 
 This produces two tables in the report.
 
-One final note on create the `data_list`:
+The **_recommended_** way save data for the report is:
+
+```python
+all_rows = cursor.fetchall()
+if all_rows:
+    for row in all_rows:
+        self.data.append(tuple(row.values()))
+```
+
+`tuple(row.values())` expands the row data for the report in the same order as the SQL query. Generally, if you are NOT requiring to modify the table order (which can be done in the SELECT statement) or modifying the column data for the report, then use this method.
+
+For plists or other dictionaries, be careful using this method. Since Python 3.7 ([ref](https://docs.python.org/3.7/library/stdtypes.html#typesmapping)), dictionary are ordered. If you have not created the dictionary to know the insertion order, do not rely on this method!
+
+
+If you need to construct the tuples for some advance processing, then either below works.
 
 ```python
 data_list.append((row['column1'], row['column2'], row['column3']))

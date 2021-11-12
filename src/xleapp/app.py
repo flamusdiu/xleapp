@@ -18,12 +18,13 @@ import xleapp.report as report
 import xleapp.templating as templating
 
 from xleapp.plugins import Plugin
+from xleapp.report.db import DBService
 
 from ._version import __project__, __version__
 from .gui.utils import ProcessThread
 from .helpers.descriptors import Validator
 from .helpers.search import FileSeekerBase, search_providers
-from .helpers.utils import discovered_plugins
+from .helpers.utils import discovered_plugins, is_list
 from .templating.ext import IncludeLogFileExtension
 
 
@@ -91,6 +92,7 @@ class Application:
     report_folder: Path
     seeker: FileSeekerBase
     version: str
+    dbservice: DBService
 
     def __init__(self) -> None:
         self.default_configs = {
@@ -115,6 +117,8 @@ class Application:
         self.create_output_folder()
         self.input_path = input_path
         self.device.update({"type": device_type})
+
+        self.dbservice = DBService(self.report_folder)
 
         sorted_plugins = sorted(
             search_providers.data.items(),
@@ -176,6 +180,11 @@ class Application:
             "lstrip_blocks": True,
         }
         rv = self.jinja_environment(**options)
+        rv.filters.update(
+            {
+                'is_list': is_list,
+            },
+        )
         rv.globals.update(g=self)
 
         return rv
@@ -207,26 +216,51 @@ class Application:
         artifact: ArtifactEnum
         for artifact in artifacts.filter_artifacts(self.artifacts.data):
             msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
-            if not artifact.core:
-                if artifact.report and artifact.select:
-                    html_report = templating.ArtifactHtmlReport(
-                        report_folder=self.report_folder,
-                        log_folder=self.log_folder,
-                        extraction_type=self.extraction_type,
-                        navigation=nav,
+            if artifact.report and artifact.select:
+                html_report = templating.ArtifactHtmlReport(
+                    report_folder=self.report_folder,
+                    log_folder=self.log_folder,
+                    extraction_type=self.extraction_type,
+                    navigation=nav,
+                )
+
+                if html_report(artifact).report:  # type: ignore
+                    logger_log.info(f"{msg_artifact}")
+            else:
+                logger_log.warn(
+                    f"{msg_artifact}: "
+                    "Report not generated! Artifact "
+                    "marked for no report generation. Check "
+                    "artifact's 'report' attribute.",
+                )
+
+            if artifact.processed and hasattr(artifact, "data"):
+                artifact_name = artifact.value.name
+                data_list = artifact.data
+                data_headers = artifact.report_headers
+
+                self.dbservice.save(
+                    db_type="tsv",
+                    name=artifact_name,
+                    data_list=data_list,
+                    data_headers=data_headers,
+                )
+
+                if artifact.kml:
+                    self.dbservice.save(
+                        db_type="kml",
+                        name=artifact_name,
+                        data_list=data_list,
+                        data_headers=data_headers,
                     )
 
-                    if html_report(artifact).report:  # type: ignore
-                        logger_log.info(f"{msg_artifact}")
-                else:
-                    logger_log.warn(
-                        f"{msg_artifact}: "
-                        "Report not generated! Artifact "
-                        "marked for no report generation. Check "
-                        "artifact's 'report' attribute.",
+                if artifact.timeline:
+                    self.dbservice.save(
+                        db_type="timeline",
+                        name=artifact_name,
+                        data_list=data_list,
+                        data_headers=data_headers,
                     )
-            else:
-                logger_log.info(f"{msg_artifact}: Report skipped for core artifacts!")
         logger_log.info("Report files generated!")
         logger_log.info(f"Report location: {self.output_path}")
 

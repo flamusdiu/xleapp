@@ -5,25 +5,11 @@ Reports Module
 
 import importlib.util
 import shutil
+import typing as t
 
 from pathlib import Path
 
-from .db import DBManager, KmlDBManager, TimelineDBManager, TsvManager
 from .webicons import WebIcon as WebIcon
-
-
-def save_to_db(report_folder: Path, db_type: str, **options) -> None:
-    db: DBManager
-
-    if db_type in ["kml", "timeline", "tsv"] and getattr(options, "data_list", []):
-        if db_type == "kml":
-            db = KmlDBManager(report_folder=report_folder, **options)
-        if db_type == "tsv":
-            db = TsvManager(report_folder=report_folder, **options)
-        if db_type == "timeline":
-            db = TimelineDBManager(report_folder=report_folder, **options)
-
-        db.save()
 
 
 def copy_static_files(report_folder: Path) -> None:

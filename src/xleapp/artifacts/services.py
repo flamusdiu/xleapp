@@ -197,7 +197,8 @@ class Artifacts:
 
     @staticmethod
     def generate_artifact_enum(
-        app: Application, device_type: str
+        app: Application,
+        device_type: str,
     ) -> t.Type[ArtifactEnum]:
         """Generates a Enumeration object for all artifacts based on supplied device type.
 
@@ -209,7 +210,7 @@ class Artifacts:
             An Enumeration.
         """
         members = {}
-        plugins: "Plugin" = list(app.plugins[device_type])[0]
+        plugins: Plugin = list(app.plugins[device_type])[0]
         for xleapp_cls in plugins.plugins:
             artifact = dataclass(
                 xleapp_cls,

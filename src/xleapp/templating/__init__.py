@@ -68,7 +68,7 @@ def generate_nav(
     nav = defaultdict(set)
 
     for artifact in artifacts.data:
-        if not artifact.core and artifact.select:
+        if artifact.select:
             temp_item = NavigationItem(
                 name=artifact.value.name,
                 web_icon=artifact.web_icon.value,

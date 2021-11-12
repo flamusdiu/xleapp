@@ -3,6 +3,7 @@ import re
 import typing as t
 
 from collections import defaultdict
+from datetime import datetime
 from importlib.metadata import entry_points
 from pathlib import Path
 
@@ -132,3 +133,13 @@ def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
         return plugins
     except KeyError:
         raise PluginMissingError("No plugins installed! Exiting!")
+
+
+def unix_epoch_to_readable_date(unix_epoch_time: int):
+    unix_time = float(unix_epoch_time + 978307200)
+    readable_time = datetime.utcfromtimestamp(unix_time).strftime("%Y-%m-%d %H:%M:%S")
+    return readable_time
+
+
+def is_list(value) -> bool:
+    return isinstance(value, list)

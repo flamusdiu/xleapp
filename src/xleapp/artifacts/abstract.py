@@ -25,7 +25,7 @@ from pathlib import Path
 
 import xleapp.artifacts as artifacts
 
-from .descriptors import FoundFiles, ReportHeaders, WebIcon
+from .descriptors import FoundFiles, Icon, ReportHeaders
 
 
 if t.TYPE_CHECKING:
@@ -38,7 +38,6 @@ class AbstractBase:
 
     description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
-    data: list[t.Any] = field(init=False, repr=False, compare=False)
     regex: set[str] = field(init=False, repr=False, compare=False)
     app: Application = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
@@ -55,8 +54,13 @@ class AbstractArtifactDefaults:
 
     category: str = field(init=False, default="Unknown")
     core: bool = field(init=False, default=False)
+    data: list[t.Any] = field(
+        init=False,
+        repr=False,
+        compare=False,
+        default_factory=lambda: [],
+    )
     found: FoundFiles = field(init=False, default=FoundFiles())
-    kml: bool = field(init=False, default=False)
     long_running_process: bool = field(init=False, default=False)
     processed: bool = field(init=False, default=False)
     process_time: float = field(init=False, default=float())
@@ -64,7 +68,7 @@ class AbstractArtifactDefaults:
     report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
     select: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
-    web_icon: WebIcon = field(init=False, default=WebIcon())
+    web_icon: Icon = field(init=False, default=Icon())
 
 
 @dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
@@ -153,6 +157,23 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
             Path to the folder to save files
         """
         return Path(self.app.report_folder / "export" / self.cls_name)
+
+    @property
+    def kml(self) -> bool:
+        """Checks if artifact has Lat/Long data for KML
+
+        Returns:
+            Returns true if "Timestamp", "Latitude", "Longitude" are in report headers.
+        """
+        if isinstance(self.report_headers, tuple):
+            headers = {col.lower() for col in self.report_headers}
+            return {"timestamp", "latitude", "longitude"} <= headers
+        elif isinstance(self.report_headers, list):
+            for table in self.report_headers:
+                headers = {col.lower() for col in table}
+                if {"timestamp", "latitude", "longitude"} <= headers:
+                    return True
+        return False
 
     def copyfile(self, input_file: Path, output_file: str) -> Path:
         """Exports file to report folder
