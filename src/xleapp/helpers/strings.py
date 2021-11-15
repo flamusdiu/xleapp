@@ -1,5 +1,8 @@
 import re
+import string
 import typing as t
+
+from pathlib import Path
 
 
 def raw(data: t.ByteString) -> str:
@@ -26,7 +29,10 @@ def split_camel_case(value: str) -> list[str]:
 
 
 def wraptext(
-    source_text: str, separator_chars: str, width: int = 70, keep_separators: bool = True
+    source_text: str,
+    separator_chars: str,
+    width: int = 70,
+    keep_separators: bool = True,
 ):
     current_length = 0
     latest_separator = -1
@@ -59,3 +65,18 @@ def wraptext(
         else:
             char_index += 1
     return output
+
+
+def filter_strings_in_file(filename: Path, min_chars=4):
+    with open(filename, errors="ignore") as file:
+        result = ""
+        printable = set(string.printable)
+        for char in file.read():
+            if char in printable:
+                result += char
+                continue
+            if len(result) >= min_chars:
+                yield result
+            result = ""
+        if len(result) >= min_chars:  # catch reslt at EOF
+            yield result

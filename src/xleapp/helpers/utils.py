@@ -4,6 +4,7 @@ import typing as t
 
 from collections import defaultdict
 from datetime import datetime
+from functools import reduce
 from importlib.metadata import entry_points
 from pathlib import Path
 
@@ -143,3 +144,20 @@ def unix_epoch_to_readable_date(unix_epoch_time: int):
 
 def is_list(value) -> bool:
     return isinstance(value, list)
+
+
+def deep_get(dictionary: dict, *keys: str) -> t.Any:
+    """Searches dictionary for keys
+
+    Args:
+        dictionary: dictionary to search
+        keys: strings as keys
+
+    Returns:
+        Returns value of the key
+    """
+    return reduce(
+        lambda d, key: d.get(key, "") if isinstance(d, dict) else "",
+        keys,
+        dictionary,
+    )

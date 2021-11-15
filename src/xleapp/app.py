@@ -24,6 +24,7 @@ from ._version import __project__, __version__
 from .gui.utils import ProcessThread
 from .helpers.descriptors import Validator
 from .helpers.search import FileSeekerBase, search_providers
+from .helpers.strings import split_camel_case
 from .helpers.utils import discovered_plugins, is_list
 from .templating.ext import IncludeLogFileExtension
 
@@ -40,8 +41,19 @@ else:
 
 
 class Device(BaseUserDict):
+    """Device information for report"""
+
     def table(self) -> list[list[t.Any]]:
-        return [[key, value] for key, value in self.data.items()]
+        """Creates list for table information on the "Device" Tab
+
+        Returns:
+            Returns the list of device information
+        """
+        data_list = []
+        for key, value in self.data.items():
+            key_camel_case = split_camel_case(key)
+            data_list.append([" ".join(key_camel_case), value])
+        return data_list
 
 
 class OutputFolder(Validator):
@@ -116,7 +128,7 @@ class Application:
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
-        self.device.update({"type": device_type})
+        self.device.update({"Type": device_type})
 
         self.dbservice = DBService(self.report_folder)
 
@@ -216,6 +228,7 @@ class Application:
         artifact: ArtifactEnum
         for artifact in artifacts.filter_artifacts(self.artifacts.data):
             msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
+
             if artifact.report and artifact.select:
                 html_report = templating.ArtifactHtmlReport(
                     report_folder=self.report_folder,

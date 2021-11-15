@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import io
 import logging
 import shutil
 import typing as t
@@ -67,10 +70,7 @@ def generate_artifact_table(artifacts: Artifacts) -> None:
     logger_log.info("Artifact table generation completed")
 
 
-def copyfile(
-    input_file: Path,
-    output_file: Path,
-) -> Path:
+def copyfile(input_file: Path | bytes, output_file: Path) -> Path:
     """Exports file to report folder
 
     File will be located under report_folder\\export\\artifact_class
@@ -82,16 +82,22 @@ def copyfile(
     Returns:
         output_file: Path object of the file save location and name.
     """
-    if input_file.is_file():
+
+    if isinstance(input_file, bytes):
         output_file.parent.mkdir(parents=True, exist_ok=True)
+        output_file.write_bytes(input_file)
+        logger_log.debug(f"File {output_file.name} saved to " f"{output_file}")
     else:
-        output_file.mkdir(parents=True, exist_ok=True)
+        if input_file.is_file():
+            output_file.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            output_file.mkdir(parents=True, exist_ok=True)
 
-    if utils.is_platform_windows():
-        input_file = Path(f"\\\\?\\{input_file.resolve()}")
+        if utils.is_platform_windows():
+            input_file = Path(f"\\\\?\\{input_file.resolve()}")
 
-    shutil.copy2(input_file, output_file)
-    logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
+        shutil.copy2(input_file, output_file)
+        logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
     return output_file
 
 

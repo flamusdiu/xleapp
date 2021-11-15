@@ -6,7 +6,7 @@
     {% block add_scripts %}{% endblock %}
 {% endblock %}
 {% block title %}{{g.project}} {{g.version}}{% endblock %}
-{% block navigation %}{{ nav(navigation) }}{% endblock %}
+{% block navigation %}{{ nav(navigation, "index") }}{% endblock %}
 {% block report_data %}
                 <div class="card bg-white" style="padding: 20px;">
                     <h2 class="card-title">Case Information</h2>

@@ -53,7 +53,7 @@ def main(app: Application) -> None:
     ).finalize()
 
     if len(window["-DEVICETYPE-"].Values) > 0:
-        device_type = app.device["type"] = window["-DEVICETYPE-"].Values[0]
+        device_type = app.device["Type"] = window["-DEVICETYPE-"].Values[0]
         artifacts = app.artifacts.data
         window["-DEVICETYPE-"].update(set_to_index=0, scroll_to_index=0)
         window["-MODULELIST-"].update(

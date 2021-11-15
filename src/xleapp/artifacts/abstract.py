@@ -65,6 +65,7 @@ class AbstractArtifactDefaults:
     processed: bool = field(init=False, default=False)
     process_time: float = field(init=False, default=float())
     report: bool = field(init=False, default=True)
+    report_title: str = field(init=False, default="")
     report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
     select: bool = field(init=False, default=False)
     timeline: bool = field(init=False, default=False)
@@ -175,7 +176,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                     return True
         return False
 
-    def copyfile(self, input_file: Path, output_file: str) -> Path:
+    def copyfile(self, input_file: Path | bytes, output_file: str) -> Path:
         """Exports file to report folder
 
         File will be located under report_folder\\export\\artifact_class
@@ -184,7 +185,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         location for each file.
 
         Args:
-            input_file: input file name/path
+            input_file: input file name/path or :obj:`io.BytesIO`
             output_file: output file name
 
         Returns:

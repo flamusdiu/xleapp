@@ -100,8 +100,8 @@ class Artifacts:
 
     def __init__(self, app: Application) -> None:
         self.app = app
-        if "type" in self.app.device:
-            self = self(self.app.device["type"])
+        if "Type" in self.app.device:
+            self = self(self.app.device["Type"])
 
     def __call__(self, device_type: str) -> Artifacts:
         """Updates the :attr:`data` for artifacts for the :attr:`device_type`.
@@ -251,7 +251,7 @@ class Artifacts:
         """
         num_processed = 0
         artifact: ArtifactEnum
-        device_type: str = self.app.device["type"]
+        device_type: str = self.app.device["Type"]
         plugins: Plugin = list(self.app.plugins[device_type])[0]
 
         if hasattr(plugins, "pre_process"):
