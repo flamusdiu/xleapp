@@ -409,7 +409,10 @@ class FileSeekerTar(FileSeekerBase):
         # "inode/blockdevice" seems to be the file magic number on some iOS tar
         # extractions could manually pull the magic numbers instead of this for
         # tar file.
-        return mime in ["application/x-gzip", "application/x-tar", "inode/blockdevice"]
+        return mime in [
+            "application/x-gzip",
+            "application/x-tar",
+        ] or self.input_file.suffix in [".gz", ".tar", ".tar.gz"]
 
     @property
     def priority(self) -> int:
@@ -454,7 +457,7 @@ class FileSeekerZip(FileSeekerBase):
     @cached_property
     def validate(self) -> bool:
         mime, _ = self.input_path
-        return mime == "application/zip"
+        return mime == "application/zip" or self.input_path.suffix in [".zip"]
 
     @property
     def priority(self) -> int:
