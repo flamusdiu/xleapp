@@ -95,7 +95,7 @@ class Handle:
 
     Attributes:
         file_handle: sets the file or database connection
-        path: location of the file or database. Set seperatly to ensure the path can be
+        path: location of the file or database. Set separately to ensure the path can be
             resolved as early as possible.
 
     Args:
@@ -285,8 +285,8 @@ class FileSeekerBase(ABC):
 
     @property
     @abstractmethod
-    def priorty(self) -> int:
-        raise NotImplementedError(f"Need to set a priorty for {self!r}")
+    def priority(self) -> int:
+        raise NotImplementedError(f"Need to set a priority for {self!r}")
 
     @property
     def all_files(self) -> t.Union[list[str], dict[str, str]]:
@@ -320,7 +320,7 @@ class FileSeekerBase(ABC):
         """Validates input for this seeker
 
         Returns:
-            Returns True if validated or Falses if fails.
+            Returns True if validated or False if fails.
         """
         raise NotImplementedError(f"Need validate property for {self!r}!")
 
@@ -361,7 +361,7 @@ class FileSeekerDir(FileSeekerBase):
         pass
 
     @property
-    def priorty(self) -> int:
+    def priority(self) -> int:
         return 20
 
     @cached_property
@@ -412,7 +412,7 @@ class FileSeekerTar(FileSeekerBase):
         return mime in ["application/x-gzip", "application/x-tar", "inode/blockdevice"]
 
     @property
-    def priorty(self) -> int:
+    def priority(self) -> int:
         return 20
 
 
@@ -457,7 +457,7 @@ class FileSeekerZip(FileSeekerBase):
         return mime == "application/zip"
 
     @property
-    def priorty(self) -> int:
+    def priority(self) -> int:
         return 20
 
 

@@ -75,10 +75,10 @@ class Application:
         default_configs (dict[str, t.Any]): Default configuration used for the
             application. Currently not used.
         extraction_type (str): Type of extraction being processed.
-        report_folder (Path): Location of the repot.
+        report_folder (Path): Location of the report.
         log_folder (Path): Location of the log files. Resides in side the report folder.
         seeker (FileSeekerBase): Seeker to location find from the extraction.
-        jinja_environment (Enviroment): Jinja2 environment for processing and outputing
+        jinja_environment (Environment): Jinja2 environment for processing and outputing
             HTML reports.
         processing_type (float): Total about of time to run application after initial
             setup.
@@ -134,7 +134,7 @@ class Application:
 
         sorted_plugins = sorted(
             search_providers.data.items(),
-            key=lambda kv: kv[1].priorty,
+            key=lambda kv: kv[1].priority,
         )
         for extraction_type, _ in sorted_plugins:
             provider: FileSeekerBase = search_providers(
