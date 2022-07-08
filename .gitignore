@@ -111,7 +111,11 @@ $RECYCLE.BIN/
 docs/old
 
 # ignore docs build directory
-docs/source/_build/
+docs/_build/
 
 # ignore plugins
 plugins/
+
+
+# ignore test data
+data/
