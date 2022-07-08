@@ -1,7 +1,10 @@
 ifeq ($(OS),Windows_NT)
-# Uses Powershell to run make instead of cmd
-SHELL := pwsh.exe
-.SHELLFLAGS := -Command
+    # Uses Powershell to run make instead of cmd
+    SHELL := pwsh.exe
+    .SHELLFLAGS := -Command
+    VENV := .venv/Scripts/Activate.ps1
+else
+    VENV := .venv/bin/activate
 endif
 
 PYPIREPO := pypi
@@ -14,8 +17,6 @@ comma := ,
 
 PLUGINS :=  '$(shell $$(Get-ChildItem -Directory $(PLUGINDIR)).name)'
 
-VENV := .venv/bin/activate.ps1
-
 ifdef DL_PLUGINS
 	GIT_PLUGINS := @('$(DL_PLUGINS)'.split(' '))
 else
@@ -27,11 +28,7 @@ define plugin_run
 @$&(pushd $(PLUGINDIR) && $(PLUGINS) | foreach {pushd $$_ && $(1) && popd} && popd)
 endef
 
-install:
-	@python -m venv .venv
-	@$(VENV) && pip install -r requirements-dev.txt
-
-install-poetry: pkg-update
+install: pkg-update
 	@poetry install
 	$(call plugin_run, poetry install)
 # Need to install the plugins in the make application folder. This created dev_depends. However,
