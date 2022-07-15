@@ -55,6 +55,9 @@ flake8-builtins = "^1.5.3"
 flake8-eradicate = "^1.2.1"
 pep8-naming = "^0.13.0"
 darglint = "^1.8.1"
+pytest = "^7.1.2"
+tox = "^3.25.1"
+coverage = "^6.4.2"
 
 [tool.poetry.scripts]
 xleapp = "xleapp.__main__:cli"
