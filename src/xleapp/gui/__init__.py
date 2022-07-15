@@ -18,8 +18,8 @@ from xleapp.artifacts.services import ArtifactEnum
 
 from ..artifacts import Artifacts
 from ..helpers.search import search_providers
-from ..helpers.strings import wraptext
-from ..helpers.utils import ValidateInput
+from ..helpers.strings import wrap_text
+from ..helpers.utils import validate_input
 from .layout import error_popup_no_modules, generate_artifact_list, generate_layout
 from .utils import ArtifactProcessor, disable_widgets
 
@@ -103,7 +103,7 @@ def main(app: Application) -> None:
             input_path = values["-INPUTFILEFOLDER-"]
             output_path = values["-OUTPUTFOLDER-"]
 
-            ValidateInput(
+            validate_input(
                 input_path=input_path,
                 output_path=output_path,
             )
@@ -135,7 +135,7 @@ def main(app: Application) -> None:
 
             report_path = Path(app.report_folder / "index.html").resolve()
             str_report_path = str(report_path).replace("\\\\", "\\")
-            str_report_path = wraptext(str_report_path, "\\")
+            str_report_path = wrap_text(str_report_path, "\\")
             window["<OPEN REPORT>"].update(disabled=False, visible=True)
             window["<REPORT URL>"].update(str_report_path, visible=True)
             window["<STOP>"].update(visible=False)

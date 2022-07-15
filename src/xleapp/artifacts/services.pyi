@@ -9,6 +9,7 @@ import wrapt
 from xleapp.app import Application
 from xleapp.gui.utils import ProcessThread
 
+
 class ArtifactProxy(wrapt.ObjectProxy):
     def __hash__(self) -> int: ...
 

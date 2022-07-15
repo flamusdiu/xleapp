@@ -18,6 +18,7 @@ import magic
 
 import xleapp.helpers.utils as utils
 
+from xleapp.artifacts.regex import SearchRegex
 from xleapp.helpers.descriptors import Validator
 
 
@@ -144,16 +145,19 @@ class FileHandles(UserDict):
     def __len__(self) -> int:
         return sum(count for count in self.values())
 
-    def add(self, regex: str, files, file_names_only: bool = False) -> None:
+    def add(self, regex: SearchRegex, files, file_names_only: bool = False) -> None:
         """Adds files for each regex to be tracked
 
         Args:
-            regex: string used to find the files
-            files: set of handels or paths to track
-            file_names_only: keep only file names/paths but no file objects.
+            regex(SearchRegex): string used to find the files
+            files: set of handles or paths to track
+            file_names_only(bool): keep only file names/paths but no file objects.
+
+        Raises:
+            FileNotFoundError: raises error if matched file is not found
         """
-        if self.logged[regex] == 0:
-            logger_process.info(f"\nFiles for {regex} located at:")
+        if self.logged[regex.regex] == 0:
+            logger_process.info(f"\nFiles for {regex.regex} located at:")
         for item in files:
             file_handle: Handle
             path: Path = None
@@ -207,7 +211,7 @@ class FileHandles(UserDict):
         self.data = {}
         self.logged = set()
 
-    def __getitem__(self, regex: str) -> set[Handle]:
+    def __getitem__(self, regex: SearchRegex) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
             for artifact_file in files:
@@ -217,7 +221,7 @@ class FileHandles(UserDict):
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
 
-    def __delitem__(self, regex: str) -> None:
+    def __delitem__(self, regex: SearchRegex) -> None:
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
@@ -258,9 +262,13 @@ class FileSeekerBase(ABC):
     @abstractmethod
     def search(
         self,
-        filepattern_to_search: str,
+        file_pattern_to_search: str,
     ) -> t.Iterator:
-        """Returns a list of paths for files/folders that matched"""
+        """Returns a list of paths for files/folders that matched
+
+        Args:
+            file_pattern_to_search: :obj:`str` to search for files
+        """
         pass
 
     @abstractmethod
@@ -445,7 +453,6 @@ class FileSeekerZip(FileSeekerBase):
                     pathlist.append(extracted_path)
                 except Exception:
                     member = member.lstrip("/")
-                    # logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
         return iter(pathlist)
 
     def build_files_list(self, folder=None):
@@ -496,7 +503,8 @@ class FileSearchProvider(BaseUserDict):
         """Creates or returns the search provider
 
         Args:
-            key: short name for the file seeker
+            extraction_type(str): short name for seeker
+            input_path(Path): path to search for files
             **kwargs: options for the search provider
 
         Raises:

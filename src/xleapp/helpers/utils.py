@@ -57,10 +57,7 @@ def get_next_unused_name(path: str) -> str:
     return os.path.join(folder, new_name)
 
 
-def ValidateInput(
-    input_path: str,
-    output_path: str,
-) -> None:
+def validate_input(input_path: str, output_path: str) -> None:
     """
     Returns tuple (success, extraction_type)
     """
@@ -161,3 +158,36 @@ def deep_get(dictionary: dict, *keys: str) -> t.Any:
         keys,
         dictionary,
     )
+
+
+def filter_json(self, json: t.Any, fields: tuple[str | tuple[str]]) -> dict:
+    """Returns a dictionary from a json object
+
+    Args:
+        json: JSON object to search
+        fields: Fields to filter JSON object by
+
+    Returns:
+        Returns dictonary of filtered data
+    """
+    json_dict = {}
+    for field in fields:
+        if isinstance(field, tuple):
+            json_value = deep_get(json, *field)
+        else:
+            json_value = json.get(field, "")
+        json_dict.update({field: json_value})
+    return json_dict
+
+
+def time_factor_conversion(time_in_utc: str) -> str:
+    # time_in_utc has to be a string
+    if len(time_in_utc) == 16:
+        time_factor = 1000000
+    else:
+        time_factor = 1000
+    time_in_utc = int(time_in_utc)
+    if time_in_utc > 0:
+        time_in_utc = datetime.fromtimestamp(time_in_utc / time_factor)
+        time_in_utc = str(time_in_utc)
+    return time_in_utc
