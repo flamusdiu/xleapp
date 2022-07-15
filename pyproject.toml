@@ -66,8 +66,8 @@ format = "grouped"
 max_line_length = 90
 show_source = true
 docstring-convention = "google"
-inline-quotes = "double"
-max_complexity = 12
+inline_quotes = "double"
+max_complexity = 13
 
 # D107: don't need docstrings for __init__ method of classes. 
 #       Infavor of documenting at the top of classes instead of inside __init__ methods.
