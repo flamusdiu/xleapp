@@ -33,7 +33,7 @@ install: pkg-update
 	$(call plugin_run, poetry install)
 # Need to install the plugins in the make application folder. This created dev_depends. However,
 # this are not saved in poetry file at the time.
-	$(PLUGINS) | foreach {poetry add -D $(PLUGINDIR)/$$_}
+	$(PLUGINS) | foreach {pip install -e $(PLUGINDIR)/$$_}
 
 pkg-update:
 	@poetry update
@@ -84,7 +84,6 @@ clean:
 	$(call plugin_run, rm -Force dist/*)
 # Removes plugins from pyproject.toml file. These should not be commited this way.
 	@echo "Removing plugins from pyproject.toml file!"
-	@&(Set-Content -Path .\pyproject.toml -Value (Get-Content .\pyproject.toml | Select-String -Pattern "xleapp-[\w-]+\s?=\s?" -NotMatch))
 	poetry update
 
 pkg-plugins:
