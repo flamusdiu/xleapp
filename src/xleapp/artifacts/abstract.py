@@ -26,6 +26,7 @@ from pathlib import Path
 import xleapp.artifacts as artifacts
 
 from .descriptors import FoundFiles, Icon, ReportHeaders
+from .regex import SearchRegex
 
 
 if t.TYPE_CHECKING:
@@ -38,7 +39,12 @@ class AbstractBase:
 
     description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
-    regex: set[str] = field(init=False, repr=False, compare=False)
+    regex: set[SearchRegex] = field(
+        init=False,
+        repr=False,
+        compare=False,
+        default_factory=set,
+    )
     app: Application = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
@@ -82,17 +88,17 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         `seeker`. It saves should save the report in `report_folder`.
         """
         raise NotImplementedError(
-            "Needs to implement Artifact's" "process() method!",
+            "Needs to implement Artifact's process() method!",
         )
 
     @contextmanager
     def context(
         self,
-        regex: set[str],
+        regex: str,
         file_names_only: bool = False,
         return_on_first_hit: bool = True,
     ) -> t.Iterator[Artifact]:
-        """Creates a contaxt manager for an artifact.
+        """Creates a context manager for an artifact.
 
         This will automatically search and add the regex and files to an artifact when
         called. You then can use `self.found` when processing the artifact.
@@ -100,21 +106,27 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         Example:
             This can be used with `with` blocks::
 
-            >>> with Artifact.context({'*/myregex*'}, file_names_only=True) as artifact:
+            >>> with Artifact.context("*/my_regex*", file_names_only=True) as artifact:
                     artifact.name = 'New Name'
                     artifact.process()
+
+        Args:
+            regex(str): regular expression to search files
+            file_names_only(bool): return only file names
+            return_on_first_hit(bool): return on first hit
 
         Yields:
             Artifact: Updated object
         """
         seeker = self.app.seeker
         files = seeker.file_handles
-        global_regex = files
-        self.regex = regex
+
+        self.regex.add(SearchRegex(regex))
+
         for artifact_regex in self.regex:
             handles = None
             results = None
-            if artifact_regex in global_regex:
+            if artifact_regex.processed:
                 handles = files[artifact_regex]
             else:
                 try:
@@ -128,18 +140,21 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                 if results:
                     files.add(artifact_regex, results, file_names_only)
 
+                artifact_regex.processed = True
+
             if handles or results:
                 if return_on_first_hit or len(results) == 1:
                     self.found = self.found | {files[artifact_regex].copy().pop()}
                 else:
                     self.found = self.found | files[artifact_regex]
+
         yield self
 
     def __enter__(self) -> Artifact:
         return self
 
-    def __eq__(self, other) -> bool:
-        return (self.name == other.name) and (self.category == self.category)
+    def __eq__(self, __o: object) -> bool:
+        return (self.name == __o.name) and (self.category == __o.category)
 
     @property
     def cls_name(self) -> str:
@@ -181,7 +196,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
 
         File will be located under report_folder\\export\\artifact_class
 
-        A shortcut for :func:`artifacts.copyfile()` inforcing the save
+        A shortcut for :func:`artifacts.copyfile()` enforcing the save
         location for each file.
 
         Args:
@@ -189,7 +204,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
             output_file: output file name
 
         Returns:
-            output_file: Path object of the file save location and name.
+            Path: Path object of the file save location and name.
         """
         return artifacts.copyfile(
             input_file=input_file,
@@ -204,7 +219,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
             message: Message to log. Defaults to None.
 
         Raises:
-            AttributeError: Error messae if :attr:`message` is not set.
+            AttributeError: Error message if :attr:`message` is not set.
         """
         if not hasattr(self, "_log"):
             self._log = logging.getLogger("xleapp.logfile")

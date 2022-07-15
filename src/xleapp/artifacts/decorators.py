@@ -14,10 +14,8 @@ def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
     """Decorator to mark an artifact as 'core'
 
     Args:
-        cls: The aritfact object
+        cls: The artifact object
 
-    Raises:
-        AttributeError: Raises and error if a :obj:`Artifact` is not decorated.
 
     Returns:
         DecoratedFunc: The decorated object
@@ -41,14 +39,11 @@ def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
 def long_running_process(cls: DecoratedFunc) -> DecoratedFunc:
     """Marks an artifact as a 'long running process'.
 
-    Artifacts marked with this decorator must be manually selected either throug
+    Artifacts marked with this decorator must be manually selected either through
     `--artifact` option in the CLI or in the GUI list. They are never selected manually.
 
     Args:
         cls: The artifact object
-
-    Raises:
-        AttributeError: Raises and error if a :obj:`Artifact` is not decorated.
 
     Returns:
         DecoratedFunc: The decorated object
