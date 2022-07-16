@@ -29,7 +29,7 @@ define plugin_run
 endef
 
 install: pkg-update
-	@poetry install
+	@poetry install --extras lint,tests
 	$(call plugin_run, poetry install)
 # Need to install the plugins in the make application folder. This created dev_depends. However,
 # this are not saved in poetry file at the time.
