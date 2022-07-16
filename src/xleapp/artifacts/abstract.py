@@ -87,9 +87,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         """Gets artifacts located in `files_found` params by the
         `seeker`. It saves should save the report in `report_folder`.
         """
-        raise NotImplementedError(
-            "Needs to implement Artifact's process() method!",
-        )
 
     @contextmanager
     def context(
