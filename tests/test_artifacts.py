@@ -1,7 +1,5 @@
 import pytest
-
 from xleapp import Artifact, Search, WebIcon
-from xleapp.artifacts.regex import SearchRegex
 
 
 @pytest.fixture
@@ -64,26 +62,29 @@ def test_artifact_multiple_search():
 
     return TestArtifact()
 
+
 def test_create_artifact(test_artifact):
     assert isinstance(test_artifact, Artifact)
 
 
-def test_create_artifact_search(test_artifact):
+def test_create_artifact_search(test_artifact, app):
+    test_artifact.app = app
     test_artifact.process()
     assert len(test_artifact.regex) == 1
 
 
-def test_create_artifact_multiple_search(test_artifact_multiple_search):
+def test_create_artifact_multiple_search(test_artifact_multiple_search, app):
+    test_artifact_multiple_search.app = app
     test_artifact_multiple_search.process()
     assert len(test_artifact_multiple_search.regex) == 3
-        
+
+
 def test_create_artifact_missing_process():
     class TestArtifact(Artifact):
         def __post_init__(self) -> None:
             self.name = "TestArtifact"
             self.category = "Test"
             self.web_icon = WebIcon.TEST
-    
+
     with pytest.raises(TypeError):
         artifact = TestArtifact()
-        
