@@ -74,13 +74,13 @@ class Search:
 
     def __init__(
         self,
-        *args,
+        regex,
         file_names_only: bool = False,
         return_on_first_hit: bool = True,
     ):
         self.return_on_first_hit = return_on_first_hit
         self.file_names_only = file_names_only
-        self.search = [*args]
+        self.search = regex
 
     def __call__(self, func):
         def search_wrapper(cls) -> bool:

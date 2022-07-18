@@ -117,20 +117,20 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         """
         seeker = self.app.seeker
         files = seeker.file_handles
-
         self.regex.add(SearchRegex(regex))
 
         for artifact_regex in self.regex:
             handles = None
             results = None
+            regex = str(artifact_regex)
             if artifact_regex.processed:
-                handles = files[artifact_regex]
+                handles = files[regex]
             else:
                 try:
                     if return_on_first_hit:
-                        results = {next(seeker.search(artifact_regex))}
+                        results = {next(seeker.search(regex))}
                     else:
-                        results = set(seeker.search(artifact_regex))
+                        results = set(seeker.search(regex))
                 except StopIteration:
                     results = None
 

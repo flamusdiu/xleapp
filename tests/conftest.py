@@ -12,22 +12,20 @@ ios_13_4_1_zip = (
 )
 
 
-def fake_discover_plugins(mocker):
-    plugins = mocker.MagicMock()
-    plugins.plugins = set('Accounts')
-    return {'xleapp-ios', plugins}
+@pytest.fixture(scope="session", autouse=True)
+def test_data(request):
+    return request.config.cache.makedir("test-data")
 
-
-@pytest.fixture(scope="session")
-def ios_image(request):
+'''
+@pytest.fixture(scope="session", autouse=True)
+def ios_image(test_data, request):
     """Downloads and saves ios Image. Most test will use this file system image.
     This is extracted a head of time due to the overhead of trying to extract
     during testing.
     """
-    fd: Path = request.config.cache.makedir("test-data")
-    fn = Path(fd / "ios_13_4_1.zip")
-    ios_file_extraction_root = fd / "iOS 13.4.1 Extraction/Extraction"
-    ios_file_sys = fd / "13-4-1"
+    fn = Path(test_data / "ios_13_4_1.zip")
+    ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
+    ios_file_sys = test_data / "13-4-1"
 
     request.config.cache.set("xleapp/ios-image-13-4-1", str(ios_file_sys))
 
@@ -53,7 +51,7 @@ def ios_image(request):
                         progress_bar.update(len(ch))
 
     if not ios_file_extraction_root.exists():
-        unpack_archive(str(fn), extract_dir=str(fd))
+        unpack_archive(str(fn), extract_dir=str(test_data))
 
     if not ios_file_sys.exists():
         # some files just do not extract
@@ -65,22 +63,29 @@ def ios_image(request):
 
     # Return the file system directory after the second extraction
     return ios_file_sys
+'''
 
-
-@pytest.fixture(scope="session")
-def app(request, ios_image):
-    from xleapp.app import Application
+@pytest.fixture
+def plugin_patched(monkeypatch, mocker, test_artifact):
     import xleapp.helpers.utils as utils
-
-    pytest.MonkeyPatch.setattr(utils, "discovered_plugins", fake_discover_plugins)
-
+ 
+    def fake_discover_plugins():
+        plugins = mocker.MagicMock()
+        plugins.plugins = [test_artifact]
+        return {'ios': {plugins}}
+    
+    monkeypatch.setattr(utils, "discovered_plugins", fake_discover_plugins)
+    
+@pytest.fixture
+def app(test_data, plugin_patched):
+    from xleapp.app import Application
+    
+    output_path = Path(test_data / "reports")
+    output_path.mkdir(exist_ok=True)
     app = Application()
-    output_path = request.config.cache.makedir("test-data/reports")
 
-    app(device_type="ios", input_path=ios_image, output_path=output_path)
-    return app
-
-
+    return app(device_type="ios", input_path=Path.cwd(), output_path=output_path)
+    
 def test_app_input_path(ios_image, app):
     assert app.input_path == ios_image
 

@@ -43,12 +43,13 @@ def test_artifact():
                         row_dict = dict_from_row(row)
                         self.data.append(tuple(row_dict.values()))
 
-    return Accounts()
+    return Accounts
 
 
 @pytest.fixture
 def test_artifact_multiple_search():
     class TestArtifact(Artifact):
+        name = "TestArtifact"
         def __post_init__(self) -> None:
             self.name = "TestArtifact"
             self.category = "Test"
@@ -68,14 +69,16 @@ def test_create_artifact(test_artifact):
 
 
 def test_create_artifact_search(test_artifact, app):
-    test_artifact.app = app
-    test_artifact.process()
-    assert len(test_artifact.regex) == 1
+    artifact = test_artifact()
+    artifact.app = app
+    artifact.process()
+    assert len(artifact.regex) == 1
 
 
 def test_create_artifact_multiple_search(test_artifact_multiple_search, app):
     test_artifact_multiple_search.app = app
     test_artifact_multiple_search.process()
+    print(test_artifact_multiple_search.regex)
     assert len(test_artifact_multiple_search.regex) == 3
 
 
