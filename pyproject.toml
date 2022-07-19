@@ -203,6 +203,13 @@ exe = [
   "pyinstaller"
 ]
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q" 
+testpaths = [
+  "tests",
+]
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
