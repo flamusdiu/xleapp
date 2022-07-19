@@ -4,6 +4,7 @@ import sqlite3
 import typing as t
 
 from ..helpers.types import DecoratedFunc
+from ..helpers.search import SearchRegex
 from .abstract import Artifact
 
 
@@ -72,30 +73,17 @@ class Search:
        return_on_first_hit: Returns only the first found file. Defaults to True.
     """
 
+    
     def __init__(
         self,
-        regex,
-        file_names_only: bool = False,
-        return_on_first_hit: bool = True,
+        func
     ):
-        self.return_on_first_hit = return_on_first_hit
-        self.file_names_only = file_names_only
-        self.search = regex
-
+        print(f"__init__: {func}")
+    
     def __call__(self, func):
-        def search_wrapper(cls) -> bool:
-            try:
-                with cls.context(
-                    regex=self.search,
-                    file_names_only=self.file_names_only,
-                    return_on_first_hit=self.return_on_first_hit,
-                ) as artifact:
-                    if artifact.found:
-                        func(artifact)
-                    cls.processed = True
-            except sqlite3.OperationalError as ex:
-                logger_log.error(f"-> Error {ex}")
-            return cls.processed
+        print(f"__call__: {func}")
 
-        functools.update_wrapper(search_wrapper, func)
-        return search_wrapper
+
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return functools.partial(self.__call__, obj)

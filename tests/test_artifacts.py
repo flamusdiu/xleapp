@@ -56,6 +56,7 @@ def test_artifact_multiple_search():
             self.category = "Test"
             self.web_icon = WebIcon.TEST
 
+        @Search()
         @Search("**/test.sqlite")
         @Search("**/test1.sqlite")
         @Search("**/test2.sqlite")
