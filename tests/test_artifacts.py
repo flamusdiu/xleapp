@@ -1,5 +1,5 @@
 import pytest
-from xleapp import Artifact, Search, WebIcon
+from xleapp import Artifact, Search, WebIcon, artifacts
 
 
 @pytest.fixture
@@ -50,6 +50,7 @@ def test_artifact():
 def test_artifact_multiple_search():
     class TestArtifact(Artifact):
         name = "TestArtifact"
+
         def __post_init__(self) -> None:
             self.name = "TestArtifact"
             self.category = "Test"
@@ -61,25 +62,35 @@ def test_artifact_multiple_search():
         def process(self):
             pass
 
-    return TestArtifact()
+    return TestArtifact
 
 
 def test_create_artifact(test_artifact):
-    assert isinstance(test_artifact, Artifact)
+    assert isinstance(test_artifact(), Artifact)
 
 
 def test_create_artifact_search(test_artifact, app):
+    from xleapp.helpers.search import SearchRegex
+
     artifact = test_artifact()
     artifact.app = app
     artifact.process()
+    assert isinstance(artifact.regex, set)
     assert len(artifact.regex) == 1
+    assert isinstance(artifact.regex.pop(), SearchRegex)
 
 
 def test_create_artifact_multiple_search(test_artifact_multiple_search, app):
-    test_artifact_multiple_search.app = app
-    test_artifact_multiple_search.process()
-    print(test_artifact_multiple_search.regex)
-    assert len(test_artifact_multiple_search.regex) == 3
+    from xleapp.helpers.search import SearchRegex
+
+    artifact = test_artifact_multiple_search()
+    artifact.app = app
+    artifact.process()
+    assert isinstance(artifact.regex, set)
+    assert len(artifact.regex) == 3
+
+    for regex in artifact.regex:
+        assert isinstance(regex, SearchRegex)
 
 
 def test_create_artifact_missing_process():
