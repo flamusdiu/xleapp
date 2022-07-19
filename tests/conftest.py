@@ -11,18 +11,53 @@ ios_13_4_1_zip = (
     "https://digitalcorpora.s3.amazonaws.com/corpora/mobile/ios_13_4_1/ios_13_4_1.zip"
 )
 
+optional_markers = {
+    "download": {
+        "help": "downloads archives for tests. Greatly slows down tests!",
+        "marker-descr": "downloads archives for testing. Tests will take longer!",
+        "skip-reason": "Test only runs with the --{} option.",
+    }
+}
+
+
+def pytest_addoption(parser):
+    for marker, info in optional_markers.items():
+        parser.addoption(
+            "--{}".format(marker), action="store_true", default=False, help=info['help']
+        )
+
+
+def pytest_configure(config):
+    for marker, info in optional_markers.items():
+        config.addinivalue_line("markers", "{}: {}".format(marker, info['marker-descr']))
+
+
+def pytest_collection_modifyitems(config, items):
+    for marker, info in optional_markers.items():
+        if not config.getoption("--{}".format(marker)):
+            skip_test = pytest.mark.skip(reason=info['skip-reason'].format(marker))
+            for item in items:
+                if marker in item.keywords:
+                    item.add_marker(skip_test)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def test_data(request):
     return request.config.cache.makedir("test-data")
 
-'''
+
+@pytest.mark.download
 @pytest.fixture(scope="session", autouse=True)
-def ios_image(test_data, request):
+def ios_image(test_data, request, pytestconfig):
     """Downloads and saves ios Image. Most test will use this file system image.
     This is extracted a head of time due to the overhead of trying to extract
     during testing.
     """
+    
+    # seems autouse always happens even if set to skip. This forces the skip.
+    if not pytestconfig.getoption("--download"):
+        return pytest.mark.skip(reason="Test only runs with the --{} option.")
+    
     fn = Path(test_data / "ios_13_4_1.zip")
     ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
     ios_file_sys = test_data / "13-4-1"
@@ -63,29 +98,31 @@ def ios_image(test_data, request):
 
     # Return the file system directory after the second extraction
     return ios_file_sys
-'''
+
 
 @pytest.fixture
 def plugin_patched(monkeypatch, mocker, test_artifact):
     import xleapp.helpers.utils as utils
- 
+
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [test_artifact]
         return {'ios': {plugins}}
-    
+
     monkeypatch.setattr(utils, "discovered_plugins", fake_discover_plugins)
-    
+
+
 @pytest.fixture
 def app(test_data, plugin_patched):
     from xleapp.app import Application
-    
+
     output_path = Path(test_data / "reports")
     output_path.mkdir(exist_ok=True)
     app = Application()
 
     return app(device_type="ios", input_path=Path.cwd(), output_path=output_path)
-    
+
+
 def test_app_input_path(ios_image, app):
     assert app.input_path == ios_image
 
