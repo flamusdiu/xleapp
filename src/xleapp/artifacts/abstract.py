@@ -91,7 +91,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
     @contextmanager
     def context(
         self,
-        regex: str,
         file_names_only: bool = False,
         return_on_first_hit: bool = True,
     ) -> t.Iterator[Artifact]:
@@ -117,7 +116,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         """
         seeker = self.app.seeker
         files = seeker.file_handles
-        self.regex.add(SearchRegex(regex))
 
         for artifact_regex in self.regex:
             handles = None

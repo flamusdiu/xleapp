@@ -3,10 +3,13 @@ import typing as t
 from dataclasses import dataclass, field
 
 
-@dataclass(unsafe_hash=True)
+@dataclass
 class SearchRegex:
-    regex: str = field(init=True, hash=True)
-    processed: bool = field(init=False, hash=False, compare=False, default=False)
+    regex: str = field(init=True)
+    processed: bool = field(init=False, compare=False, default=False)
 
     def __str__(self) -> str:
         return self.regex
+    
+    def __hash__(self) -> int:
+        return hash(self.regex)

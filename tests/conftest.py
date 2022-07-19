@@ -53,11 +53,11 @@ def ios_image(test_data, request, pytestconfig):
     This is extracted a head of time due to the overhead of trying to extract
     during testing.
     """
-    
+
     # seems autouse always happens even if set to skip. This forces the skip.
     if not pytestconfig.getoption("--download"):
         return pytest.mark.skip(reason="Test only runs with the --{} option.")
-    
+
     fn = Path(test_data / "ios_13_4_1.zip")
     ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
     ios_file_sys = test_data / "13-4-1"
@@ -110,6 +110,7 @@ def plugin_patched(monkeypatch, mocker, test_artifact):
         return {'ios': {plugins}}
 
     monkeypatch.setattr(utils, "discovered_plugins", fake_discover_plugins)
+    print(utils.discovered_plugins())
 
 
 @pytest.fixture

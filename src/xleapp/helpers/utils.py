@@ -126,7 +126,7 @@ class PluginMissingError(RuntimeError):
 def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
     plugins: dict[str, set[Plugin]] = defaultdict(set)
     try:
-        for plugin in entry_points()["xleapp.plugins"]:
+        for plugin in entry_points(select="xleapp.plugins"):
             xleapp_plugin: Plugin = plugin.load()()
             plugins[plugin.name].add(xleapp_plugin)
         return plugins
