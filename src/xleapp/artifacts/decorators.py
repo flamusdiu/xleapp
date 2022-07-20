@@ -103,5 +103,7 @@ class Search:
                 logger_log.error(f"-> Error {ex}")
             return cls.processed
 
-        functools.update_wrapper(search_wrapper, func)
-        return search_wrapper
+
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return functools.partial(self.__call__, obj)
