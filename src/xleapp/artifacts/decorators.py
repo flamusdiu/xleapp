@@ -73,6 +73,7 @@ class Search:
        return_on_first_hit: Returns only the first found file. Defaults to True.
     """
 
+<<<<<<< HEAD
     search: dict[str, set[SearchRegex]] = dict()
 
     def __init__(
@@ -102,6 +103,19 @@ class Search:
             except sqlite3.OperationalError as ex:
                 logger_log.error(f"-> Error {ex}")
             return cls.processed
+=======
+    
+    def __init__(
+        self,
+        func
+    ):
+        print(f"__init__: {func}")
+    
+    def __call__(self, func):
+        print(f"__call__: {func}")
+>>>>>>> 7fd0a34a3730e89e70d2f1b8e3580e7acbf60c87
 
-        functools.update_wrapper(search_wrapper, func)
-        return search_wrapper
+
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return functools.partial(self.__call__, obj)
