@@ -8,7 +8,7 @@ import requests
 from tqdm import tqdm
 
 from xleapp.app import Application
-
+from .test_artifacts import TestArtifact
 
 ios_13_4_1_zip = (
     "https://digitalcorpora.s3.amazonaws.com/corpora/mobile/ios_13_4_1/ios_13_4_1.zip"
@@ -104,10 +104,10 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def app(test_data, test_artifact, mocker, monkeypatch):
+def app(test_data, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
-        plugins.plugins = [test_artifact]
+        plugins.plugins = [TestArtifact]
         return {'ios': {plugins}}
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())

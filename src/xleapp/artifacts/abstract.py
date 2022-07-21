@@ -25,8 +25,8 @@ from pathlib import Path
 
 import xleapp.artifacts as artifacts
 
-from .descriptors import FoundFiles, Icon, ReportHeaders
-from .regex import SearchRegex
+from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
+from .regex import Regex
 
 
 if t.TYPE_CHECKING:
@@ -39,11 +39,11 @@ class AbstractBase:
 
     description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
-    regex: set[SearchRegex] = field(
+    regex: set[Regex] = field(
         init=False,
         repr=False,
         compare=False,
-        default_factory=set,
+        default=SearchRegex(),
     )
     app: Application = field(init=False, repr=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
@@ -91,8 +91,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
     @contextmanager
     def context(
         self,
-        file_names_only: bool = False,
-        return_on_first_hit: bool = True,
     ) -> t.Iterator[Artifact]:
         """Creates a context manager for an artifact.
 
@@ -120,12 +118,12 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         for artifact_regex in self.regex:
             handles = None
             results = None
-            regex = str(artifact_regex)
+            regex = str(artifact_regex.regex)
             if artifact_regex.processed:
                 handles = files[regex]
             else:
                 try:
-                    if return_on_first_hit:
+                    if artifact_regex.return_on_first_hit:
                         results = {next(seeker.search(regex))}
                     else:
                         results = set(seeker.search(regex))
@@ -133,12 +131,12 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                     results = None
 
                 if results:
-                    files.add(artifact_regex, results, file_names_only)
+                    files.add(artifact_regex, results, artifact_regex.file_names_only)
 
                 artifact_regex.processed = True
 
             if handles or results:
-                if return_on_first_hit or len(results) == 1:
+                if artifact_regex.return_on_first_hit or len(results) == 1:
                     self.found = self.found | {files[artifact_regex].copy().pop()}
                 else:
                     self.found = self.found | files[artifact_regex]

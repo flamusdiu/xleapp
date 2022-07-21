@@ -35,6 +35,3 @@ class Validator(ABC):
 
         Validators may return non boolean values.
         """
-        raise NotImplementedError(
-            "Descriptors must create a `validator()` class that returns a boolean!",
-        )

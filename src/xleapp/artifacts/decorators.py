@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import functools
 import logging
 import sqlite3
 import typing as t
 
-from ..helpers.search import SearchRegex
+from ..helpers.search import Regex
 from ..helpers.types import DecoratedFunc
 from .abstract import Artifact
 
@@ -73,40 +75,23 @@ class Search:
        return_on_first_hit: Returns only the first found file. Defaults to True.
     """
 
-    search: dict[str, set[SearchRegex]] = dict()
-
-    def __init__(
-        self,
-        name,
-        regex,
-        file_names_only: bool = False,
-        return_on_first_hit: bool = True,
-    ):
-        self.return_on_first_hit = return_on_first_hit
-        self.file_names_only = file_names_only
-        if not name in self.search.keys():
-            self.search[name] = set()
-        self.search[name].add(SearchRegex(regex))
+    def __init__(self, *args: tuple[str] | str):
+        self.search = args
 
     def __call__(self, func):
         def search_wrapper(cls) -> bool:
             try:
-                cls.regex = self.search[f"{cls.name}__{cls.category}"]
-                with cls.context(
-                    file_names_only=self.file_names_only,
-                    return_on_first_hit=self.return_on_first_hit,
-                ) as artifact:
+                cls.regex = self.search
+                with cls.context() as artifact:
                     if artifact.found:
                         func(artifact)
                     cls.processed = True
             except sqlite3.OperationalError as ex:
                 logger_log.error(f"-> Error {ex}")
             return cls.processed
-        
+
         functools.update_wrapper(search_wrapper, func)
         return search_wrapper
-
-
 
     def __get__(self, obj, objtype):
         """Support instance methods."""

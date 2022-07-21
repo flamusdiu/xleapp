@@ -18,7 +18,7 @@ import magic
 
 import xleapp.helpers.utils as utils
 
-from xleapp.artifacts.regex import SearchRegex
+from xleapp.artifacts.regex import Regex
 from xleapp.helpers.descriptors import Validator
 
 
@@ -145,7 +145,7 @@ class FileHandles(UserDict):
     def __len__(self) -> int:
         return sum(count for count in self.values())
 
-    def add(self, regex: SearchRegex, files, file_names_only: bool = False) -> None:
+    def add(self, regex: Regex, files, file_names_only: bool = False) -> None:
         """Adds files for each regex to be tracked
 
         Args:
@@ -211,7 +211,7 @@ class FileHandles(UserDict):
         self.data = {}
         self.logged = set()
 
-    def __getitem__(self, regex: SearchRegex) -> set[Handle]:
+    def __getitem__(self, regex: Regex) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
             for artifact_file in files:
@@ -221,7 +221,7 @@ class FileHandles(UserDict):
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
 
-    def __delitem__(self, regex: SearchRegex) -> None:
+    def __delitem__(self, regex: Regex) -> None:
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
