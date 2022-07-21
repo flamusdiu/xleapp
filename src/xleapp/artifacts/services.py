@@ -211,6 +211,7 @@ class Artifacts:
         """
         members = {}
         plugins: Plugin = list(app.plugins[device_type])[0]
+
         for xleapp_cls in plugins.plugins:
             artifact = dataclass(
                 xleapp_cls,

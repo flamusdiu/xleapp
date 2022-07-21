@@ -100,7 +100,6 @@ class Application:
     output_path = OutputFolder()
     processing_time: float
     project: str
-    plugins: t.Optional[dict[str, set[Plugin]]]
     report_folder: Path
     seeker: FileSeekerBase
     version: str
@@ -115,8 +114,6 @@ class Application:
 
         self.project = __project__
         self.version = __version__
-
-        self.plugins = discovered_plugins()
 
     def __call__(
         self,
@@ -162,6 +159,10 @@ class Application:
                     artifacts_enum[artifact.name].select = False  # type: ignore
 
         return self
+
+    @cached_property
+    def plugins(self) -> dict[str, set[Plugin]]:
+        return discovered_plugins()
 
     @cached_property
     def jinja_env(self) -> Environment:

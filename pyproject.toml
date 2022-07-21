@@ -25,36 +25,44 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
 Jinja2 = "^3.1.2"
+PySimpleGUI = "^4.60.1"
+PyYAML = "^6.0"
 prettytable = "^3.3.0"
+python = ">=3.9,<3.11"
 python-magic-bin = "^0.4.14"
 simplekml = "^1.3.6"
 wrapt = "^1.14.1"
-PySimpleGUI = "^4.60.1"
-PyYAML = "^6.0"
 
-[tool.poetry.dev-dependencies]
-flake8 = "^4.0.1"
-flake8-bandit = "^3.0.0"
-flake8-bugbear = "^22.7.1"
-flake8-commas = "^2.1.0"
-flake8-comprehensions = "^3.10.0"
-flake8-docstrings = "^1.6.0"
-flake8-isort = "^4.1.1"
-flake8-mutable = "^1.2.0"
-flake8-quotes = "^3.3.1"
-flake8-variables-names = "^0.0.5"
-mypy = "^0.961"
-pyinstaller = "^5.1"
-types-PyYAML = "^6.0.9"
-black = "^22.6.0"
-types-Jinja2 = "^2.11.9"
-flakeheaven = "^2.0.0"
-flake8-builtins = "^1.5.3"
-flake8-eradicate = "^1.2.1"
-pep8-naming = "^0.13.0"
-darglint = "^1.8.1"
+black = {version = "^22.6.0", optional = true}
+darglint = {version = "^1.8.1", optional = true}
+flake8 = {version = "^4.0.1", optional = true}
+flake8-bandit = {version = "^3.0.0", optional = true}
+flake8-bugbear = {version = "^22.7.1", optional = true}
+flake8-builtins = {version = "1.5.3", optional = true}
+flake8-commas = {version = "^2.1.0", optional = true}
+flake8-comprehensions = {version = "^3.10.0", optional = true}
+flake8-docstrings = {version = "^1.6.0", optional = true}
+flake8-eradicate = {version = "^1.2.1", optional = true}
+flake8-isort = {version = "^4.1.1", optional = true}
+flake8-mutable = {version = "^1.2.0", optional = true}
+flake8-quotes = {version = "^3.3.1", optional = true}
+flake8-variables-names = {version = "^0.0.5", optional = true}
+flakeheaven = {version = "^2.0.0", optional = true}
+mypy = {version = "^0.961", optional = true}
+pep8-naming = {version = "^0.13.0", optional = true}
+pyinstaller = {version = "^5.1", optional = true}
+pytest = {version = "^6.0.2", optional = true}
+pytest-cache = {version = "^1.0", optional = true}
+pytest-cov = {version = "^2.10.1", optional = true}
+pytest-dependency = {version = "^0.5.1", optional = true}
+pytest-mock = {version = "^3.8.2", optional = true}
+requests = {version = "^2.28.1", optional = true}
+tox = {version = "^3.23.0", optional = true}
+tqdm = {version = "^4.64.0", optional = true}
+types-Jinja2 = {version = "^2.11.9", optional = true}
+types-PyYAML = {version = "^6.0.9", optional = true}
+
 
 [tool.poetry.scripts]
 xleapp = "xleapp.__main__:cli"
@@ -157,3 +165,72 @@ ignore_missing_imports = true
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.extras]
+# Test dependencies as extras so they can be set as extras in tox config
+# More info on https://github.com/python-poetry/poetry/issues/1941
+tests = [
+  "pytest",
+  "pytest-cache",
+  "pytest-cov",
+  "pytest-dependency",
+  "pytest-mock",
+  "tox"
+]
+vscode = [
+  "requests",
+  "tqdm"
+]
+lint = [
+  "black",
+  "flakeheaven",
+  "flake8",
+  "flake8-bandit",
+  "flake8-bugbear",
+  "flake8-commas",
+  "flake8-comprehensions",
+  "flake8-docstrings",
+  "flake8-isort",
+  "flake8-mutable",
+  "flake8-quotes",
+  "flake8-variables-names",
+  "flake8-builtins",
+  "flake8-eradicate",
+  "pep8-naming",
+  "darglint",
+  "types-PyYAML",
+  "types-Jinja2",
+]
+exe = [
+  "mypy",
+  "pyinstaller"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q" 
+testpaths = [
+  "tests",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = {py39, py310}-tests, {py39, py310}-lint
+
+[testenv:tests]
+commands =
+  pytest -vv --cov={envsitepackagesdir}/xleapp --cov-report xml --cov-report html --ignore=data
+deps =
+  requests
+  tqdm
+extras =
+  tests
+
+[testenv:lint]
+commands =
+   black -S src/
+   flakeheaven lint src/
+extras = 
+   lint
+"""

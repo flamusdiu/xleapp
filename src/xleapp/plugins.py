@@ -51,7 +51,7 @@ class Plugin(ABC):
     def folder(self) -> Path:
         """Returns path to plugins folder
 
-        Basic usage is shown here. This needs to be in plugin's concret class to
+        Basic usage is shown here. This needs to be in plugin's concrete class to
         get proper path.
 
         Example:

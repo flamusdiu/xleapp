@@ -1,11 +1,14 @@
+from __future__ import annotations
+
+import importlib
 import os
+import pkgutil
 import re
 import typing as t
 
 from collections import defaultdict
 from datetime import datetime
 from functools import reduce
-from importlib.metadata import entry_points
 from pathlib import Path
 
 from xleapp import __authors__
@@ -124,13 +127,19 @@ class PluginMissingError(RuntimeError):
 
 def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
     plugins: dict[str, set[Plugin]] = defaultdict(set)
-    try:
-        for plugin in entry_points()["xleapp.plugins"]:
-            xleapp_plugin: Plugin = plugin.load()()
-            plugins[plugin.name].add(xleapp_plugin)
-        return plugins
-    except KeyError:
+    found = {
+        name: importlib.import_module(name)
+        for _, name, _ in pkgutil.iter_modules()
+        if name.startswith('xleapp-')
+    }
+
+    if len(found) == 0:
         raise PluginMissingError("No plugins installed! Exiting!")
+
+    for name, plugin in found.items():
+        xleapp_plugin: Plugin = plugin.load()()
+        plugins[name].add(xleapp_plugin)
+    return plugins
 
 
 def unix_epoch_to_readable_date(unix_epoch_time: int):
