@@ -1,6 +1,7 @@
 # coding: utf-8
-import os
 import json
+import os
+
 
 """
 This helper renders chat conversations passed as a json dump of a dictionary:

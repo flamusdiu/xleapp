@@ -11,7 +11,6 @@ from queue import PriorityQueue
 import PySimpleGUI as PySG
 import wrapt
 
-
 from ..helpers.decorators import timed
 from ..helpers.strings import split_camel_case
 
@@ -212,7 +211,7 @@ class Artifacts:
         """
         members = {}
         plugins: Plugin = list(app.plugins[device_type])[0]
-        
+
         for xleapp_cls in plugins.plugins:
             artifact = dataclass(
                 xleapp_cls,

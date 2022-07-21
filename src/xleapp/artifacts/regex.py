@@ -10,6 +10,6 @@ class SearchRegex:
 
     def __str__(self) -> str:
         return self.regex
-    
+
     def __hash__(self) -> int:
         return hash(self.regex)

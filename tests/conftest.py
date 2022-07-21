@@ -105,7 +105,6 @@ def ios_image(test_data, request, pytestconfig):
 
 @pytest.fixture
 def app(test_data, test_artifact, mocker, monkeypatch):
-    
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [test_artifact]
