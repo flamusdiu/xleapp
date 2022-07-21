@@ -1,11 +1,16 @@
-import pytest
 from dataclasses import dataclass
-from xleapp import Artifact, Search, WebIcon, artifacts
+
+import pytest
+
+from xleapp import Artifact, Search, WebIcon
 from xleapp.app import Application
 
 
 @dataclass
 class TestArtifact(Artifact):
+    
+    __test__ = False
+    
     def __post_init__(self) -> None:
         self.name = "Accounts"
         self.category = "Accounts"
@@ -20,7 +25,7 @@ class TestArtifact(Artifact):
         )
         self.timeline = True
 
-    @Search("Accounts__Accounts", "**/Accounts3.sqlite")
+    @Search("**/Accounts3.sqlite")
     def process(self):
         for fp in self.found:
             cursor = fp().cursor()
@@ -47,6 +52,7 @@ class TestArtifact(Artifact):
 
 @dataclass
 class TestArtifactMultipleSearch(Artifact):
+    __test__ = False
     name = "TestArtifact"
 
     def __post_init__(self) -> None:
@@ -54,15 +60,13 @@ class TestArtifactMultipleSearch(Artifact):
         self.category = "Test"
         self.web_icon = WebIcon.TRIANGLE
 
-    @Search("TestArtifact__Unknown", "**/test.sqlite")
-    @Search("TestArtifact__Unknown", "**/test1.sqlite")
-    @Search("TestArtifact__Unknown", "**/test2.sqlite")
+    @Search(["**/test.sqlite"],["**/test1.sqlite"],["**/test2.sqlite"])
     def process(self):
         pass
 
-
 @dataclass
 class TestArtifactMissingProcess(Artifact):
+    __test__ = False
     def __post_init__(self) -> None:
         self.name = "TestArtifact"
         self.category = "Test"

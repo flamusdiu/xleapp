@@ -1,10 +1,13 @@
-from shutil import unpack_archive
-from pathlib import Path
 from contextlib import suppress
+from pathlib import Path
+from shutil import unpack_archive
 
 import pytest
 import requests
+
 from tqdm import tqdm
+
+from xleapp.app import Application
 
 
 ios_13_4_1_zip = (
@@ -56,7 +59,7 @@ def ios_image(test_data, request, pytestconfig):
 
     # seems autouse always happens even if set to skip. This forces the skip.
     if not pytestconfig.getoption("--download"):
-        return pytest.mark.skip(reason="Test only runs with the --{} option.")
+        return pytest.mark.skip(reason="Test only runs with the --download option.")
 
     fn = Path(test_data / "ios_13_4_1.zip")
     ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
@@ -101,21 +104,14 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def plugin_patched(monkeypatch, mocker, test_artifact):
-    import xleapp.helpers.utils as utils
-
+def app(test_data, test_artifact, mocker, monkeypatch):
+    
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [test_artifact]
         return {'ios': {plugins}}
 
-    monkeypatch.setattr(utils, "discovered_plugins", fake_discover_plugins)
-    print(utils.discovered_plugins())
-
-
-@pytest.fixture
-def app(test_data, plugin_patched):
-    from xleapp.app import Application
+    monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
 
     output_path = Path(test_data / "reports")
     output_path.mkdir(exist_ok=True)
@@ -128,5 +124,5 @@ def test_app_input_path(ios_image, app):
     assert app.input_path == ios_image
 
 
-def test_app_output_path(ios_image, app, tmp_path_factory):
+def test_app_output_path(app, tmp_path_factory):
     assert app.output_path == tmp_path_factory / "data"

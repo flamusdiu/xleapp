@@ -102,6 +102,9 @@ class Search:
             except sqlite3.OperationalError as ex:
                 logger_log.error(f"-> Error {ex}")
             return cls.processed
+        
+        functools.update_wrapper(search_wrapper, func)
+        return search_wrapper
 
 
     def __get__(self, obj, objtype):
