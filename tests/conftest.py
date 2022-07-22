@@ -1,6 +1,7 @@
 from contextlib import suppress
 from pathlib import Path
 from shutil import unpack_archive
+import shutil
 
 import pytest
 import requests
@@ -59,7 +60,7 @@ def ios_image(test_data, request, pytestconfig):
 
     # seems autouse always happens even if set to skip. This forces the skip.
     if not pytestconfig.getoption("--download"):
-        return pytest.mark.skip(reason="Test only runs with the --download option.")
+        return Path.cwd()
 
     fn = Path(test_data / "ios_13_4_1.zip")
     ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
@@ -104,7 +105,7 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def app(test_data, mocker, monkeypatch):
+def app(test_data, ios_image, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [TestArtifact]
@@ -116,7 +117,9 @@ def app(test_data, mocker, monkeypatch):
     output_path.mkdir(exist_ok=True)
     app = Application()
 
-    return app(device_type="ios", input_path=Path.cwd(), output_path=output_path)
+    yield app(device_type="ios", input_path=ios_image, output_path=output_path)
+    
+    shutil.rmtree(app.report_folder)
 
 
 def test_app_input_path(ios_image, app):

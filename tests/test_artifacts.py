@@ -1,9 +1,12 @@
 from dataclasses import dataclass
+from multiprocessing import dummy
 
 import pytest
 
 from xleapp import Artifact, Search, WebIcon
 from xleapp.app import Application
+from xleapp.artifacts.descriptors import SearchRegex
+from xleapp.artifacts.regex import Regex
 
 
 @dataclass
@@ -109,19 +112,42 @@ class TestArtifactMultipleSearchWithOptions(Artifact):
         pytest.param(TestArtifactMissingProcess, marks=pytest.mark.xfail),
     ],
 )
-def test_create_artifact(artifact):
-    assert isinstance(artifact(), Artifact)
+class TestArtifactCreation:
+    def test_create_artifact(self, artifact):
+        assert isinstance(artifact(), Artifact)
 
+    def test_artifact_attach_app(self, artifact, app):
+        test_artifact = artifact()
+        test_artifact.app = app
+        assert isinstance(test_artifact.app, Application)
 
-@pytest.mark.parametrize(
-    "artifact",
-    [TestArtifact, TestArtifactMultipleSearch, TestArtifactMultipleSearchWithOptions],
-)
-def test_artifact_attach_app(artifact, app):
-    artifact = artifact()
-    artifact.app = app
-    assert isinstance(artifact.app, Application)
+@pytest.fixture
+def regex(request):
+        from xleapp.artifacts.descriptors import SearchRegex
+        from xleapp.artifacts.regex import Regex
 
+        class DummyClass:
+            """Dummy class to assign the descriptor to.
+            
+                This also holds a lookup dictionary to check the set values against the
+                values set with the object. 
+            """
+            regex = SearchRegex()
+            lookup = {}
+
+        search = DummyClass()
+        search.regex = request.param
+        
+        if isinstance(request.param, str):
+                search.lookup.update({request.param: []})
+        else:   
+            for regex_item in request.param:
+                if isinstance(regex_item, tuple):
+                    search.lookup.update({regex_item[0]: regex_item[1:]})
+                else:
+                    search.lookup.update({regex_item: []})
+
+        return search
 
 @pytest.mark.parametrize(
     "regex",
@@ -142,42 +168,33 @@ def test_artifact_attach_app(artifact, app):
         pytest.param(2, marks=pytest.mark.xfail),
         pytest.param([2, "test", ("test", "test")], marks=pytest.mark.xfail),
     ],
+    indirect=True
 )
-class TestSearchRegexDescriptor:
-    @pytest.mark.dependency()
+class TestSearchRegexDescriptor:  
     def test_tuples(self, regex):
-        from xleapp.artifacts.descriptors import SearchRegex
+        assert isinstance(regex.regex, tuple)
+        for search in regex.regex:
+            assert isinstance(search, Regex)
 
-        search = SearchRegex()
-        try:
-            search.validator(regex)
-        except ValueError as exc:
-            assert False, f"'search_regex_descriptor_tuples' raised an exception {exc}"
-
-    @pytest.mark.dependency(depends=["test_tuples"])
     def test_return_value(self, regex):
-        from xleapp.artifacts.descriptors import SearchRegex
-        from xleapp.artifacts.regex import Regex
-
-        class DummyClass:
-            regex = SearchRegex()
-
-        search = DummyClass()
-        search.regex = regex
-
-        regex_lookup = {k: v for k, *v in regex if isinstance(v, tuple)}
-
-        for regex_search in search.regex:
+        for regex_search in regex.regex:
             assert isinstance(regex_search, Regex)
-            if regex_search.regex in regex_lookup:
-                assert (
-                    regex_search.file_names_only
-                    == "file_names_only"
-                    in regex_lookup[regex_search.regex]
-                )
+            assert (
+                regex_search.file_names_only
+                == ("file_names_only"
+                in regex.lookup[regex_search.regex])
+            )
 
-                assert (
-                    regex_search.file_names_only
-                    == "file_names_only"
-                    in regex_lookup[regex_search.regex]
-                )
+            assert (
+                regex_search.file_names_only
+                == ("file_names_only"
+                in regex.lookup[regex_search.regex])
+            )
+    
+    def test_convert_to_string(self, regex):
+
+        for regex_search in regex.regex:
+            assert str(regex_search) == regex_search.regex
+        
+    def test_hash(self, regex):
+        assert hash(regex.regex)

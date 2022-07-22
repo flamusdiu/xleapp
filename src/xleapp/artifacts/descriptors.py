@@ -160,14 +160,18 @@ class SearchRegex(Validator):
             searches.extend([Regex(value)])
         else:
             for regex in value:
-                searches.extend(
-                    [
-                        Regex(
-                            regex,
-                            file_names_only="file_names_only" in regex,
-                            return_on_first_hit="return_on_first_hit" in regex,
-                        )
-                    ]
-                )
+                if isinstance(regex, str):
+                    regex_obj = Regex(
+                        regex,
+                        file_names_only="file_names_only" in regex,
+                        return_on_first_hit="return_on_first_hit" in regex,
+                    )
+                else:
+                    regex_obj = Regex(
+                        regex[0],
+                        file_names_only="file_names_only" in regex,
+                        return_on_first_hit="return_on_first_hit" in regex,
+                    )
+                searches.extend([regex_obj])
 
         setattr(obj, self.private_name, tuple(searches))
