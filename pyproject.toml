@@ -96,7 +96,7 @@ flake8-bugbear = ["+*"]
 flake8-builtins = ["+*"]
 flake8-commas = ["+*"]
 flake8-comprehensions = ["+*"]
-flake8-darglint = ["+*"]
+flake8-darglint = ["-+*"]
 flake8-docstrings = ["-+*", "-D107"]
 flake8-eradicate = ["+*"]
 flake8-isort = ["+*"]
@@ -215,8 +215,8 @@ testpaths = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-isolated_build = True
-envlist = {py39, py310}-tests, {py39, py310}-lint
+isolated_build = true
+envlist = {py39, py310}-{tests, lint}
 
 [testenv:tests]
 commands =
@@ -233,4 +233,4 @@ commands =
    flakeheaven lint src/
 extras = 
    lint
-"""
+  """
