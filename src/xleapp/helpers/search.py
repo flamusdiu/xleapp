@@ -340,30 +340,30 @@ class FileSeekerDir(FileSeekerBase):
         self.input_path = Path(directory_or_file)
         if self.validate:
             logger_log.info("Building files listing...")
-            subfolders, files = self.build_files_list(directory_or_file)
-            self.all_files.extend(subfolders)
+            sub_folders, files = self.build_files_list(directory_or_file)
+            self.all_files.extend(sub_folders)
             self.all_files.extend(files)
             logger_log.info(f"File listing complete - {len(self._all_files)} files")
         return self
 
     def build_files_list(self, folder):
-        subfolders, files = [], []
+        sub_folders, files = [], []
 
         for item in os.scandir(folder):
             if item.is_dir():
-                subfolders.append(item.path)
+                sub_folders.append(item.path)
             if item.is_file():
                 files.append(item.path)
 
-        for folder in list(subfolders):
+        for folder in list(sub_folders):
             sf, items = self.build_files_list(folder)
-            subfolders.extend(sf)
+            sub_folders.extend(sf)
             files.extend(items)
 
-        return subfolders, files
+        return sub_folders, files
 
-    def search(self, filepattern):
-        return iter(fnmatch.filter(self.all_files, filepattern))
+    def search(self, file_pattern):
+        return iter(fnmatch.filter(self.all_files, file_pattern))
 
     def cleanup(self) -> None:
         pass
@@ -388,9 +388,9 @@ class FileSeekerTar(FileSeekerBase):
             self.temp_folder = Path(temp_folder)
         return self
 
-    def search(self, filepattern: str) -> t.Iterator[Path]:
+    def search(self, file_pattern: str) -> t.Iterator[Path]:
         for member in self.build_files_list():
-            if fnmatch.fnmatch(member.name, filepattern):
+            if fnmatch.fnmatch(member.name, file_pattern):
 
                 full_sanitize_name = utils.sanitize_file_path(str(member.name))
                 if utils.is_platform_windows():
@@ -441,19 +441,19 @@ class FileSeekerZip(FileSeekerBase):
             self.temp_folder = temp_folder
         return self
 
-    def search(self, filepattern: str):
-        pathlist: list[str] = []
+    def search(self, file_pattern: str):
+        path_list: list[str] = []
         for member in self.build_files_list():
-            if fnmatch.fnmatch(member, filepattern):
+            if fnmatch.fnmatch(member, file_pattern):
                 try:
                     extracted_path = (
                         # already replaces illegal chars with _ when exporting
                         self.input_file.extract(member, path=self.temp_folder)
                     )
-                    pathlist.append(extracted_path)
+                    path_list.append(extracted_path)
                 except Exception:
                     member = member.lstrip("/")
-        return iter(pathlist)
+        return iter(path_list)
 
     def build_files_list(self, folder=None):
         return self.input_file.namelist()
