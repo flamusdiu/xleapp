@@ -51,6 +51,7 @@ flake8-variables-names = {version = "^0.0.5", optional = true}
 flakeheaven = {version = "^2.0.0", optional = true}
 mypy = {version = "^0.961", optional = true}
 pep8-naming = {version = "^0.13.0", optional = true}
+pyfakefs = {version = "^4.6.3", optional = true}
 pyinstaller = {version = "^5.1", optional = true}
 pytest = {version = "^6.0.2", optional = true}
 pytest-cache = {version = "^1.0", optional = true}
@@ -69,7 +70,7 @@ xleapp = "xleapp.__main__:cli"
 
 [tool.flakeheaven]
 # exclude chat_rendering.py until tested/fixed
-extended_default_ignore=["chat_rendering.py"] 
+exclude=["chat_rendering.py"] 
 format = "grouped"
 max_line_length = 90
 show_source = true
@@ -77,6 +78,7 @@ docstring-convention = "google"
 inline_quotes = "double"
 max_complexity = 13
 
+# A003: ignore shared variables in a class
 # D107: don't need docstrings for __init__ method of classes. 
 #       Infavor of documenting at the top of classes instead of inside __init__ methods.
 # D203: 1 blank line required before class docstring.
@@ -93,7 +95,7 @@ max_complexity = 13
 [tool.flakeheaven.plugins]
 flake8-bandit = ["+*"]
 flake8-bugbear = ["+*"]
-flake8-builtins = ["+*"]
+flake8-builtins = ["+*", "-A003"]
 flake8-commas = ["+*"]
 flake8-comprehensions = ["+*"]
 flake8-darglint = ["-+*"]
@@ -117,6 +119,9 @@ mccabe = ["-C901"]
 
 [tool.flakeheaven.exceptions."**/types.py"]
 pyflakes = ["-F401"]
+
+[tool.flakeheaven.exceptions."tests/**"]
+flake8-bandit = ["+*", "-S101"]
 
 [tool.isort]
 profile = "black"
@@ -169,11 +174,14 @@ build-backend = "poetry.core.masonry.api"
 # Test dependencies as extras so they can be set as extras in tox config
 # More info on https://github.com/python-poetry/poetry/issues/1941
 tests = [
+  "pyfakefs",
   "pytest",
   "pytest-cache",
   "pytest-cov",
   "pytest-dependency",
   "pytest-mock",
+  "requests",
+  "tqdm",
   "tox"
 ]
 vscode = [
@@ -207,30 +215,7 @@ exe = [
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q" 
+addopts = "-vv --cov=xleapp --cov-report xml --cov-report html --ignore=data" 
 testpaths = [
   "tests",
 ]
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = true
-envlist = {py39, py310}-{tests, lint}
-
-[testenv:tests]
-commands =
-  pytest -vv --cov={envsitepackagesdir}/xleapp --cov-report xml --cov-report html --ignore=data
-deps =
-  requests
-  tqdm
-extras =
-  tests
-
-[testenv:lint]
-commands =
-   black -S src/
-   flakeheaven lint src/
-extras = 
-   lint
-  """

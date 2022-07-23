@@ -91,7 +91,7 @@ class Plugin(ABC):
                     search_providers.register_builder(name, file_seeker)
                 else:
                     raise TypeError(
-                        f"Search provider {file_seeker!r} is not a FileSeeker!"
+                        f"Search provider {file_seeker!r} is not a FileSeeker!",
                     )
         else:
             search_providers.register_builder(name, file_seekers)

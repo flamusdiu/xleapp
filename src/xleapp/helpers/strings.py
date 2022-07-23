@@ -14,7 +14,7 @@ def raw(data: t.ByteString) -> str:
     )
 
 
-def print(data: t.ByteString) -> filter:
+def print_str(data: t.ByteString) -> filter:
     """Returns string of printable characters. Works similar to the Linux
     `string` function.
     """

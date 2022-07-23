@@ -5,7 +5,6 @@ import logging
 import sqlite3
 import typing as t
 
-from ..helpers.search import Regex
 from ..helpers.types import DecoratedFunc
 from .abstract import Artifact
 

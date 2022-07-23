@@ -16,8 +16,8 @@ if t.TYPE_CHECKING:
 
 
 def generate_thumbnail(
-    imDirectory: Path,
-    imFilename: str,
+    image_directory: Path,
+    image_filename: str,
     seeker: FileSeekerBase,
     report_folder: Path,
 ) -> str:
@@ -25,27 +25,29 @@ def generate_thumbnail(
     searching for thumbnails, copy it to report folder and return tag  to
     insert in html
     """
-    thumb = f"{g.app.default_configs.get('thumbnail_root')}/{imDirectory}/{imFilename}"
-    thumblist = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)
-    thumbname = f"{str(imDirectory.resolve()).replace('/', '_')}_{imFilename}.JPG"
-    pathToThumb = os.path.join(
-        os.path.basename(os.path.abspath(report_folder)),
-        thumbname,
+    thumb = f"{g.app.default_configs.get('thumbnail_root')}/{image_directory}/{image_filename}"
+    thumb_list = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)
+    thumb_name = (
+        f"{str(image_directory.resolve()).replace('/', '_')}_{image_filename}.JPG"
     )
-    htmlThumbTag = '<img src="{0}"></img>'.format(pathToThumb)
-    if thumblist:
-        shutil.copyfile(thumblist[0], os.path.join(report_folder, thumbname))
+    path_to_thumb = os.path.join(
+        os.path.basename(os.path.abspath(report_folder)),
+        thumb_name,
+    )
+    html_thumb_tag = '<img src="{0}"></img>'.format(path_to_thumb)
+    if thumb_list:
+        shutil.copyfile(thumb_list[0], os.path.join(report_folder, thumb_name))
     else:
         # recreate thumbnail from image
         # TODO: handle videos and HEIC
         files = seeker.search(
-            f"{g.app.default_configs.get('MEDIA_ROOT')}/{imDirectory}/{imFilename}",
+            f"{g.app.default_configs.get('MEDIA_ROOT')}/{image_directory}/{image_filename}",
         )
         if files:
             try:
                 im = Image.open(files[0])
                 im.thumbnail(g.app.default_configs.get("THUMB_SIZE"))
-                im.save(os.path.join(report_folder, thumbname))
+                im.save(os.path.join(report_folder, thumb_name))
             except:  # noqa
                 pass  # unsupported format
-    return htmlThumbTag
+    return html_thumb_tag

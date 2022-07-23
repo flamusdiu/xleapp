@@ -1,6 +1,5 @@
-from tabnanny import filename_only
-from xleapp.helpers.descriptors import Validator
 from xleapp.artifacts.regex import Regex
+from xleapp.helpers.descriptors import Validator
 from xleapp.report import WebIcon
 
 

@@ -118,10 +118,10 @@ class Artifacts:
             device_type=device_type,
         )
         for artifact in self.data:
-            priorty = 10
+            priority = 10
             if artifact.core:
-                priorty = 1
-            self.queue.put((priorty, artifact))
+                priority = 1
+            self.queue.put((priority, artifact))
         return self
 
     def __getattr__(self, name: str) -> t.Any:
@@ -162,38 +162,6 @@ class Artifacts:
         for artifact in self.data:
             if not artifact.core:
                 artifact.selected = False
-
-    def select(
-        self,
-        *artifacts: str,
-        selected: t.Optional[bool] = True,
-        long_running_process: t.Optional[bool] = False,
-        all: t.Optional[bool] = False,
-    ) -> None:
-        """Selects one or more artifacts to be processed.
-
-        Args:
-            selected: Boolean to select or deselect an artifact. Defaults to True.
-            long_running_process: Select long running processes. Use the
-                :func:`@long_running_process` decorator to mark it as 'long_running_process'. Defaults to False.
-            all: Select all artifacts except 'long_running_processes'. To select long running processing set both :attr:`long_running_process` and :attr:`all` to True. Defaults to False.
-
-        Raises:
-            KeyError: Raises error if artifact does not exists.
-        """
-        if all:
-            for artifact in self.data:
-                if not artifact.core:
-                    if not long_running_process and artifact.long_running_process:
-                        artifact.select = False
-                    else:
-                        artifact.select = True
-
-        for item in artifacts:
-            try:
-                self.data[item].select = selected
-            except KeyError:
-                raise KeyError(f"Artifact[{item!r}] does not exist!")
 
     @staticmethod
     def generate_artifact_enum(

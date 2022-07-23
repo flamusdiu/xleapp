@@ -9,6 +9,7 @@ import wrapt
 from xleapp.app import Application
 from xleapp.gui.utils import ProcessThread
 
+
 class ArtifactProxy(wrapt.ObjectProxy):
     def __hash__(self) -> int: ...
 
@@ -34,13 +35,6 @@ class Artifacts:
     @property
     def selected(self) -> list[str]: ...
     def reset(self) -> None: ...
-    def select(
-        self,
-        *artifacts: str,
-        selected: Optional[bool],
-        long_running_process: Optional[bool],
-        all: Optional[bool],
-    ) -> None: ...
     @staticmethod
     def generate_artifact_enum(
         app: Application, device_type: str

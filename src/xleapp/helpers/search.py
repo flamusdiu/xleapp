@@ -269,12 +269,10 @@ class FileSeekerBase(ABC):
         Args:
             file_pattern_to_search: :obj:`str` to search for files
         """
-        pass
 
     @abstractmethod
     def cleanup(self) -> None:
         """close any open handles"""
-        pass
 
     @abstractmethod
     def build_files_list(
@@ -289,7 +287,6 @@ class FileSeekerBase(ABC):
         Returns:
             A list of files
         """
-        pass
 
     @property
     @abstractmethod
@@ -330,7 +327,6 @@ class FileSeekerBase(ABC):
         Returns:
             Returns True if validated or False if fails.
         """
-        raise NotImplementedError(f"Need validate property for {self!r}!")
 
 
 class FileSeekerDir(FileSeekerBase):
