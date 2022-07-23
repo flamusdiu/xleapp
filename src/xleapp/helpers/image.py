@@ -4,11 +4,11 @@ import typing as t
 
 from pathlib import Path
 
+import xleapp.globals as g
+
 from PIL import (  # type: ignore  # https://github.com/python-pillow/Pillow/issues/2625
     Image,
 )
-
-import xleapp.globals as g
 
 
 if t.TYPE_CHECKING:
@@ -34,7 +34,7 @@ def generate_thumbnail(
         os.path.basename(os.path.abspath(report_folder)),
         thumb_name,
     )
-    html_thumb_tag = '<img src="{0}"></img>'.format(path_to_thumb)
+    html_thumb_tag = '<img src="{}"></img>'.format(path_to_thumb)
     if thumb_list:
         shutil.copyfile(thumb_list[0], os.path.join(report_folder, thumb_name))
     else:

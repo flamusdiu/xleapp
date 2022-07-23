@@ -102,9 +102,9 @@
     scrollbar-width: thin !important;
 }
 
-/* For Chrome & Safari 
+/* For Chrome & Safari
 *::-webkit-scrollbar {
-    width: 10px; 
+    width: 10px;
 }
 [data-theme="dark"] *::-webkit-scrollbar {
     background-color: blue;

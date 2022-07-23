@@ -10,7 +10,6 @@ from enum import Enum
 from pathlib import Path
 
 import PySimpleGUI as PySG
-
 import xleapp.log as log
 import xleapp.templating as templating
 

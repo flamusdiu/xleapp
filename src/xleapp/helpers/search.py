@@ -15,7 +15,6 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import magic
-
 import xleapp.helpers.utils as utils
 
 from xleapp.artifacts.regex import Regex

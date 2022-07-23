@@ -4,7 +4,7 @@ Usage
 Terminal Command Line
 *********************
 
-xLEAPP has a terminal/CLI version named xleapp. Contrast with ileapGUI which 
+xLEAPP has a terminal/CLI version named xleapp. Contrast with ileapGUI which
 executes the code via a graphical user interface.
 
 .. code-block:: bash
@@ -28,13 +28,13 @@ Look at the selected output folder after execution to access the report generate
 Graphical User Interface Overview
 *********************************
 
-xLEAPP has a graphical user interface version named xleappGUI. Contrast with xleapp which executes 
+xLEAPP has a graphical user interface version named xleappGUI. Contrast with xleapp which executes
 the code via a terminal or command line interface window.
 
 .. thumbnail:: _images/xleapp_gui_overview.png
     :title: xLEAPP GUI Overview
     :align: center
 
-As seen in the screen above the user can select the extraction to be parsed and where to place the 
-report after processing. All supported artifact categories are located in the left side of the screen. 
+As seen in the screen above the user can select the extraction to be parsed and where to place the
+report after processing. All supported artifact categories are located in the left side of the screen.
 These can be toggled on or off as needed. The center windows will show log messages as the program executes.

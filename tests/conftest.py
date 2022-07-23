@@ -8,7 +8,6 @@ import pytest
 import requests
 
 from tqdm import tqdm
-
 from xleapp.app import Application
 
 from .test_artifacts import TestArtifact
@@ -33,19 +32,19 @@ def pytest_addoption(parser):
             "--{}".format(marker),
             action="store_true",
             default=False,
-            help=info['help'],
+            help=info["help"],
         )
 
 
 def pytest_configure(config):
     for marker, info in optional_markers.items():
-        config.addinivalue_line("markers", "{}: {}".format(marker, info['marker-descr']))
+        config.addinivalue_line("markers", "{}: {}".format(marker, info["marker-descr"]))
 
 
 def pytest_collection_modifyitems(config, items):
     for marker, info in optional_markers.items():
         if not config.getoption("--{}".format(marker)):
-            skip_test = pytest.mark.skip(reason=info['skip-reason'].format(marker))
+            skip_test = pytest.mark.skip(reason=info["skip-reason"].format(marker))
             for item in items:
                 if marker in item.keywords:
                     item.add_marker(skip_test)
@@ -123,7 +122,7 @@ def app(test_data, ios_image, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [TestArtifact]
-        return {'ios': {plugins}}
+        return {"ios": {plugins}}
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
 

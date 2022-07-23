@@ -6,9 +6,8 @@ import typing as t
 
 from pathlib import Path
 
-import yaml
-
 import xleapp.globals as g
+import yaml
 
 from ..helpers.utils import generate_program_header
 
@@ -90,7 +89,7 @@ def init() -> None:
 
     if mod.origin:
         log_config = Path(mod.origin).parent / "log_config.yaml"
-        with open(log_config, "r") as file:
+        with open(log_config) as file:
             config = yaml.safe_load(file.read())
 
         if not g.app.log_folder.exists():

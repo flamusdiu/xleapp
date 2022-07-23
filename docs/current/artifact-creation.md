@@ -47,7 +47,7 @@ There are two other options usable with this decorator:
 * file_names_only
 * return_on_first_hit
 
-First, `file_names_only` returns a list of file paths to your artifact instead of open files mimicking the way iLEAPP works today. If the search returns more then **10** files, then you automatically get a list of file paths. 
+First, `file_names_only` returns a list of file paths to your artifact instead of open files mimicking the way iLEAPP works today. If the search returns more then **10** files, then you automatically get a list of file paths.
 
 Second, `return_on_first_hit` ensures that the very first file found is returned.
 
@@ -58,7 +58,7 @@ from xleapp import Artifact, WebIcon, Search
 
 
 class MyArtifact(Artifact):
-    # This is for SQLite Database Artifacts. 
+    # This is for SQLite Database Artifacts.
     def __post_init__(self):
         self.name = "Artifact Name"
         self.category = "Applications"
@@ -78,7 +78,7 @@ class MyArtifact(Artifact):
             )
 
             # Everything below here is used to construct the list of information
-            # from the artifact. 
+            # from the artifact.
             #
             # Note: Either syntax works => row['column1'] == row[0]
             all_rows = cursor.fetchall()
@@ -185,7 +185,7 @@ are equal in output. The first one using column head is the **_preferred_** meth
 
 <h2 id="publishing-artifacts">Publishing Artifacts</h2>
 
-Artifacts need to be published under the proper plugin package. 
+Artifacts need to be published under the proper plugin package.
 
 For ios:
 

@@ -9,7 +9,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import jinja2
-
 import xleapp.globals as g
 
 from ..helpers.types import DecoratedFunc
@@ -74,7 +73,7 @@ class HtmlPageBase(ABC):
 
 @dataclass
 class HtmlPageMixin:
-    artifact: "ArtifactEnum" = field(init=False)
+    artifact: ArtifactEnum = field(init=False)
     report_folder: Path = field(init=True)
     log_folder: Path = field(init=True)
     device: object = field(init=False)
@@ -100,7 +99,7 @@ class HtmlPageMixinDefaults:
 
     extraction_type: t.Optional[str] = field(default="fs", init=True)
     processing_time: float = field(default=0.0, init=True)
-    navigation: dict[str, set["NavigationItem"]] = field(
+    navigation: dict[str, set[NavigationItem]] = field(
         default_factory=lambda: {},
         init=True,
     )
@@ -143,7 +142,7 @@ class NavigationItem:
 
     name: str
     href: str
-    web_icon: "Icon"
+    web_icon: Icon
 
     def __str__(self) -> str:
         return f'<a class="nav-link" href="{self.href}"><span data-feather="{self.web_icon}"></span>{self.name}</a>'
@@ -182,7 +181,7 @@ class ArtifactHtmlReport(HtmlPage):
             self.report_folder
             / f"{self.artifact.category} - {self.artifact.value.name}.html"
         )
-        output_file.write_text(html, encoding='UTF-8')
+        output_file.write_text(html, encoding="UTF-8")
 
         return True
 

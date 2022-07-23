@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """[summary]
 """
 from __future__ import annotations
@@ -12,7 +11,6 @@ from abc import abstractmethod
 from pathlib import Path
 
 import simplekml
-
 import xleapp.helpers.utils as utils
 
 from xleapp.helpers.descriptors import Validator

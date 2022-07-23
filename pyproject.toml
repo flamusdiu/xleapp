@@ -51,6 +51,7 @@ flake8-variables-names = {version = "^0.0.5", optional = true}
 flakeheaven = {version = "^2.0.0", optional = true}
 mypy = {version = "^0.961", optional = true}
 pep8-naming = {version = "^0.13.0", optional = true}
+pre-commit = {version = "^2.20.0", optional = true}
 pyfakefs = {version = "^4.6.3", optional = true}
 pyinstaller = {version = "^5.1", optional = true}
 pytest = {version = "^6.0.2", optional = true}
@@ -70,7 +71,7 @@ xleapp = "xleapp.__main__:cli"
 
 [tool.flakeheaven]
 # exclude chat_rendering.py until tested/fixed
-exclude=["chat_rendering.py"] 
+exclude=["chat_rendering.py"]
 format = "grouped"
 max_line_length = 90
 show_source = true
@@ -79,7 +80,7 @@ inline_quotes = "double"
 max_complexity = 13
 
 # A003: ignore shared variables in a class
-# D107: don't need docstrings for __init__ method of classes. 
+# D107: don't need docstrings for __init__ method of classes.
 #       Infavor of documenting at the top of classes instead of inside __init__ methods.
 # D203: 1 blank line required before class docstring.
 # E203: Whitespace before ":"
@@ -89,7 +90,7 @@ max_complexity = 13
 # E1102: %s is not callable
 # E1123: Passing unexpected keyword argument %r in function call
 # F401: Module imported but unused.
-# W503: Line breaks should occur after the binary operator to keep 
+# W503: Line breaks should occur after the binary operator to keep
 #       all variable names aligned. Disabled infavor of W504 (PEP8 updates)
 # Q000: Remove bad quotes
 [tool.flakeheaven.plugins]
@@ -123,6 +124,10 @@ pyflakes = ["-F401"]
 [tool.flakeheaven.exceptions."tests/**"]
 flake8-bandit = ["+*", "-S101"]
 
+[tool.flakeheaven.exceptions."docs/**"]
+flake8-isort = ["-+*"]
+pycodestyle = ["-+*"]
+
 [tool.isort]
 profile = "black"
 atomic = true
@@ -135,7 +140,7 @@ skip = [".eggs",
         ".git",
         ".venv",
         "_build"]
-src_paths = "src"
+src_paths = ["src, tests"]
 
 [tool.black]
 line_length = 90
@@ -174,6 +179,7 @@ build-backend = "poetry.core.masonry.api"
 # Test dependencies as extras so they can be set as extras in tox config
 # More info on https://github.com/python-poetry/poetry/issues/1941
 tests = [
+  "pre-commit",
   "pyfakefs",
   "pytest",
   "pytest-cache",
@@ -215,7 +221,7 @@ exe = [
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-vv --cov=xleapp --cov-report xml --cov-report html --ignore=data" 
+addopts = "-vv --cov=xleapp --cov-report xml --cov-report html --ignore=data"
 testpaths = [
   "tests",
 ]

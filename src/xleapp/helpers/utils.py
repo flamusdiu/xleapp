@@ -130,7 +130,7 @@ def discovered_plugins() -> t.Optional[dict[str, set[Plugin]]]:
     found = {
         name: importlib.import_module(name)
         for _, name, _ in pkgutil.iter_modules()
-        if name.startswith('xleapp-')
+        if name.startswith("xleapp-")
     }
 
     if len(found) == 0:
