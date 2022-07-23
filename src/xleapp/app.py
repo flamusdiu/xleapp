@@ -10,13 +10,11 @@ from pathlib import Path
 
 import jinja2
 import PySimpleGUI as PySG
-
-from jinja2 import Environment
-
 import xleapp.artifacts as artifacts
 import xleapp.report as report
 import xleapp.templating as templating
 
+from jinja2 import Environment
 from xleapp.plugins import Plugin
 from xleapp.report.db import DBService
 
@@ -195,7 +193,7 @@ class Application:
         rv = self.jinja_environment(**options)
         rv.filters.update(
             {
-                'is_list': is_list,
+                "is_list": is_list,
             },
         )
         rv.globals.update(g=self)

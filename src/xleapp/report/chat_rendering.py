@@ -1,4 +1,3 @@
-# coding: utf-8
 import json
 import os
 
@@ -105,7 +104,7 @@ input : df with following columns:
     - content-type str : mime type of atachement or None (ex : 'image/jpeg')
     - file-path str : path of attachment to render
     - from_me bool : 0 if received, 1 if sent
-output : 
+output :
     str including script and data to include in report html
 
 """

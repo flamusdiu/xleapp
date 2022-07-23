@@ -1,15 +1,17 @@
+import shutil
+
 from contextlib import suppress
 from pathlib import Path
 from shutil import unpack_archive
-import shutil
 
 import pytest
 import requests
 
 from tqdm import tqdm
-
 from xleapp.app import Application
+
 from .test_artifacts import TestArtifact
+
 
 ios_13_4_1_zip = (
     "https://digitalcorpora.s3.amazonaws.com/corpora/mobile/ios_13_4_1/ios_13_4_1.zip"
@@ -20,26 +22,29 @@ optional_markers = {
         "help": "downloads archives for tests. Greatly slows down tests!",
         "marker-descr": "downloads archives for testing. Tests will take longer!",
         "skip-reason": "Test only runs with the --{} option.",
-    }
+    },
 }
 
 
 def pytest_addoption(parser):
     for marker, info in optional_markers.items():
         parser.addoption(
-            "--{}".format(marker), action="store_true", default=False, help=info['help']
+            "--{}".format(marker),
+            action="store_true",
+            default=False,
+            help=info["help"],
         )
 
 
 def pytest_configure(config):
     for marker, info in optional_markers.items():
-        config.addinivalue_line("markers", "{}: {}".format(marker, info['marker-descr']))
+        config.addinivalue_line("markers", "{}: {}".format(marker, info["marker-descr"]))
 
 
 def pytest_collection_modifyitems(config, items):
     for marker, info in optional_markers.items():
         if not config.getoption("--{}".format(marker)):
-            skip_test = pytest.mark.skip(reason=info['skip-reason'].format(marker))
+            skip_test = pytest.mark.skip(reason=info["skip-reason"].format(marker))
             for item in items:
                 if marker in item.keywords:
                     item.add_marker(skip_test)
@@ -105,11 +110,19 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
+def fake_filesystem(fs):
+    """Variable name 'fs' causes a pylint warning. Provide a longer name
+    acceptable to pylint for use in tests.
+    """
+    yield fs
+
+
+@pytest.fixture
 def app(test_data, ios_image, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [TestArtifact]
-        return {'ios': {plugins}}
+        return {"ios": {plugins}}
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
 
@@ -118,7 +131,7 @@ def app(test_data, ios_image, mocker, monkeypatch):
     app = Application()
 
     yield app(device_type="ios", input_path=ios_image, output_path=output_path)
-    
+
     shutil.rmtree(app.report_folder)
 
 

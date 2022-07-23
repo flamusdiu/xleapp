@@ -73,7 +73,7 @@ def generate_nav(
                 name=artifact.value.name,
                 web_icon=artifact.web_icon.value,
                 href=str(
-                    report_folder / f"{artifact.category} - {artifact.value.name}.html"
+                    report_folder / f"{artifact.category} - {artifact.value.name}.html",
                 ),
             )
             nav[artifact.category].add(temp_item)

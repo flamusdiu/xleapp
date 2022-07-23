@@ -82,13 +82,13 @@ remote: Total 4869 (delta 3444), reused 4830 (delta 3406), pack-reused 0
 Receiving objects: 100% (4869/4869), 7.20 MiB | 11.94 MiB/s, done.
 Resolving deltas: 100% (3444/3444), done.
 
-# Install any plugins. These are specified with out the "xleapp-" prefix. 
+# Install any plugins. These are specified with out the "xleapp-" prefix.
 $ make DL_PLUGINS="ios" pkg-plugins
 Cloning into "xleapp-ios"...
 remote: Enumerating objects: 257, done.
 remote: Counting objects: 100% (257/257), done.
 remote: Compressing objects: 100% (92/92), done.
-remote: Total 257 (delta 159), reused 253 (delta 155), pack-reused 0 
+remote: Total 257 (delta 159), reused 253 (delta 155), pack-reused 0
 Receiving objects:  92% (237/257)
 Receiving objects: 100% (257/257), 146.19 KiB | 1.35 MiB/s, done.
 Resolving deltas: 100% (159/159), done.
@@ -126,6 +126,6 @@ Installing the current project: xleapp-ios (0.1.0)
 
 # Test application
 $ xleapp -h
-usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH] 
+usage: xleapp [-h] [-I] [-R] [-A] [-C] [-V] [-o OUTPUT_FOLDER] [-i INPUT_PATH]
               [--artifact [ARTIFACT ...]] [-p] [-l] [--gui] [--version]
 ```

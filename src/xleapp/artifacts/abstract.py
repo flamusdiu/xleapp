@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module contains all the functions for Artifact abstract class.
 
 Python requires that attributes with out default values come after attributes with defaults.

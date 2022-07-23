@@ -34,9 +34,9 @@ xLEAPP Wiki!
    :width: 216px
    :height: 295px
 
-xLEAPP is a collection of Python 3 scripts that parses logs, events, and property files from iOS file system extractions.  
+xLEAPP is a collection of Python 3 scripts that parses logs, events, and property files from iOS file system extractions.
 
-This wiki will serve as the main source of documentation on the artifacts xLEAPP supports. Each artifact page will  their meaning, and where to go for additional information. 
+This wiki will serve as the main source of documentation on the artifacts xLEAPP supports. Each artifact page will  their meaning, and where to go for additional information.
 
 Indices and tables
 ==================

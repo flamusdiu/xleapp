@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """[summary]
 """
 from __future__ import annotations
@@ -12,7 +11,6 @@ from abc import abstractmethod
 from pathlib import Path
 
 import simplekml
-
 import xleapp.helpers.utils as utils
 
 from xleapp.helpers.descriptors import Validator
@@ -115,10 +113,10 @@ class KmlDBManager(DBManager):
             db.connection.commit()
 
             for row in data_list:
-                modifiedDict = dict(zip(data_headers, row))
-                times = modifiedDict["Timestamp"]
-                lon = modifiedDict["Longitude"]
-                lat = modifiedDict["Latitude"]
+                modified_dict = dict(zip(data_headers, row))
+                times = modified_dict["Timestamp"]
+                lon = modified_dict["Longitude"]
+                lat = modified_dict["Latitude"]
 
                 if lat:
                     pnt = kml.newpoint()

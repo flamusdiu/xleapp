@@ -6,9 +6,8 @@ import typing as t
 
 from pathlib import Path
 
-import yaml
-
 import xleapp.globals as g
+import yaml
 
 from ..helpers.utils import generate_program_header
 
@@ -89,8 +88,8 @@ def init() -> None:
         raise FileNotFoundError("Missing package 'log_config.yaml' to configure logging!")
 
     if mod.origin:
-        logConfig = Path(mod.origin).parent / "log_config.yaml"
-        with open(logConfig, "r") as file:
+        log_config = Path(mod.origin).parent / "log_config.yaml"
+        with open(log_config) as file:
             config = yaml.safe_load(file.read())
 
         if not g.app.log_folder.exists():

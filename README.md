@@ -41,7 +41,7 @@ Here is a list of plugins that need to be completed. Plugin package suffixed wit
 - [ ] xleapp-vehicles
 - [ ] xleapp-vehicles-non-free
 - [ ] xleapp-windows
-- [ ] xleapp-windows-non-free 
+- [ ] xleapp-windows-non-free
 
 ## Installation
 
@@ -143,7 +143,7 @@ optional arguments:
 This needs work and may not work properly!
 
 ```bash
-$ xleapp --gui 
+$ xleapp --gui
 
 ```
 
@@ -154,7 +154,7 @@ $ xleapp.py --help
 
 ```
 
-The GUI will open in another window.  
+The GUI will open in another window.
 
 ## Acknowledgements
 

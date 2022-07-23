@@ -5,11 +5,9 @@ import webbrowser
 from enum import Enum
 
 import PySimpleGUI as PySG
-
-from PySimpleGUI import LISTBOX_SELECT_MODE_MULTIPLE, LISTBOX_SELECT_MODE_SINGLE
-
 import xleapp.helpers.utils as utils
 
+from PySimpleGUI import LISTBOX_SELECT_MODE_MULTIPLE, LISTBOX_SELECT_MODE_SINGLE
 from xleapp.artifacts.services import ArtifactEnum
 
 

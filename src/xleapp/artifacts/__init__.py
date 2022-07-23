@@ -9,7 +9,6 @@ from pathlib import Path
 from textwrap import TextWrapper
 
 import prettytable
-
 import xleapp.helpers.utils as utils
 
 from .abstract import Artifact as Artifact
