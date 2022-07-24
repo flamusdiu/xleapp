@@ -12,7 +12,7 @@ repos:
       - id: no-commit-to-branch
       - id: mixed-line-ending
         args: ["--fix=lf"]
-        exclude: tox\.ini
+        exclude: (tox.ini|.*.bat)
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.37.2
