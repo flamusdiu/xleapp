@@ -49,3 +49,14 @@ repos:
     hooks:
       - id: tox-ini-fmt
         args: ["-p", "fix_lint"]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Check pytest unit tests pass
+        entry: poetry run pytest tests
+        pass_filenames: false
+        language: system
+        types: [python]
+        stages:
+          - "push"
