@@ -58,5 +58,4 @@ repos:
         pass_filenames: false
         language: system
         types: [python]
-        stages:
-          - "push"
+        stages: [push]
