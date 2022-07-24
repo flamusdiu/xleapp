@@ -3,27 +3,35 @@ repos:
     rev: v4.3.0
     hooks:
       - id: trailing-whitespace
+        stages: [commit]
       - id: end-of-file-fixer
+        stages: [commit]
       - id: check-toml
+        stages: [commit]
       - id: fix-encoding-pragma
+        stages: [commit]
         args: [--remove]
       - id: debug-statements
         language_version: python3
       - id: no-commit-to-branch
+        stages: [commit]
       - id: mixed-line-ending
+        stages: [commit]
         args: ["--fix=lf"]
-        exclude: tox\.ini
+        exclude: (tox.ini|.*.bat)
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.37.2
     hooks:
       - id: pyupgrade
+        stages: [commit]
         args: [--py3-plus]
 
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
       - id: blacken-docs
+        stages: [commit]
         additional_dependencies: [black==22.6.0]
         language_version: python3
 
@@ -31,12 +39,13 @@ repos:
     rev: 22.6.0
     hooks:
       - id: black
-        args: [--quiet]
+        stages: [push]
 
   - repo: https://github.com/flakeheaven/flakeheaven
     rev: 2.0.0
     hooks:
       - id: flakeheaven
+        stages: [commit]
         additional_dependencies:
           - flake8-bugbear==22.7.1
           - flake8-bandit==3.0.0
@@ -48,4 +57,15 @@ repos:
     rev: 0.5.2
     hooks:
       - id: tox-ini-fmt
+        stages: [commit]
         args: ["-p", "fix_lint"]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Check pytest unit tests pass
+        entry: pytest tests/
+        pass_filenames: false
+        language: system
+        types: [python]
+        stages: [push]
