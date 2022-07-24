@@ -53,9 +53,13 @@ repos:
   - repo: local
     hooks:
       - id: pytest
+        additional_dependencies:
+          - pytest==6.0.2
+          - pytest-cache==1.0
+          - pytest-mock==3.8.2
         name: Check pytest unit tests pass
-        entry: poetry run pytest tests/
+        entry: pytest -vv tests/
         pass_filenames: false
-        language: system
+        language: python
         types: [python]
         stages: [commit, push]
