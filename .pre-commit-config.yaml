@@ -40,7 +40,6 @@ repos:
     hooks:
       - id: black
         stages: [push]
-        # args: [--quiet]
 
   - repo: https://github.com/flakeheaven/flakeheaven
     rev: 2.0.0
