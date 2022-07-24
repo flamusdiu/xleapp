@@ -84,8 +84,7 @@ class MyArtifact(Artifact):
             all_rows = cursor.fetchall()
             if all_rows:
                 for row in all_rows:
-                    self.data.append((row['column1'], row['column2'], row['column3']))
-
+                    self.data.append((row["column1"], row["column2"], row["column3"]))
 ```
 
 <h2 id="saving-report-data">Saving Report Data</h2>
@@ -93,12 +92,7 @@ class MyArtifact(Artifact):
 `self.data` is where your data found is saved. This is a list containing a table matrix of data. For example:
 
 ```python
-
-self.data = [
-    [1, 'apple', 'oranges'],
-    [2, 'apple', 'oranges'],
-    [3, 'apple', 'oranges']
-]
+self.data = [[1, "apple", "oranges"], [2, "apple", "oranges"], [3, "apple", "oranges"]]
 ```
 
 Translates to:
@@ -140,16 +134,16 @@ If you have more then one table of a data, your create your `self.data` like thi
 
 ```python
 self.data = [
-    [ # first table
-        [1, 'apple', 'oranges'],
-        [2, 'apple', 'oranges'],
-        [3, 'apple', 'oranges']
+    [  # first table
+        [1, "apple", "oranges"],
+        [2, "apple", "oranges"],
+        [3, "apple", "oranges"],
     ],
-    [ # second table
-        [1, 'apple', 'oranges'],
-        [2, 'apple', 'oranges'],
-        [3, 'apple', 'oranges']
-    ]
+    [  # second table
+        [1, "apple", "oranges"],
+        [2, "apple", "oranges"],
+        [3, "apple", "oranges"],
+    ],
 ]
 ```
 
@@ -172,7 +166,7 @@ For plists or other dictionaries, be careful using this method. Since Python 3.7
 If you need to construct the tuples for some advance processing, then either below works.
 
 ```python
-data_list.append((row['column1'], row['column2'], row['column3']))
+data_list.append((row["column1"], row["column2"], row["column3"]))
 ```
 
  and
