@@ -39,8 +39,8 @@ repos:
     rev: 22.6.0
     hooks:
       - id: black
-        stages: [commit]
-        args: [--quiet]
+        stages: [push]
+        # args: [--quiet]
 
   - repo: https://github.com/flakeheaven/flakeheaven
     rev: 2.0.0
