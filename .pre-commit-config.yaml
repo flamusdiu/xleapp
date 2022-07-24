@@ -54,8 +54,8 @@ repos:
     hooks:
       - id: pytest
         name: Check pytest unit tests pass
-        entry: poetry run pytest tests
+        entry: poetry run pytest tests/
         pass_filenames: false
         language: system
         types: [python]
-        stages: [push]
+        stages: [commit, push]
