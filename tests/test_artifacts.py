@@ -50,70 +50,26 @@ class TestArtifact(Artifact):
                     self.data.append(tuple(row_dict.values()))
 
 
-@dataclass
-class TestArtifactMultipleSearch(Artifact):
-    __test__ = False
-    name = "TestArtifact"
-
-    def __post_init__(self) -> None:
-        self.name = "TestArtifact"
-        self.category = "Test"
-        self.web_icon = WebIcon.TRIANGLE
-
-    @Search(
-        "**/test.sqlite",
-        "**/test1.sqlite",
-        "**/test2.sqlite",
-    )
-    def process(self):
-        pass
+@pytest.fixture
+def artifact():
+    return TestArtifact()
 
 
-@dataclass
-class TestArtifactMissingProcess(Artifact):
-    __test__ = False
-
-    def __post_init__(self) -> None:
-        self.name = "TestArtifact"
-        self.category = "Test"
-        self.web_icon = WebIcon.TRIANGLE
-
-
-@dataclass
-class TestArtifactMultipleSearchWithOptions(Artifact):
-
-    __test__ = False
-
-    name = "TestArtifact"
-
-    def __post_init__(self) -> None:
-        self.name = "TestArtifact"
-        self.category = "Test"
-        self.web_icon = WebIcon.TRIANGLE
-
-    @Search(
-        ("**/test.sqlite", "return_on_first_hit", "file_names_only"),
-        ("**/test1.sqlite", "return_on_first_hit"),
-        "**/test2.sqlite",
-    )
-    def process(self):
-        pass
-
-
-@pytest.mark.parametrize(
-    "artifact",
-    [
-        TestArtifact,
-        TestArtifactMultipleSearch,
-        TestArtifactMultipleSearchWithOptions,
-        pytest.param(TestArtifactMissingProcess, marks=pytest.mark.xfail),
-    ],
-)
 class TestArtifactCreation:
-    def test_create_artifact(self, artifact):
-        assert isinstance(artifact(), Artifact)
+    def test_create(self, artifact):
+        assert isinstance(artifact, Artifact)
 
-    def test_artifact_attach_app(self, artifact, app):
-        test_artifact = artifact()
-        test_artifact.app = app
-        assert isinstance(test_artifact.app, Application)
+    def test_attach_app(self, artifact, app):
+        artifact.app = app
+        assert isinstance(artifact.app, Application)
+
+
+def test_artifact_context_manager(artifact, app):
+    artifact.app = app
+    artifact.regex = (
+        ("**/files"),
+        ("**/files2", "return_on_first_hit", "file_names_only"),
+    )
+
+    with artifact.context() as af:
+        assert isinstance(af, Artifact)

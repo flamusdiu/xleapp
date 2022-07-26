@@ -41,6 +41,13 @@ repos:
       - id: black
         stages: [commit]
 
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        stages: [commit]
+
   - repo: https://github.com/flakeheaven/flakeheaven
     rev: 2.0.0
     hooks:

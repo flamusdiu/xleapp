@@ -19,8 +19,10 @@ class Icon(Validator):
     default_value: WebIcon = WebIcon["ALERT_TRIANGLE"]
 
     def validator(self, value):
-        if value not in WebIcon:
-            raise TypeError(f"Expected {str(value)} to be {repr(WebIcon)}! ")
+        try:
+            WebIcon(value)
+        except ValueError:
+            raise TypeError(f"Expected {str(value)} to be {repr(WebIcon)}!")
 
 
 class ReportHeaders(Validator):
@@ -35,7 +37,7 @@ class ReportHeaders(Validator):
             )
 
     @staticmethod
-    def _check_list_of_tuples(values: list, bool_list: list[bool] = None) -> bool:
+    def _check_list_of_tuples(values: list, *, bool_list: list[bool] = None) -> bool:
         """Checks list to see if its a list of tuples of strings
 
         Examples:
@@ -69,16 +71,15 @@ class ReportHeaders(Validator):
             elif isinstance(values, list):
                 idx = values[:1][0]
                 values = values[1:]
-            else:
-                return False
 
-            if isinstance(idx, list):
-                return ReportHeaders._check_list_of_tuples(values, bool_list)
-            elif isinstance(idx, tuple):
-                bool_list.extend([isinstance(it, str) for it in idx])
-            else:
-                bool_list.extend([False])
-            return ReportHeaders._check_list_of_tuples(values, bool_list)
+            if isinstance(idx, tuple):
+                for it in idx:
+                    if isinstance(it, str):
+                        bool_list.extend([True])
+                    else:
+                        return False
+
+            return ReportHeaders._check_list_of_tuples(values, bool_list=bool_list)
 
 
 class SearchRegex(Validator):
@@ -86,10 +87,10 @@ class SearchRegex(Validator):
 
     default_value: set = set()
 
-    def validator(self, *value) -> None:
-        if not SearchRegex._check_list_of_tuples(value, bool_list=[]):
+    def validator(self, value) -> None:
+        if not SearchRegex._check_list_of_tuples(value, bool_list=None):
             raise TypeError(
-                f"Expected {value!r} to be a list of list or tuple!",
+                f"Expected {value!r} to be a list of list or tuple of strings!",
             )
 
     @staticmethod
@@ -135,6 +136,7 @@ class SearchRegex(Validator):
         bool_list = bool_list or []
 
         args = args[0]
+        idx = None
 
         if args == ():
             return all(bool_list)
@@ -142,11 +144,13 @@ class SearchRegex(Validator):
             if isinstance(args, tuple):
                 idx = args[:1][0]
                 args = args[1:]
-            else:
-                return False
 
             if isinstance(idx, str):
                 bool_list.extend([True])
+            elif isinstance(args, str):
+                return True
+            elif not isinstance(idx, tuple):
+                return False
 
             return SearchRegex._check_list_of_tuples(args, bool_list=bool_list)
 
