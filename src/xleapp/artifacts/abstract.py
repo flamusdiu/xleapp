@@ -142,12 +142,6 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
 
         yield self
 
-    def __enter__(self) -> Artifact:
-        return self
-
-    def __eq__(self, __o: object) -> bool:
-        return (self.name == __o.name) and (self.category == __o.category)
-
     @property
     def cls_name(self) -> str:
         """Returns class Name of object

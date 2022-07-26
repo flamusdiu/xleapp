@@ -123,6 +123,7 @@ pyflakes = ["-F401"]
 
 [tool.flakeheaven.exceptions."tests/**"]
 flake8-bandit = ["+*", "-S101"]
+flake8-docstrings = ["-+*", "-D107"]
 
 [tool.flakeheaven.exceptions."docs/**"]
 flake8-isort = ["-+*"]
