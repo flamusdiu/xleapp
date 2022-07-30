@@ -110,15 +110,16 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def fake_filesystem(fs):
+def fake_filesystem(fs, test_data):
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
     """
+    fs.add_real_directory(test_data)
     yield fs
 
 
 @pytest.fixture
-def app(test_data, ios_image, mocker, monkeypatch):
+def app(fake_filesystem, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [TestArtifact]
@@ -126,8 +127,8 @@ def app(test_data, ios_image, mocker, monkeypatch):
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
 
-    output_path = Path(test_data / "reports")
-    output_path.mkdir(exist_ok=True)
+    fake_filesystem.makedir("reports")
+    output_path = Path() / "reports"
     app = Application()
 
     yield app(device_type="ios", input_path=ios_image, output_path=output_path)

@@ -30,6 +30,8 @@ class Validator(ABC):
         value_updated = self.validator(value)
 
         if value_updated:
+            if value_updated == "None":
+                value_updated = None
             setattr(obj, self.private_name, value_updated)
         else:
             setattr(obj, self.private_name, value)
