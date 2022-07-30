@@ -66,7 +66,8 @@ class HandleValidator(Validator):
             None if value is :obj:`Path`.
         """
         if isinstance(value, Path):
-            return None
+            # Set as string to ensure 'None' is returned properly.
+            return "None"
         elif not isinstance(value, (sqlite3.Connection, IOBase)):
             raise TypeError(
                 f"Expected {value!r} to be one of: string, Path, sqlite3.Connection"
@@ -79,15 +80,16 @@ class InputPathValidation(Validator):
         if isinstance(value, str):
             value = Path(value).resolve()
 
-        if isinstance(value, Path) and value.exists():
-            if not value.is_dir():
-                return magic.from_file(str(value), mime=True), value
+        if isinstance(value, Path):
+            if value.exists():
+                if value.is_dir():
+                    return "dir", value
+                else:
+                    return magic.from_file(str(value), mime=True), value
             else:
-                return "dir", value
-
-        if not value.exists():
-            raise FileNotFoundError(f"File/Folder {str(value)} not found!")
-        raise TypeError(f"Expected {str(value)} to be one of: str or Path.")
+                raise FileNotFoundError(f"File/Folder {str(value)} not found!")
+        else:
+            raise TypeError(f"Expected {str(value)} to be one of: str or Path.")
 
 
 class Handle:

@@ -55,6 +55,8 @@ class Device(BaseUserDict):
 
 
 class OutputFolder(Validator):
+    default_value: t.Any = None
+
     def validator(self, value: t.Union[str, Path]) -> None:
         if not isinstance(value, (str, Path)):
             raise TypeError(f"Expected {value!r} to be one of: str, Path!")

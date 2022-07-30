@@ -64,12 +64,16 @@ class TestArtifactCreation:
         assert isinstance(artifact.app, Application)
 
 
-def test_artifact_context_manager(artifact, app):
-    artifact.app = app
-    artifact.regex = (
-        ("**/files"),
-        ("**/files2", "return_on_first_hit", "file_names_only"),
-    )
+class TestArtifactContactManager:
+    @pytest.fixture
+    def artifact_context(self, artifact, app):
+        artifact.app = app
+        artifact.regex = (
+            ("**/files"),
+            ("**/files2", "return_on_first_hit", "file_names_only"),
+        )
+        return artifact
 
-    with artifact.context() as af:
-        assert isinstance(af, Artifact)
+    def test_contact_manager(self, artifact_context):
+        with artifact_context.context() as af:
+            assert isinstance(af, Artifact)

@@ -5,6 +5,7 @@ import xleapp.artifacts.descriptors as descriptors
 
 from xleapp.artifacts.descriptors import FoundFiles, Icon, ReportHeaders
 from xleapp.artifacts.regex import Regex
+from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator
 
 
 @pytest.fixture
@@ -81,6 +82,17 @@ class TestValidatorABC:
                 ReportHeaders,
                 (42, 59, 100),
                 "Expected (42, 59, 100) to be a list of tuples or tuple!",
+            ),
+            (PathValidator, False, "Expected Ellipsis to be a Path or Pathlike object"),
+            (
+                InputPathValidation,
+                [42],
+                "Expected [42] to be one of: str or Path.",
+            ),
+            (
+                HandleValidator,
+                42,
+                "Expected 42 to be one of: string, Path, sqlite3.Connection or IOBase.",
             ),
         ],
     )
@@ -218,3 +230,32 @@ class TestDescriptorRecursiveBoolReturn:
             result = descriptor._check_list_of_tuples(test_strings)
             assert result == results
             assert self.bool_list == validation
+
+
+class TestInputPathValidation:
+    def test_str_input(self):
+        from pathlib import Path
+
+        ph = str(Path.cwd())
+
+        class DummyClass:
+            value = InputPathValidation()
+
+        ph = Path.cwd()
+        dummy_class = DummyClass()
+        dummy_class.value = ph
+
+        assert dummy_class.value == ("dir", ph.resolve())
+
+
+def test_handle_validator_path():
+    from pathlib import Path
+
+    class DummyClass:
+        value = HandleValidator()
+
+    ph = Path.cwd()
+    dummy_class = DummyClass()
+    dummy_class.value = ph
+
+    assert dummy_class.value is None
