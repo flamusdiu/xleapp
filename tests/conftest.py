@@ -8,7 +8,7 @@ import pytest
 import requests
 
 from tqdm import tqdm
-from xleapp.app import Application
+from xleapp.app import Application, Device
 
 from .test_artifacts import TestArtifact
 
@@ -134,6 +134,39 @@ def app(fake_filesystem, mocker, monkeypatch):
     yield app(device_type="ios", input_path=ios_image, output_path=output_path)
 
     shutil.rmtree(app.report_folder)
+
+
+@pytest.fixture
+def test_search_providers():
+    class provider:
+        validate = True
+        priority = 10
+        file_handles = object()
+
+        def search(self, regex):
+            return iter([])
+
+    class SearchProvider:
+        data = {"FS": provider()}
+
+        def __call__(self, extraction_type, *, input_path, **kwargs):
+            return self.data["FS"]
+
+    return SearchProvider()
+
+
+@pytest.fixture
+def test_device():
+    return Device(
+        {
+            "IOS Version": 14.6,
+            "ProductBuildVersion": "18F72",
+            "Product": "iPhone OS",
+            "Last Known ICCID": "89012803320056608813",
+            "Reported Phone Number": "19048075555",
+            "IMEI": "356720085253071",
+        }
+    )
 
 
 def test_app_input_path(ios_image, app):

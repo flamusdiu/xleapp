@@ -51,7 +51,11 @@ class TestArtifact(Artifact):
 
 
 @pytest.fixture
-def artifact():
+def artifact(mocker, test_search_providers):
+
+    mocker.patch("xleapp.report.db.KmlDBManager._create", return_value=None)
+    mocker.patch("xleapp.report.db.TimelineDBManager._create", return_value=None)
+    mocker.patch("xleapp.app.search_providers", test_search_providers)
     return TestArtifact()
 
 
@@ -72,8 +76,9 @@ class TestArtifactContactManager:
             ("**/files"),
             ("**/files2", "return_on_first_hit", "file_names_only"),
         )
-        return artifact
+
+        with artifact.context() as af:
+            yield af
 
     def test_contact_manager(self, artifact_context):
-        with artifact_context.context() as af:
-            assert isinstance(af, Artifact)
+        assert isinstance(artifact_context, Artifact)
