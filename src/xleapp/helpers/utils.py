@@ -89,7 +89,7 @@ def generate_program_header(
 ):
     project, version = project_version.split(" ")
     header = (
-        "Procesing started. Please wait. This may take a "
+        "Processing started. Please wait. This may take a "
         "few minutes...\n"
         "-----------------------------------------------------------"
         "---------------------------\n\n"
@@ -177,7 +177,7 @@ def filter_json(self, json: t.Any, fields: tuple[str | tuple[str]]) -> dict:
         fields: Fields to filter JSON object by
 
     Returns:
-        Returns dictonary of filtered data
+        Returns dictionary of filtered data
     """
     json_dict = {}
     for field in fields:

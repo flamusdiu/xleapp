@@ -8,7 +8,7 @@ import pytest
 import requests
 
 from tqdm import tqdm
-from xleapp.app import Application
+from xleapp.app import Application, Device
 
 from .test_artifacts import TestArtifact
 
@@ -110,15 +110,16 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def fake_filesystem(fs):
+def fake_filesystem(fs, test_data):
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
     """
+    fs.add_real_directory(test_data)
     yield fs
 
 
 @pytest.fixture
-def app(test_data, ios_image, mocker, monkeypatch):
+def app(fake_filesystem, mocker, monkeypatch):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
         plugins.plugins = [TestArtifact]
@@ -126,13 +127,46 @@ def app(test_data, ios_image, mocker, monkeypatch):
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
 
-    output_path = Path(test_data / "reports")
-    output_path.mkdir(exist_ok=True)
+    fake_filesystem.makedir("reports")
+    output_path = Path() / "reports"
     app = Application()
 
     yield app(device_type="ios", input_path=ios_image, output_path=output_path)
 
     shutil.rmtree(app.report_folder)
+
+
+@pytest.fixture
+def test_search_providers():
+    class provider:
+        validate = True
+        priority = 10
+        file_handles = object()
+
+        def search(self, regex):
+            return iter([])
+
+    class SearchProvider:
+        data = {"FS": provider()}
+
+        def __call__(self, extraction_type, *, input_path, **kwargs):
+            return self.data["FS"]
+
+    return SearchProvider()
+
+
+@pytest.fixture
+def test_device():
+    return Device(
+        {
+            "IOS Version": 14.6,
+            "ProductBuildVersion": "18F72",
+            "Product": "iPhone OS",
+            "Last Known ICCID": "89012803320056608813",
+            "Reported Phone Number": "19048075555",
+            "IMEI": "356720085253071",
+        }
+    )
 
 
 def test_app_input_path(ios_image, app):
