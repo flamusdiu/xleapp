@@ -1,8 +1,7 @@
 import os
+import pathlib
 import shutil
 import typing as t
-
-from pathlib import Path
 
 import xleapp.globals as g
 
@@ -16,10 +15,10 @@ if t.TYPE_CHECKING:
 
 
 def generate_thumbnail(
-    image_directory: Path,
+    image_directory: pathlib.Path,
     image_filename: str,
     seeker: FileSeekerBase,
-    report_folder: Path,
+    report_folder: pathlib.Path,
 ) -> str:
     """
     searching for thumbnails, copy it to report folder and return tag  to

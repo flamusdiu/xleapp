@@ -1,8 +1,7 @@
 import logging
+import pathlib
 import sqlite3
 import typing as t
-
-from pathlib import Path
 
 from .utils import is_platform_windows
 
@@ -10,7 +9,7 @@ from .utils import is_platform_windows
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def open_sqlite_db_readonly(path: t.Union[Path, str]) -> sqlite3.Connection:
+def open_sqlite_db_readonly(path: t.Union[pathlib.Path, str]) -> sqlite3.Connection:
     """Opens an sqlite db in read-only mode, so original db (and -wal/journal are intact)
 
     Args:
@@ -20,10 +19,10 @@ def open_sqlite_db_readonly(path: t.Union[Path, str]) -> sqlite3.Connection:
         Sqlite3.Connection to database as readonly.
     """
     if isinstance(path, str):
-        path = Path(path)
+        path = pathlib.Path(path)
 
     if is_platform_windows and path.drive.startswith("\\\\?\\"):
-        path = Path(path)
+        path = pathlib.Path(path)
 
     try:
         db = sqlite3.connect(

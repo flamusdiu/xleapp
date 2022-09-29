@@ -1,9 +1,9 @@
-from xleapp.artifacts.regex import Regex
-from xleapp.helpers.descriptors import Validator
-from xleapp.report import WebIcon
+import xleapp.artifacts.regex as regex
+import xleapp.helpers.descriptors as descriptors
+import xleapp.report as report
 
 
-class FoundFiles(Validator):
+class FoundFiles(descriptors.Validator):
     """Descriptor ensuring 'foundfiles' type"""
 
     default_value: set = set()
@@ -13,19 +13,19 @@ class FoundFiles(Validator):
             raise TypeError(f"Expected {value!r} to be a set!")
 
 
-class Icon(Validator):
+class Icon(descriptors.Validator):
     """Descriptor ensuring 'web_icon' type"""
 
-    default_value: WebIcon = WebIcon["ALERT_TRIANGLE"]
+    default_value: report.WebIcon = report.WebIcon["ALERT_TRIANGLE"]
 
     def validator(self, value):
         try:
-            WebIcon(value)
+            report.WebIcon(value)
         except ValueError:
-            raise TypeError(f"Expected {str(value)} to be {repr(WebIcon)}!")
+            raise TypeError(f"Expected {str(value)} to be {repr(report.WebIcon)}!")
 
 
-class ReportHeaders(Validator):
+class ReportHeaders(descriptors.Validator):
     """Descriptor ensuring 'report_headers' type"""
 
     default_value: tuple = ()
@@ -82,77 +82,16 @@ class ReportHeaders(Validator):
             return ReportHeaders._check_list_of_tuples(values, bool_list=bool_list)
 
 
-class SearchRegex(Validator):
+class SearchRegex(descriptors.Validator):
     """Descriptor ensuring 'regex' type"""
 
     default_value: set = set()
 
     def validator(self, value) -> None:
-        if not SearchRegex._check_list_of_tuples(value, bool_list=None):
+        if not (isinstance(value, str) or (isinstance(value, tuple) and len(value) < 4)):
             raise TypeError(
-                f"Expected {value!r} to be a list of list or tuple of strings!",
+                f"Expected {value!r} to be a str or tuple!",
             )
-
-    @staticmethod
-    def _check_list_of_tuples(*args: tuple[str], bool_list: list[bool] = None) -> bool:
-        """Checks list to see if its a list of tuples of strings
-
-        Examples:
-
-            Set single search
-            @Search("**/myregex")
-            process(self) -> None:
-                pass
-
-            Set single search with options
-            @Search("**/myregex", "return_on_first_hit")
-            process(self) -> None:
-                pass
-
-            Set multiple searches
-            @Search(("**/myregex"), ("**/my_other_regex"), ("**/my_next_regex"))
-            process(self) -> None:
-                pass
-
-            Set multiple searches with options
-            @Search(
-                ("**/myregex", "return_on_first_hit"),
-                ("**/my_other_regex", "return_on_first_hit", "file_names_only"),
-                ("**/my_next_regex")
-            )
-
-            process(self) -> None:
-                pass
-            Anything else should fail to set.
-
-        Args:
-            values: values to be checked
-            bool_list: list of booleans of values checked.
-                Defaults to [].
-
-        Returns:
-            bool: Returns true or false if values match for tuples of strings
-        """
-        bool_list = bool_list or []
-
-        args = args[0]
-        idx = None
-
-        if args == ():
-            return all(bool_list)
-        else:
-            if isinstance(args, tuple):
-                idx = args[:1][0]
-                args = args[1:]
-
-            if isinstance(idx, str):
-                bool_list.extend([True])
-            elif isinstance(args, str):
-                return True
-            elif not isinstance(idx, tuple):
-                return False
-
-            return SearchRegex._check_list_of_tuples(args, bool_list=bool_list)
 
     def __set__(self, obj, value) -> None:
         # Some validators may return a value
@@ -160,21 +99,8 @@ class SearchRegex(Validator):
         searches = []
 
         if isinstance(value, str):
-            searches.extend([Regex(value)])
+            searches.extend([regex.Regex(value)])
         else:
-            for regex in value:
-                if isinstance(regex, str):
-                    regex_obj = Regex(
-                        regex,
-                        file_names_only="file_names_only" in regex,
-                        return_on_first_hit="return_on_first_hit" in regex,
-                    )
-                else:
-                    regex_obj = Regex(
-                        regex[0],
-                        file_names_only="file_names_only" in regex,
-                        return_on_first_hit="return_on_first_hit" in regex,
-                    )
-                searches.extend([regex_obj])
+            searches.extend([regex.Regex(*value)])
 
         setattr(obj, self.private_name, tuple(searches))

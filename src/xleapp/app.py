@@ -1,38 +1,39 @@
 from __future__ import annotations
 
 import datetime
+import importlib
 import logging
 import typing as t
 
-from collections import UserDict
+from collections import UserDict, defaultdict
 from functools import cached_property
+from importlib.metadata import entry_points
 from pathlib import Path
 
 import jinja2
+import jinja2.ext
 import PySimpleGUI as PySG
 import xleapp.artifacts as artifacts
+import xleapp.artifacts.services as artifact_service
+import xleapp.plugins as plugins
 import xleapp.report as report
+import xleapp.report.db as db
 import xleapp.templating as templating
-
-from jinja2 import Environment
-from xleapp.plugins import Plugin
-from xleapp.report.db import DBService
 
 from ._version import __project__, __version__
 from .gui.utils import ProcessThread
 from .helpers.descriptors import Validator
 from .helpers.search import FileSeekerBase, search_providers
 from .helpers.strings import split_camel_case
-from .helpers.utils import discovered_plugins, is_list
+from .helpers.utils import is_list
 from .templating.ext import IncludeLogFileExtension
 
+
+__ARTIFACT_PLUGINS__ = artifact_service.Artifacts()
 
 logger_log = logging.getLogger("xleapp.logfile")
 
 if t.TYPE_CHECKING:
-    from .artifacts import Artifacts
-    from .artifacts.services import ArtifactEnum
-
     BaseUserDict = UserDict[str, t.Any]
 else:
     BaseUserDict = UserDict
@@ -78,7 +79,7 @@ class Application:
         report_folder (Path): Location of the report.
         log_folder (Path): Location of the log files. Resides in side the report folder.
         seeker (FileSeekerBase): Seeker to location find from the extraction.
-        jinja_environment (Environment): Jinja2 environment for processing and outputing
+        jinja_environment (jinja2.Environment): Jinja2 environment for processing and outputting
             HTML reports.
         processing_type (float): Total about of time to run application after initial
             setup.
@@ -95,7 +96,7 @@ class Application:
     device: Device = Device()
     extraction_type: str
     input_path: Path
-    jinja_environment = Environment
+    jinja_environment = jinja2.Environment
     log_folder: Path
     output_path = OutputFolder()
     processing_time: float
@@ -103,31 +104,31 @@ class Application:
     report_folder: Path
     seeker: FileSeekerBase
     version: str
-    dbservice: DBService
+    dbservice: db.DBService
 
-    def __init__(self) -> None:
+    def __init__(self, device_type: str) -> None:
         self.default_configs = {
             "thumbnail_root": "**/Media/PhotoData/Thumbnails/**",
             "media_root": "**/Media",
             "thumbnail_size": (256, 256),
         }
 
+        self.device.update({"Type": device_type})
+        self.discover_plugins()
         self.project = __project__
         self.version = __version__
 
     def __call__(
         self,
         *artifacts_list: str,
-        device_type: t.Optional[str] = None,
         output_path: t.Optional[Path] = None,
         input_path: Path,
     ) -> Application:
         self.output_path = output_path
         self.create_output_folder()
         self.input_path = input_path
-        self.device.update({"Type": device_type})
 
-        self.dbservice = DBService(self.report_folder)
+        self.dbservice = db.DBService(self.report_folder)
 
         sorted_plugins = sorted(
             search_providers.data.items(),
@@ -144,28 +145,41 @@ class Application:
                 self.extraction_type = extraction_type
                 break
 
-        artifacts_enum = self.artifacts.data
-        artifact: ArtifactEnum
         artifacts_str_list: t.Sequence[str]
         if artifacts_list:
             artifacts_str_list = [selected.lower() for selected in artifacts_list]
-        for artifact in artifacts_enum:
-            if artifacts_list and artifact.cls_name.lower() in artifacts_str_list:
-                artifacts_enum[artifact.name].select = True  # type: ignore
-            elif not artifacts_list:
-                artifacts_enum[artifact.name].select = True  # type: ignore
-            else:
-                if not artifact.core:
-                    artifacts_enum[artifact.name].select = False  # type: ignore
 
+            for artifact in artifacts.AbstractBase.registry:
+                if artifacts_list and type(artifact).__name__ in artifacts_str_list:
+                    artifact.select = True  # type: ignore
+                elif not artifacts_list:
+                    artifact.select = True  # type: ignore
+                else:
+                    if not artifact.core:
+                        artifact.select = False  # type: ignore
         return self
 
-    @cached_property
-    def plugins(self) -> dict[str, set[Plugin]]:
-        return discovered_plugins()
+    @staticmethod
+    def discover_plugins() -> t.Optional[dict[str, set[plugins.Plugin]]]:
+        device_plugins: dict[str, set[plugins.Plugin]] = defaultdict(set)
+        found = {
+            plugin.name: importlib.import_module(plugin.module)
+            for plugin in entry_points()["xleapp.plugins"]
+        }
+
+        if len(found) == 0:
+            raise plugins.PluginMissingError("No plugins installed! Exiting!")
+
+        for _, extension in found.items():
+            for plugin in extension.__PLUGINS__:
+                xleapp_plugin: plugins.Plugin = getattr(
+                    plugin, f"{plugin.__name__.rpartition('.')[-1].capitalize()}Plugin"
+                )
+                device_plugins[plugin].add(xleapp_plugin())
+        return device_plugins
 
     @cached_property
-    def jinja_env(self) -> Environment:
+    def jinja_env(self) -> jinja2.Environment:
         return self.create_jinja_environment()
 
     def create_output_folder(self) -> None:
@@ -181,7 +195,7 @@ class Application:
         lf.mkdir(parents=True, exist_ok=True)
         tf.mkdir(parents=True, exist_ok=True)
 
-    def create_jinja_environment(self) -> Environment:
+    def create_jinja_environment(self) -> jinja2.Environment:
         template_loader = jinja2.PackageLoader("xleapp.templating", "templates")
         log_file_loader = jinja2.FileSystemLoader(self.log_folder)
 
@@ -202,16 +216,16 @@ class Application:
 
         return rv
 
-    @cached_property
-    def artifacts(self) -> Artifacts:
-        return artifacts.Artifacts(self)
+    @property
+    def artifacts(self):
+        return __ARTIFACT_PLUGINS__
 
-    def crunch_artifacts(
+    def run(
         self,
         window: t.Optional[PySG.Window],
         thread: t.Optional[ProcessThread],
     ) -> None:
-        self.artifacts.crunch_artifacts(window=window, thread=thread)
+        self.artifacts.run_queue(window=window, thread=thread)
 
     def generate_artifact_table(self) -> None:
         artifacts.generate_artifact_table(self.artifacts)
@@ -226,8 +240,8 @@ class Application:
             report_folder=self.report_folder,
             artifacts=self.artifacts,
         )
-        artifact: ArtifactEnum
-        for artifact in artifacts.filter_artifacts(self.artifacts.data):
+
+        for artifact in artifacts.filter_artifacts(self.artifacts):
             msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
 
             if artifact.report and artifact.select:

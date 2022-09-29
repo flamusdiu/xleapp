@@ -1,7 +1,6 @@
+import collections
+import pathlib
 import typing as t
-
-from collections import defaultdict
-from pathlib import Path
 
 from ._partials.index import Index
 from .ext import IncludeLogFileExtension as IncludeLogFileExtension
@@ -50,7 +49,7 @@ def get_contributors(contributors: list[list[str]]) -> list[Contributor]:
 
 
 def generate_nav(
-    report_folder: Path,
+    report_folder: pathlib.Path,
     artifacts: "Artifacts",
 ) -> dict[str, set[NavigationItem]]:
     """Generates a dictionary containing the navigation of the
@@ -65,7 +64,7 @@ def generate_nav(
     Returns:
         dict: dictionary of navigation items for HTML Report
     """
-    nav = defaultdict(set)
+    nav = collections.defaultdict(set)
 
     for artifact in artifacts.data:
         if artifact.select:

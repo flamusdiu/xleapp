@@ -1,39 +1,38 @@
 from __future__ import annotations
 
+import abc
+import collections
 import fnmatch
+import functools
+import io
 import logging
 import os
+import pathlib
 import sqlite3
 import tarfile
 import typing as t
 
-from abc import ABC, abstractmethod
-from collections import UserDict, defaultdict
-from functools import cached_property
-from io import IOBase
-from pathlib import Path
 from zipfile import ZipFile
 
 import magic
+import xleapp.artifacts.regex as regex
+import xleapp.helpers.descriptors as descriptors
 import xleapp.helpers.utils as utils
-
-from xleapp.artifacts.regex import Regex
-from xleapp.helpers.descriptors import Validator
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
 
 if t.TYPE_CHECKING:
-    BaseUserDict = UserDict[str, t.Any]
+    BaseUserDict = collections.UserDict[str, t.Any]
 else:
-    BaseUserDict = UserDict
+    BaseUserDict = collections.UserDict
 
 
-class PathValidator(Validator):
+class PathValidator(descriptors.Validator):
     """Validates if a Pathlike object was set."""
 
-    def validator(self, value: t.Any) -> Path:
+    def validator(self, value: t.Any) -> pathlib.Path:
         """Validates this property
 
         Args:
@@ -45,12 +44,12 @@ class PathValidator(Validator):
         Returns:
             :obj:`Path`.
         """
-        if not isinstance(value, (Path, os.PathLike, str)):
+        if not isinstance(value, (pathlib.Path, os.PathLike, str)):
             raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
-        return Path(value).resolve()
+        return pathlib.Path(value).resolve()
 
 
-class HandleValidator(Validator):
+class HandleValidator(descriptors.Validator):
     """Ensures only sqlite3.Connection or IOBase is set."""
 
     def validator(self, value: t.Any) -> None:
@@ -65,22 +64,22 @@ class HandleValidator(Validator):
         Returns:
             None if value is :obj:`Path`.
         """
-        if isinstance(value, Path):
+        if isinstance(value, pathlib.Path):
             # Set as string to ensure 'None' is returned properly.
             return "None"
-        elif not isinstance(value, (sqlite3.Connection, IOBase)):
+        elif not isinstance(value, (sqlite3.Connection, io.IOBase)):
             raise TypeError(
                 f"Expected {value!r} to be one of: string, Path, sqlite3.Connection"
                 " or IOBase.",
             )
 
 
-class InputPathValidation(Validator):
+class InputPathValidation(descriptors.Validator):
     def validator(self, value: t.Any) -> t.Any:
         if isinstance(value, str):
-            value = Path(value).resolve()
+            value = pathlib.Path(value).resolve()
 
-        if isinstance(value, Path):
+        if isinstance(value, pathlib.Path):
             if value.exists():
                 if value.is_dir():
                     return "dir", value
@@ -111,21 +110,21 @@ class Handle:
     file_handle = HandleValidator()
     path = PathValidator()
 
-    def __init__(self, found_file: t.Any, path: Path | None = None) -> None:
+    def __init__(self, found_file: t.Any, path: pathlib.Path | None = None) -> None:
         self.path = path
         if isinstance(found_file, str):
-            self.file_handle = Path(found_file)
+            self.file_handle = pathlib.Path(found_file)
         else:
             self.file_handle = found_file
 
-    def __call__(self) -> sqlite3.Connection | IOBase | Path | None:
+    def __call__(self) -> sqlite3.Connection | io.IOBase | pathlib.Path | None:
         return self.file_handle or self.path
 
     def __repr__(self) -> str:
         return f"<Handle file_handle={self.file_handle!r}, path={self.path!r}>"
 
 
-class FileHandles(UserDict):
+class FileHandles(collections.UserDict):
     """Container to hold file information for artifacts.
 
     Args:
@@ -137,7 +136,7 @@ class FileHandles(UserDict):
             only one log out put per regex when evaluating each one.
     """
 
-    logged: defaultdict = defaultdict(int)
+    logged: collections.defaultdict = collections.defaultdict(int)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(self, *args, **kwargs)
@@ -146,7 +145,7 @@ class FileHandles(UserDict):
     def __len__(self) -> int:
         return sum(count for count in self.values())
 
-    def add(self, regex: Regex, files, file_names_only: bool = False) -> None:
+    def add(self, regex: regex.Regex, files, file_names_only: bool = False) -> None:
         """Adds files for each regex to be tracked
 
         Args:
@@ -161,13 +160,13 @@ class FileHandles(UserDict):
             logger_process.info(f"\nFiles for {regex.regex} located at:")
         for item in files:
             file_handle: Handle
-            path: Path = None
-            extended_path: Path = None
+            path: pathlib.Path = None
+            extended_path: pathlib.Path = None
 
-            if isinstance(item, (Path, str)):
-                path = Path(item).resolve()
+            if isinstance(item, (pathlib.Path, str)):
+                path = pathlib.Path(item).resolve()
             elif isinstance(item, Handle):
-                path = Path(item.path).resolve()
+                path = pathlib.Path(item.path).resolve()
 
             """
             If we have more then 10 files, then set only
@@ -180,7 +179,7 @@ class FileHandles(UserDict):
                 file_handle = Handle(found_file=item, path=path)
             else:
                 if path.drive.startswith("\\\\?\\"):
-                    extended_path = Path(path)
+                    extended_path = pathlib.Path(path)
 
                 if path.is_dir():
                     file_handle = Handle(found_file=item, path=path)
@@ -212,17 +211,17 @@ class FileHandles(UserDict):
         self.data = {}
         self.logged = set()
 
-    def __getitem__(self, regex: Regex) -> set[Handle]:
+    def __getitem__(self, regex: regex.Regex) -> set[Handle]:
         try:
             files = super().__getitem__(regex)
             for artifact_file in files:
-                if isinstance(artifact_file, IOBase):
+                if isinstance(artifact_file, io.IOBase):
                     artifact_file.seek(0)
             return files
         except KeyError:
             raise KeyError(f"Regex {regex} has no files opened!")
 
-    def __delitem__(self, regex: Regex) -> None:
+    def __delitem__(self, regex: regex.Regex) -> None:
         files = self.__dict__.pop(regex, None)
         if files:
             if isinstance(files, list):
@@ -239,7 +238,7 @@ class FileHandles(UserDict):
         return self[key]
 
 
-class FileSeekerBase(ABC):
+class FileSeekerBase(abc.ABC):
     """Base class to search files
 
     Attributes:
@@ -247,20 +246,20 @@ class FileSeekerBase(ABC):
         input_path: file or direction for the extraction
     """
 
-    temp_folder: Path
+    temp_folder: pathlib.Path
     input_path: InputPathValidation = InputPathValidation()
     _all_files: t.Union[list[str], dict[str, str]] = []
     _file_handles = FileHandles()
 
-    @abstractmethod
+    @abc.abstractmethod
     def __call__(
         self,
-        directory_or_file: Path | None,
-        temp_folder: Path | None,
+        directory_or_file: pathlib.Path | None,
+        temp_folder: pathlib.Path | None,
     ) -> t.Type[FileSeekerBase]:
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def search(
         self,
         file_pattern_to_search: str,
@@ -271,14 +270,14 @@ class FileSeekerBase(ABC):
             file_pattern_to_search: :obj:`str` to search for files
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def cleanup(self) -> None:
         """close any open handles"""
 
-    @abstractmethod
+    @abc.abstractmethod
     def build_files_list(
         self,
-        folder: t.Optional[t.Union[str, Path]],
+        folder: t.Optional[t.Union[str, pathlib.Path]],
     ) -> t.Union[tuple[list, list], list, dict]:
         """Builds a file list to search
 
@@ -290,7 +289,7 @@ class FileSeekerBase(ABC):
         """
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def priority(self) -> int:
         raise NotImplementedError(f"Need to set a priority for {self!r}")
 
@@ -320,8 +319,8 @@ class FileSeekerBase(ABC):
         """Clears the list of file handles"""
         self.file_handles.clear()
 
-    @cached_property
-    @abstractmethod
+    @functools.cached_property
+    @abc.abstractmethod
     def validate(self) -> bool:
         """Validates input for this seeker
 
@@ -334,7 +333,7 @@ class FileSeekerDir(FileSeekerBase):
     """Searches directory for files."""
 
     def __call__(self, directory_or_file, temp_folder=None):
-        self.input_path = Path(directory_or_file)
+        self.input_path = pathlib.Path(directory_or_file)
         if self.validate:
             logger_log.info("Building files listing...")
             sub_folders, files = self.build_files_list(directory_or_file)
@@ -369,7 +368,7 @@ class FileSeekerDir(FileSeekerBase):
     def priority(self) -> int:
         return 20
 
-    @cached_property
+    @functools.cached_property
     def validate(self) -> bool:
         mime, _ = self.input_path
         return mime == "dir"
@@ -379,19 +378,21 @@ class FileSeekerTar(FileSeekerBase):
     """Searches tar backup for files."""
 
     def __call__(self, directory_or_file, temp_folder):
-        self.input_path = Path(directory_or_file)
+        self.input_path = pathlib.Path(directory_or_file)
         if self.validate:
             self.input_file = tarfile.open(directory_or_file, "r:*")
-            self.temp_folder = Path(temp_folder)
+            self.temp_folder = pathlib.Path(temp_folder)
         return self
 
-    def search(self, file_pattern: str) -> t.Iterator[Path]:
+    def search(self, file_pattern: str) -> t.Iterator[pathlib.Path]:
         for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, file_pattern):
 
                 full_sanitize_name = utils.sanitize_file_path(str(member.name))
                 if utils.is_platform_windows():
-                    full_path = Path(f"\\\\?\\{self.temp_folder / full_sanitize_name}")
+                    full_path = pathlib.Path(
+                        f"\\\\?\\{self.temp_folder / full_sanitize_name}"
+                    )
                 else:
                     full_path = self.temp_folder / full_sanitize_name
 
@@ -408,7 +409,7 @@ class FileSeekerTar(FileSeekerBase):
     def build_files_list(self, folder=None) -> list[tarfile.TarInfo]:
         return self.input_file.getmembers()
 
-    @cached_property
+    @functools.cached_property
     def validate(self) -> bool:
         mime, _ = self.input_path
         # "inode/blockdevice" seems to be the file magic number on some iOS tar
@@ -432,7 +433,7 @@ class FileSeekerZip(FileSeekerBase):
         directory_or_file,
         temp_folder,
     ):
-        self.input_path = Path(directory_or_file)
+        self.input_path = pathlib.Path(directory_or_file)
         if self.validate:
             self.input_file = ZipFile(directory_or_file, "r")
             self.temp_folder = temp_folder
@@ -458,7 +459,7 @@ class FileSeekerZip(FileSeekerBase):
     def cleanup(self) -> None:
         self.input_file.close()
 
-    @cached_property
+    @functools.cached_property
     def validate(self) -> bool:
         mime, _ = self.input_path
         return mime == "application/zip" or self.input_path.suffix in [".zip"]
@@ -496,7 +497,9 @@ class FileSearchProvider(BaseUserDict):
         self._items = self._items + 1
         self.data[key] = builder
 
-    def __call__(self, extraction_type: str, *, input_path: Path, **kwargs: t.Any):
+    def __call__(
+        self, extraction_type: str, *, input_path: pathlib.Path, **kwargs: t.Any
+    ):
         """Creates or returns the search provider
 
         Args:

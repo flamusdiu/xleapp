@@ -1,9 +1,8 @@
+import abc
 import typing as t
 
-from abc import ABC, abstractmethod
 
-
-class Validator(ABC):
+class Validator(abc.ABC):
     """Abstract class for validator descriptors
 
     Attributes:
@@ -36,7 +35,7 @@ class Validator(ABC):
         else:
             setattr(obj, self.private_name, value)
 
-    @abstractmethod
+    @abc.abstractmethod
     def validator(self, value: t.Any) -> t.Any:
         """Function ran to validate a value.
 

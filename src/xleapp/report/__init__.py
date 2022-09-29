@@ -3,15 +3,13 @@ Reports Module
 """
 
 import importlib.util
+import pathlib
 import shutil
-import typing as t
 
-from pathlib import Path
-
-from .webicons import WebIcon as WebIcon
+from .web_icons import WebIcon as WebIcon
 
 
-def copy_static_files(report_folder: Path) -> None:
+def copy_static_files(report_folder: pathlib.Path) -> None:
     """Copies static files to report folder.
 
     Returns:
@@ -19,7 +17,7 @@ def copy_static_files(report_folder: Path) -> None:
     """
     mod = importlib.util.find_spec(__name__)
     if mod and mod.origin:
-        html_report_root = Path(mod.origin).parent
+        html_report_root = pathlib.Path(mod.origin).parent
         static_folder = html_report_root / "_static"
         report_folder = report_folder / "_static"
 

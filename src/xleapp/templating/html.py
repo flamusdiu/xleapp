@@ -1,21 +1,20 @@
 from __future__ import annotations
 
+import abc
 import functools
 import logging
+import pathlib
 import typing as t
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from pathlib import Path
 
 import jinja2
 import xleapp.globals as g
 
-from ..helpers.types import DecoratedFunc
+from xleapp.helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
-    from xleapp.artifacts.services import ArtifactEnum
     from xleapp.report import Icon
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -65,17 +64,17 @@ class Template:
         return t.cast(DecoratedFunc, template_wrapper)
 
 
-class HtmlPageBase(ABC):
-    @abstractmethod
+class HtmlPageBase(abc.ABC):
+    @abc.abstractmethod
     def html(self) -> str:
         raise NotImplementedError('HtmlPage objects must implement "html()" method!')
 
 
 @dataclass
 class HtmlPageMixin:
-    artifact: ArtifactEnum = field(init=False)
-    report_folder: Path = field(init=True)
-    log_folder: Path = field(init=True)
+    artifact: t.Mapping = field(init=False)
+    report_folder: pathlib.Path = field(init=True)
+    log_folder: pathlib.Path = field(init=True)
     device: object = field(init=False)
     template: jinja2.Template = field(init=False, repr=False)
 
@@ -106,7 +105,7 @@ class HtmlPageMixinDefaults:
 
 
 class HtmlPage(HtmlPageMixinDefaults, HtmlPageMixin, HtmlPageBase):
-    def __call__(self, artifact: ArtifactEnum) -> HtmlPage:
+    def __call__(self, artifact: t.Mapping) -> HtmlPage:
         self.artifact = artifact
         self.data = getattr(artifact, "data", None)
         return self
@@ -136,7 +135,7 @@ class NavigationItem:
     Attributes:
         name (str): Artifact Name
         href (str): URL of Artifact's report
-        web_icon (webicons.Icon): Feather ICON for Artifact in
+        web_icon (web_icons.Icon): Feather ICON for Artifact in
             the navigation list
     """
 

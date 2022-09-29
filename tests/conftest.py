@@ -1,6 +1,7 @@
 import shutil
 
 from contextlib import suppress
+from dataclasses import dataclass
 from pathlib import Path
 from shutil import unpack_archive
 
@@ -8,9 +9,8 @@ import pytest
 import requests
 
 from tqdm import tqdm
+from xleapp import Artifact, Search, WebIcon
 from xleapp.app import Application, Device
-
-from .test_artifacts import TestArtifact
 
 
 ios_13_4_1_zip = (
@@ -110,6 +110,53 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
+def artifact():
+    class TestArtifact(Artifact):
+
+        __test__ = False
+
+        def __post_init__(self) -> None:
+            self.name = "Accounts"
+            self.category = "Accounts"
+            self.web_icon = WebIcon.USER
+            self.report_headers = (
+                "Timestamp",
+                "Account Desc.",
+                "Username",
+                "Description",
+                "Identifier",
+                "Bundle ID",
+            )
+            self.timeline = True
+
+        @Search("**/Accounts3.sqlite")
+        def process(self):
+            for fp in self.found:
+                cursor = fp().cursor()
+                cursor.execute(
+                    """
+                    select
+                    datetime(zdate+978307200,'unixepoch','utc' ) as timestamp,
+                    zaccounttypedescription,
+                    zusername,
+                    zaccountdescription,
+                    zaccount.zidentifier,
+                    zaccount.zowningbundleid
+                    from zaccount, zaccounttype
+                    where zaccounttype.z_pk=zaccount.zaccounttype
+                    """,
+                )
+
+                all_rows = cursor.fetchall()
+                if all_rows:
+                    for row in all_rows:
+                        row_dict = dict_from_row(row)  # noqa
+                        self.data.append(tuple(row_dict.values()))
+
+    return dataclass(TestArtifact)()
+
+
+@pytest.fixture
 def fake_filesystem(fs, test_data):
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
@@ -119,10 +166,18 @@ def fake_filesystem(fs, test_data):
 
 
 @pytest.fixture
-def app(fake_filesystem, mocker, monkeypatch):
+def app(
+    fake_filesystem,
+    mocker,
+    monkeypatch,
+    fake_kml_db_manager,
+    fake_timeline_db_manager,
+    fake_search_providers,
+    artifact,
+):
     def fake_discover_plugins():
         plugins = mocker.MagicMock()
-        plugins.plugins = [TestArtifact]
+        plugins.plugins = [artifact]
         return {"ios": {plugins}}
 
     monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
@@ -137,7 +192,31 @@ def app(fake_filesystem, mocker, monkeypatch):
 
 
 @pytest.fixture
-def test_search_providers():
+def test_device():
+    return Device(
+        {
+            "IOS Version": 14.6,
+            "ProductBuildVersion": "18F72",
+            "Product": "iPhone OS",
+            "Last Known ICCID": "89012803320056608813",
+            "Reported Phone Number": "19048075555",
+            "IMEI": "356720085253071",
+        }
+    )
+
+
+@pytest.fixture
+def fake_kml_db_manager(mocker):
+    mocker.patch("xleapp.report.db.KmlDBManager._create", return_value=None)
+
+
+@pytest.fixture
+def fake_timeline_db_manager(mocker):
+    mocker.patch("xleapp.report.db.TimelineDBManager._create", return_value=None)
+
+
+@pytest.fixture
+def fake_search_providers(mocker):
     class provider:
         validate = True
         priority = 10
@@ -152,21 +231,7 @@ def test_search_providers():
         def __call__(self, extraction_type, *, input_path, **kwargs):
             return self.data["FS"]
 
-    return SearchProvider()
-
-
-@pytest.fixture
-def test_device():
-    return Device(
-        {
-            "IOS Version": 14.6,
-            "ProductBuildVersion": "18F72",
-            "Product": "iPhone OS",
-            "Last Known ICCID": "89012803320056608813",
-            "Reported Phone Number": "19048075555",
-            "IMEI": "356720085253071",
-        }
-    )
+    mocker.patch("xleapp.app.search_providers", SearchProvider())
 
 
 def test_app_input_path(ios_image, app):

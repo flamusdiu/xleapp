@@ -1,35 +1,21 @@
 from __future__ import annotations
 
-import itertools
+import collections.abc as abc
+import inspect
 import logging
+import queue
 import typing as t
 
-from dataclasses import dataclass
-from enum import Enum
-from queue import PriorityQueue
-
 import PySimpleGUI as PySG
-import wrapt
+import xleapp.globals as g
 
-from ..helpers.decorators import timed
-from ..helpers.strings import split_camel_case
-
-
-_T = t.TypeVar("_T")
 
 if t.TYPE_CHECKING:
-    from ..app import Application
-    from ..gui.utils import ProcessThread
+    from ..artifacts import Artifact
+    from ..gui import ProcessThread
     from ..plugins import Plugin
 
 logger_log = logging.getLogger("xleapp.logfile")
-
-
-class ArtifactProxy(wrapt.ObjectProxy):
-    """Object proxy to support hashing :obj:`ArtifactEnum`"""
-
-    def __hash__(self) -> int:
-        return hash((self.__wrapped__.name, self.__wrapped__.category))
 
 
 class ArtifactError(Exception):
@@ -38,176 +24,50 @@ class ArtifactError(Exception):
     pass
 
 
-class ArtifactEnum(Enum):
-    """Enum for Artifacts
+class Artifacts(abc.MutableMapping):
+    __slots__ = ("store", "queue")
+    store: dict
+    queue: queue.PriorityQueue
 
-    This class holds all the installed artifacts in a :obj:`enum` for search searching
-    and modifying of artifact attributes.
-    """
+    def __init__(self):
+        self.store = dict()
+        self.queue = queue.PriorityQueue()
 
-    def __lt__(self, other: ArtifactEnum) -> bool:
-        return self.name < other.name
+    def __getitem__(self, __key: str) -> Artifact:
+        artifact = self.store[__key]
+        if inspect.isabstract(artifact):
+            artifact = artifact()
+            self.store[__key] = artifact
+            return artifact
+        return artifact
 
-    def __getattr__(self, name: str) -> t.Any:
-        """Wraps the :attr:`_value_` of the Enum object.
+    def __setitem__(self, __key: str, __value: Artifact) -> None:
+        if __key in self:
+            ValueError(f"Artifact '{__key}' already registered!")
+        self.store[__key] = __value
 
-        Attributes can be assessed through dot notation `X.name` which will check the
-        Enum.value for the property and return that property.
+    def __delitem__(self, __key: str) -> None:
+        del self.store[__key]
 
-        Meaning that:
-            X.name == X.value.name
+    def __iter__(self) -> t.Iterator[str, Artifact]:
+        return iter(self.store.items())
 
-        Args:
-            name: Name of the property.
+    def __len__(self) -> int:
+        return len(self)
 
-        Raises:
-            AttributeError: If property does not exists.
+    def __repr__(self):
+        return repr(self)
 
-        Returns:
-            Any: Returns the value of the property which could be anything.
-        """
-        if "_value_" in self.__dict__.keys() and hasattr(self.value, name):
-            return getattr(self.value, name)
-        elif name in self.__dict__:
-            return self.__dict__[name]
-        else:
-            raise AttributeError(
-                f"{__name__!r} doesn't have {name!r} attribute",
-            ) from None
-
-    def process(self) -> None:
-        """Processes and log the artifact"""
-        msg_artifact = f"{self.value.category} [{self.cls_name}] artifact"
-        logger_log.info(f"\n{msg_artifact} processing...")
-        self.value.process_time, _ = timed(self.value.process)()
-        if not self.value.processed:
-            logger_log.warn("-> Failed to processed!")
-        logger_log.info(f"{msg_artifact} finished in {self.value.process_time:.2f}s")
-
-
-class Artifacts:
-    """Service controlling all the artifacts
-
-    Attributes:
-        data: Enum for artifacts for this service
-        app: Application instance attached to this service
-        queue: Priority queue for processing the artifacts.
-    """
-
-    data: ArtifactEnum
-    app: Application
-    queue: PriorityQueue
-
-    def __init__(self, app: Application) -> None:
-        self.app = app
-        if "Type" in self.app.device:
-            self = self(self.app.device["Type"])
-
-    def __call__(self, device_type: str) -> Artifacts:
-        """Updates the :attr:`data` for artifacts for the :attr:`device_type`.
-
-        Args:
-            device_type: type of device being parsed
-
-        Returns:
-            Artifacts: updated service object
-        """
-        self.queue = PriorityQueue()
-        self.data = Artifacts.generate_artifact_enum(
-            app=self.app,
-            device_type=device_type,
-        )
-        for artifact in self.data:
+    def create_queue(self):
+        for _, artifact in self:
             priority = 10
             if artifact.core:
                 priority = 1
+
+            priority = artifact.priority or priority
             self.queue.put((priority, artifact))
-        return self
 
-    def __getattr__(self, name: str) -> t.Any:
-        try:
-            if name != "data":
-                return getattr(self.data, name)
-        except AttributeError:
-            raise AttributeError(
-                f"{__name__!r} doesn't have {name!r} attribute",
-            ) from None
-
-    def __getitem__(self, name: str) -> ArtifactEnum:
-        return getattr(self.data, name)
-
-    def __len__(self) -> int:
-        return len(self.data) or 0
-
-    @property
-    def installed(self) -> list[str]:
-        """Returns the list of installed artifacts
-
-        Returns:
-            The list of artifacts.
-        """
-        return [artifact.cls_name for artifact in self.data]
-
-    @property
-    def selected(self) -> list[str]:
-        """Returns the list of selected artifacts for processing
-
-        Returns:
-            The list of selected artifacts.
-        """
-        return [artifact.cls_name for artifact in self.data if artifact.select]
-
-    def reset(self) -> None:
-        """Resets the list of selected artifacts."""
-        for artifact in self.data:
-            if not artifact.core:
-                artifact.selected = False
-
-    @staticmethod
-    def generate_artifact_enum(
-        app: Application,
-        device_type: str,
-    ) -> t.Type[ArtifactEnum]:
-        """Generates a Enumeration object for all artifacts based on supplied device type.
-
-        Args:
-            app: Application object to attached to each artifact
-            device_type: type of device being processed
-
-        Returns:
-            An Enumeration.
-        """
-        members = {}
-        plugins: Plugin = list(app.plugins[device_type])[0]
-
-        for xleapp_cls in plugins.plugins:
-            artifact = dataclass(
-                xleapp_cls,
-            )()
-            artifact_name = "_".join(
-                split_camel_case(artifact.cls_name),
-            ).upper()
-            artifact.app = app  # ignore
-
-            artifact_proxy = ArtifactProxy(artifact)
-            members[artifact_proxy] = [
-                artifact_name,
-                artifact.cls_name,
-            ]
-
-        return t.cast(
-            t.Type[ArtifactEnum],
-            Enum(
-                value="ArtifactEnum",
-                names=itertools.chain.from_iterable(
-                    itertools.product(v, [k]) for k, v in members.items()
-                ),
-                module=__name__,
-                type=ArtifactEnum,
-            ),
-        )
-
-    def crunch_artifacts(
+    def run_queue(
         self,
         window: PySG.Window = None,
         thread: ProcessThread = None,
@@ -219,9 +79,8 @@ class Artifacts:
             thread: :mod:`threading` instance for processing artifacts. Defaults to None.
         """
         num_processed = 0
-        artifact: ArtifactEnum
-        device_type: str = self.app.device["Type"]
-        plugins: Plugin = list(self.app.plugins[device_type])[0]
+        device_type: str = g.app.device["Type"]
+        plugins: Plugin = list(g.app.plugins[device_type])[0]
 
         if hasattr(plugins, "pre_process"):
             plugins.pre_process(self)
@@ -246,3 +105,28 @@ class Artifacts:
             self.queue.task_done()
         if window and not thread.stopped:
             window.write_event_value("<DONE>", None)
+
+    @property
+    def installed(self) -> list[str]:
+        """Returns the list of installed artifacts
+
+        Returns:
+            The list of artifacts
+        """
+
+        return [artifact.cls_name for artifact in self.store]
+
+    @property
+    def selected(self) -> list[str]:
+        """Returns the list of selected artifacts for processing
+
+        Returns:
+            The list of selected artifacts.
+        """
+        return [artifact.cls_name for artifact in self.store if artifact.select]
+
+    def reset(self) -> None:
+        """Resets the list of selected artifacts."""
+        for artifact in self.store:
+            if not artifact.core:
+                artifact.selected = False

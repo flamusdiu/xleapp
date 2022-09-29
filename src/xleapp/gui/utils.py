@@ -1,8 +1,7 @@
+import abc
+import contextlib
 import threading
 import typing as t
-
-from abc import ABC, abstractmethod
-from contextlib import suppress
 
 import PySimpleGUI as PySG
 
@@ -11,7 +10,7 @@ if t.TYPE_CHECKING:
     from xleapp.app import Application
 
 
-class ProcessThread(ABC, threading.Thread):
+class ProcessThread(abc.ABC, threading.Thread):
     """Thread for processing artifacts
 
     Args:
@@ -34,7 +33,7 @@ class ProcessThread(ABC, threading.Thread):
         self._window = window
         super().__init__(daemon=True)
 
-    @abstractmethod
+    @abc.abstractmethod
     def run(self):
         NotImplementedError("Need to define a run method!")
 
@@ -73,7 +72,7 @@ def disable_widgets(window: PySG.Window, disabled: bool = False):
     for widget in window.key_dict:
         if str(widget).startswith("-") and str(widget).endswith("-"):
             # Widget does not have an update function. Just ignore error.
-            with suppress(TypeError):
+            with contextlib.suppress(TypeError):
                 window[f"{widget}"].update(
                     disabled=disabled,
                 )
