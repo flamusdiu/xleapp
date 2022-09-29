@@ -154,7 +154,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
                     else:
                         self.found = self.found | files[artifact_regex]
 
-        yield self
+            yield self
 
     @property
     def cls_name(self) -> str:
