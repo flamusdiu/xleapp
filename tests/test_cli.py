@@ -18,4 +18,4 @@ def test_generate_program_header(app, capsys):
     assert f"{__version__}" in out
     assert f"{app.input_path}" in out
     assert f"{app.report_folder}" in out
-    assert "Artifacts to parse: 1 in 1 categories" in out
+    assert "Artifacts to parse: 2 in 1 categories" in out
