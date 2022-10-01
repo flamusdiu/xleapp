@@ -112,7 +112,7 @@ def ios_image(test_data, request, pytestconfig):
 
 @pytest.fixture
 def test_artifact():
-    class TestArtifact(Artifact, label="Test Artifact"):
+    class TestArtifact(Artifact, category="Test", label="Test Artifact"):
 
         __test__ = False
 
@@ -215,12 +215,12 @@ def test_device():
 
 @pytest.fixture
 def fake_kml_db_manager(mocker):
-    mocker.patch("xleapp.report.db.KmlDBManager._create", return_value=None)
+    mocker.patch("xleapp.report.db.KmlDBManager.create", return_value=None)
 
 
 @pytest.fixture
 def fake_timeline_db_manager(mocker):
-    mocker.patch("xleapp.report.db.TimelineDBManager._create", return_value=None)
+    mocker.patch("xleapp.report.db.TimelineDBManager.create", return_value=None)
 
 
 @pytest.fixture

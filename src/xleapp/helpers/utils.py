@@ -89,7 +89,7 @@ def generate_program_header(
         "few minutes...\n"
         "-----------------------------------------------------------"
         "---------------------------\n\n"
-        f"{project} {version}: xLEAPP Logs, "
+        f"{project} {version}: {project} Logs, "
         "Events, and Properties Parser\n"
         "Objective: Triage iOS Full System Extractions.\n\n"
     )

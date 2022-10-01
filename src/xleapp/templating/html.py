@@ -49,6 +49,12 @@ class Template:
     def __init__(self, template: str) -> None:
         self._template = f"{template}.jinja"
 
+    def __repr__(self) -> str:
+        return f"<Template (template={self._template!r})>"
+
+    def __str__(self) -> str:
+        return f"Template {self._template!r} being used for HTML page."
+
     def __call__(self, func: DecoratedFunc) -> DecoratedFunc:
         @functools.wraps(func)
         def template_wrapper(cls: HtmlPage) -> t.Any:
