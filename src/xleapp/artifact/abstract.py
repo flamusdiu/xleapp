@@ -24,7 +24,7 @@ import typing as t
 from dataclasses import dataclass, field
 
 import xleapp.app as app
-import xleapp.artifacts as artifacts
+import xleapp.artifact as artifact
 import xleapp.globals as g
 
 from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
@@ -91,23 +91,18 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         """
 
     @classmethod
-    def __init_subclass__(cls, *, category, label):
+    def __init_subclass__(cls, *, label):
         super().__init_subclass__()
         if not inspect.isabstract(cls):
-            if category not in app.__ARTIFACT_PLUGINS__:
-                app.__ARTIFACT_PLUGINS__.update({category: []})
 
-            if label in app.__ARTIFACT_PLUGINS__[category]:
+            if label in app.__ARTIFACT_PLUGINS__:
                 raise ValueError(f"Name {label!r} already registered!")
 
-            cls.category = category
             cls.name = label
-            app.__ARTIFACT_PLUGINS__[category].append((label, cls))
+            app.__ARTIFACT_PLUGINS__.store.append(cls())
 
     @contextlib.contextmanager
-    def context(
-        self,
-    ) -> t.Iterator[Artifact]:
+    def context(self) -> t.Iterator[Artifact]:
         """Creates a context manager for an artifact.
 
         This will automatically search and add the regex and files to an artifact when
@@ -128,10 +123,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         Yields:
             Artifact: Updated object
         """
-        if not hasattr(g.app, "seeker"):
-            # Not processing data
-            yield self
-        else:
+        with contextlib.suppress(AttributeError):
             seeker = g.app.seeker
 
             files = seeker.file_handles
@@ -162,7 +154,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
                     else:
                         self.found = self.found | files[artifact_regex]
 
-            yield self
+        yield self
 
     @property
     def cls_name(self) -> str:
@@ -215,7 +207,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         Returns:
             Path: Path object of the file save location and name.
         """
-        return artifacts.copyfile(
+        return artifact.copyfile(
             input_file=input_file,
             output_file=self.data_save_folder / output_file,
         )

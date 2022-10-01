@@ -8,7 +8,7 @@ from .helpers.search import FileSeekerBase, search_providers
 
 
 if t.TYPE_CHECKING:
-    from .artifacts import Artifact, Artifacts
+    from .artifact import Artifact, Artifacts
 
 
 class Plugin(abc.ABC):

@@ -15,7 +15,7 @@ from .abstract import Artifact as Artifact
 from .decorators import Search as Search
 from .decorators import core_artifact as core_artifact
 from .decorators import long_running_process as long_running_process
-from .services import Artifacts as Artifacts
+from .service import Artifacts as Artifacts
 
 
 logger_log = logging.getLogger("xleapp.logfile")

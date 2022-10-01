@@ -13,7 +13,7 @@ from .html import Template as Template
 
 if t.TYPE_CHECKING:
     from xleapp.app import Application
-    from xleapp.artifacts.services import Artifacts
+    from xleapp.artifact.service import Artifacts
 
 
 def generate_index(app: "Application") -> None:

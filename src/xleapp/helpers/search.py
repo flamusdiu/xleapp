@@ -15,7 +15,7 @@ import typing as t
 from zipfile import ZipFile
 
 import magic
-import xleapp.artifacts.regex as regex
+import xleapp.artifact.regex as regex
 import xleapp.helpers.descriptors as descriptors
 import xleapp.helpers.utils as utils
 

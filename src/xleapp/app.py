@@ -1,20 +1,19 @@
 from __future__ import annotations
 
+import collections
 import datetime
+import functools
 import importlib
+import importlib.metadata
 import logging
+import pathlib
 import typing as t
-
-from collections import UserDict, defaultdict
-from functools import cached_property
-from importlib.metadata import entry_points
-from pathlib import Path
 
 import jinja2
 import jinja2.ext
 import PySimpleGUI as PySG
-import xleapp.artifacts as artifacts
-import xleapp.artifacts.services as artifact_service
+import xleapp.artifact as artifact
+import xleapp.artifact.service as artifact_service
 import xleapp.plugins as plugins
 import xleapp.report as report
 import xleapp.report.db as db
@@ -34,9 +33,9 @@ __ARTIFACT_PLUGINS__ = artifact_service.Artifacts()
 logger_log = logging.getLogger("xleapp.logfile")
 
 if t.TYPE_CHECKING:
-    BaseUserDict = UserDict[str, t.Any]
+    BaseUserDict = collections.UserDict[str, t.Any]
 else:
-    BaseUserDict = UserDict
+    BaseUserDict = collections.UserDict
 
 
 class Device(BaseUserDict):
@@ -58,10 +57,10 @@ class Device(BaseUserDict):
 class OutputFolder(Validator):
     default_value: t.Any = None
 
-    def validator(self, value: t.Union[str, Path]) -> None:
-        if not isinstance(value, (str, Path)):
+    def validator(self, value: t.Union[str, pathlib.Path]) -> None:
+        if not isinstance(value, (str, pathlib.Path)):
             raise TypeError(f"Expected {value!r} to be one of: str, Path!")
-        if not Path(value).exists():
+        if not pathlib.Path(value).exists():
             raise FileNotFoundError(f"{value!r} must already exists!")
 
 
@@ -76,15 +75,15 @@ class Application:
         default_configs (dict[str, t.Any]): Default configuration used for the
             application. Currently not used.
         extraction_type (str): Type of extraction being processed.
-        report_folder (Path): Location of the report.
-        log_folder (Path): Location of the log files. Resides in side the report folder.
+        report_folder (pathlib.Path): Location of the report.
+        log_folder (pathlib.Path): Location of the log files. Resides in side the report folder.
         seeker (FileSeekerBase): Seeker to location find from the extraction.
         jinja_environment (jinja2.Environment): Jinja2 environment for processing and outputting
             HTML reports.
         processing_type (float): Total about of time to run application after initial
             setup.
-        input_path (Path): File or Folder of the extraction.
-        output_path (Path): Parent folder of the report where the report folder is
+        input_path (pathlib.Path): File or Folder of the extraction.
+        output_path (pathlib.Path): Parent folder of the report where the report folder is
             created.
 
     Raises:
@@ -95,13 +94,13 @@ class Application:
     default_configs: dict[str, t.Any]
     device: Device = Device()
     extraction_type: str
-    input_path: Path
+    input_path: pathlib.Path
     jinja_environment = jinja2.Environment
-    log_folder: Path
+    log_folder: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
-    report_folder: Path
+    report_folder: pathlib.Path
     seeker: FileSeekerBase
     version: str
     dbservice: db.DBService
@@ -121,8 +120,8 @@ class Application:
     def __call__(
         self,
         *artifacts_list: str,
-        output_path: t.Optional[Path] = None,
-        input_path: Path,
+        output_path: t.Optional[pathlib.Path] = None,
+        input_path: pathlib.Path,
     ) -> Application:
         self.output_path = output_path
         self.create_output_folder()
@@ -149,23 +148,24 @@ class Application:
         if artifacts_list:
             artifacts_str_list = [selected.lower() for selected in artifacts_list]
 
-            for artifact in artifacts.AbstractBase.registry:
-                if artifacts_list and type(artifact).__name__ in artifacts_str_list:
-                    artifact.select = True  # type: ignore
+            for artifact_plugin in self.artifacts:
+                if (
+                    artifacts_list
+                    and type(artifact_plugin).__name__ in artifacts_str_list
+                ):
+                    artifact_plugin.select = True
                 elif not artifacts_list:
-                    artifact.select = True  # type: ignore
+                    artifact_plugin.select = True
                 else:
-                    if not artifact.core:
-                        artifact.select = False  # type: ignore
+                    if not artifact_plugin.core:
+                        artifact_plugin.select = False
         return self
 
     @staticmethod
-    def discover_plugins() -> t.Optional[dict[str, set[plugins.Plugin]]]:
-        device_plugins: dict[str, set[plugins.Plugin]] = defaultdict(set)
-        found = {
-            plugin.name: importlib.import_module(plugin.module)
-            for plugin in entry_points()["xleapp.plugins"]
-        }
+    def discover_plugins() -> set[plugins.Plugin]:
+        eps = importlib.metadata.entry_points()
+
+        found = {plugin.name: importlib.import_module(plugin.module) for plugin in eps}
 
         if len(found) == 0:
             raise plugins.PluginMissingError("No plugins installed! Exiting!")
@@ -175,10 +175,9 @@ class Application:
                 xleapp_plugin: plugins.Plugin = getattr(
                     plugin, f"{plugin.__name__.rpartition('.')[-1].capitalize()}Plugin"
                 )
-                device_plugins[plugin].add(xleapp_plugin())
-        return device_plugins
+                xleapp_plugin()
 
-    @cached_property
+    @functools.cached_property
     def jinja_env(self) -> jinja2.Environment:
         return self.create_jinja_environment()
 
@@ -187,7 +186,7 @@ class Application:
         current_time = now.strftime("%Y-%m-%d_%A_%H%M%S")
 
         rf = self.report_folder = (
-            Path(self.output_path) / f"xLEAPP_Reports_{current_time}"
+            pathlib.Path(self.output_path) / f"xLEAPP_Reports_{current_time}"
         )
 
         tf = self.temp_folder = rf / "temp"
@@ -228,10 +227,10 @@ class Application:
         self.artifacts.run_queue(window=window, thread=thread)
 
     def generate_artifact_table(self) -> None:
-        artifacts.generate_artifact_table(self.artifacts)
+        artifact.generate_artifact_table(self.artifacts)
 
     def generate_artifact_path_list(self) -> None:
-        artifacts.generate_artifact_path_list(self.artifacts)
+        artifact.generate_artifact_path_list(self.artifacts)
 
     def generate_reports(self) -> None:
         logger_log.info("\nGenerating artifact report files...")
@@ -241,10 +240,12 @@ class Application:
             artifacts=self.artifacts,
         )
 
-        for artifact in artifacts.filter_artifacts(self.artifacts):
-            msg_artifact = f"-> {artifact.category} [{artifact.cls_name}]"
+        for selected_artifact in artifact.filter_artifacts(self.artifacts):
+            msg_artifact = (
+                f"-> {selected_artifact.category} [{selected_artifact.cls_name}]"
+            )
 
-            if artifact.report and artifact.select:
+            if selected_artifact.report and selected_artifact.select:
                 html_report = templating.ArtifactHtmlReport(
                     report_folder=self.report_folder,
                     log_folder=self.log_folder,
@@ -252,7 +253,7 @@ class Application:
                     navigation=nav,
                 )
 
-                if html_report(artifact).report:  # type: ignore
+                if html_report(selected_artifact).report:  # type: ignore
                     logger_log.info(f"{msg_artifact}")
             else:
                 logger_log.warn(
@@ -262,10 +263,10 @@ class Application:
                     "artifact's 'report' attribute.",
                 )
 
-            if artifact.processed and hasattr(artifact, "data"):
-                artifact_name = artifact.value.name
-                data_list = artifact.data
-                data_headers = artifact.report_headers
+            if selected_artifact.processed and hasattr(selected_artifact, "data"):
+                artifact_name = selected_artifact.value.name
+                data_list = selected_artifact.data
+                data_headers = selected_artifact.report_headers
 
                 self.dbservice.save(
                     db_type="tsv",
@@ -274,7 +275,7 @@ class Application:
                     data_headers=data_headers,
                 )
 
-                if artifact.kml:
+                if selected_artifact.kml:
                     self.dbservice.save(
                         db_type="kml",
                         name=artifact_name,
@@ -282,7 +283,7 @@ class Application:
                         data_headers=data_headers,
                     )
 
-                if artifact.timeline:
+                if selected_artifact.timeline:
                     self.dbservice.save(
                         db_type="timeline",
                         name=artifact_name,
@@ -294,12 +295,10 @@ class Application:
 
     @property
     def num_to_process(self) -> int:
-        return len(
-            {artifact.cls_name for artifact in self.artifacts.data if artifact.select},
-        )
+        return len(self.artifacts.selected)
 
     @property
     def num_of_categories(self) -> int:
         return len(
-            {artifact.category for artifact in self.artifacts.data if artifact.select},
+            {artifact.category for artifact in self.artifacts if artifact.select},
         )

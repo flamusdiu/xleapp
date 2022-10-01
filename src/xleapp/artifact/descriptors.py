@@ -1,4 +1,4 @@
-import xleapp.artifacts.regex as regex
+import xleapp.artifact.regex as regex
 import xleapp.helpers.descriptors as descriptors
 import xleapp.report as report
 
@@ -96,11 +96,14 @@ class SearchRegex(descriptors.Validator):
     def __set__(self, obj, value) -> None:
         # Some validators may return a value
         self.validator(value)
-        searches = []
+        try:
+            searches = getattr(obj, self.private_name)
+        except AttributeError:
+            searches = set()
+        finally:
+            if isinstance(value, str):
+                searches.add(regex.Regex(value))
+            else:
+                searches.add(regex.Regex(*value))
 
-        if isinstance(value, str):
-            searches.extend([regex.Regex(value)])
-        else:
-            searches.extend([regex.Regex(*value)])
-
-        setattr(obj, self.private_name, tuple(searches))
+        setattr(obj, self.private_name, searches)

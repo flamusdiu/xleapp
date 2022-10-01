@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import collections.abc as abc
-import inspect
 import logging
 import queue
 import typing as t
@@ -11,9 +9,9 @@ import xleapp.globals as g
 
 
 if t.TYPE_CHECKING:
-    from ..artifacts import Artifact
-    from ..gui import ProcessThread
-    from ..plugins import Plugin
+    from xleapp import Artifact
+    from xleapp.gui import ProcessThread
+    from xleapp.plugins import Plugin
 
 logger_log = logging.getLogger("xleapp.logfile")
 
@@ -24,38 +22,36 @@ class ArtifactError(Exception):
     pass
 
 
-class Artifacts(abc.MutableMapping):
-    __slots__ = ("store", "queue")
-    store: dict
-    queue: queue.PriorityQueue
+class Artifacts:
+    __slots__ = ("store", "process_queue")
 
-    def __init__(self):
-        self.store = dict()
-        self.queue = queue.PriorityQueue()
+    def __init__(self) -> None:
+        self.store: list = list()
+        self.process_queue: queue.PriorityQueue = queue.PriorityQueue()
 
     def __getitem__(self, __key: str) -> Artifact:
-        artifact = self.store[__key]
-        if inspect.isabstract(artifact):
-            artifact = artifact()
-            self.store[__key] = artifact
-            return artifact
+        for artifact in self.store:
+            if artifact.name == __key:
+                break
         return artifact
 
     def __setitem__(self, __key: str, __value: Artifact) -> None:
         if __key in self:
             ValueError(f"Artifact '{__key}' already registered!")
-        self.store[__key] = __value
+        self.store.append(__value)
 
     def __delitem__(self, __key: str) -> None:
-        del self.store[__key]
+        for artifact in self.store:
+            if artifact.name == __key:
+                self.store.remove[artifact]
 
     def __iter__(self) -> t.Iterator[str, Artifact]:
-        return iter(self.store.items())
+        return iter(self.store)
 
     def __len__(self) -> int:
         return len(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self)
 
     def create_queue(self):
@@ -114,16 +110,20 @@ class Artifacts(abc.MutableMapping):
             The list of artifacts
         """
 
-        return [artifact.cls_name for artifact in self.store]
+        return [artifact.name for artifact in self.store]
 
     @property
-    def selected(self) -> list[str]:
+    def selected(self) -> set[str]:
         """Returns the list of selected artifacts for processing
 
         Returns:
             The list of selected artifacts.
         """
-        return [artifact.cls_name for artifact in self.store if artifact.select]
+        selected_artifacts = set()
+        for artifact in self.store:
+            if artifact.select:
+                selected_artifacts.add(artifact.name)
+        return selected_artifacts
 
     def reset(self) -> None:
         """Resets the list of selected artifacts."""

@@ -1,12 +1,13 @@
+import contextlib
+import pathlib
 import shutil
 
-from contextlib import suppress
 from dataclasses import dataclass
-from pathlib import Path
-from shutil import unpack_archive
 
 import pytest
 import requests
+import xleapp
+import xleapp.globals
 
 from tqdm import tqdm
 from xleapp import Artifact, Search, WebIcon
@@ -65,9 +66,9 @@ def ios_image(test_data, request, pytestconfig):
 
     # seems autouse always happens even if set to skip. This forces the skip.
     if not pytestconfig.getoption("--download"):
-        return Path.cwd()
+        return pathlib.Path.cwd()
 
-    fn = Path(test_data / "ios_13_4_1.zip")
+    fn = pathlib.Path(test_data / "ios_13_4_1.zip")
     ios_file_extraction_root = test_data / "iOS 13.4.1 Extraction/Extraction"
     ios_file_sys = test_data / "13-4-1"
 
@@ -95,12 +96,12 @@ def ios_image(test_data, request, pytestconfig):
                         progress_bar.update(len(ch))
 
     if not ios_file_extraction_root.exists():
-        unpack_archive(str(fn), extract_dir=str(test_data))
+        shutil.unpack_archive(str(fn), extract_dir=str(test_data))
 
     if not ios_file_sys.exists():
         # some files just do not extract
-        with suppress(FileNotFoundError):
-            unpack_archive(
+        with contextlib.suppress(FileNotFoundError):
+            shutil.unpack_archive(
                 str(ios_file_extraction_root / "13-4-1.tar"),
                 extract_dir=str(ios_file_sys),
             )
@@ -110,8 +111,8 @@ def ios_image(test_data, request, pytestconfig):
 
 
 @pytest.fixture
-def artifact():
-    class TestArtifact(Artifact):
+def test_artifact():
+    class TestArtifact(Artifact, label="Test Artifact"):
 
         __test__ = False
 
@@ -153,7 +154,7 @@ def artifact():
                         row_dict = dict_from_row(row)  # noqa
                         self.data.append(tuple(row_dict.values()))
 
-    return dataclass(TestArtifact)()
+    return dataclass(TestArtifact)
 
 
 @pytest.fixture
@@ -173,20 +174,27 @@ def app(
     fake_kml_db_manager,
     fake_timeline_db_manager,
     fake_search_providers,
-    artifact,
+    test_artifact,
 ):
     def fake_discover_plugins():
-        plugins = mocker.MagicMock()
-        plugins.plugins = [artifact]
-        return {"ios": {plugins}}
-
-    monkeypatch.setattr(Application, "plugins", fake_discover_plugins())
+        test_artifact()
 
     fake_filesystem.makedir("reports")
-    output_path = Path() / "reports"
-    app = Application()
+    output_path = pathlib.Path() / "reports"
 
-    yield app(device_type="ios", input_path=ios_image, output_path=output_path)
+    mocker.patch(
+        "xleapp.app.Application.discover_plugins", return_value=fake_discover_plugins()
+    )
+    app = Application(device_type="ios")
+    for artifact in app.artifacts:
+        artifact.select = True
+
+    try:
+        monkeypatch.setattr(xleapp.globals, "app", app)
+    except AttributeError:
+        xleapp.globals.app = app
+
+    yield app(input_path=ios_image, output_path=output_path)
 
     shutil.rmtree(app.report_folder)
 
