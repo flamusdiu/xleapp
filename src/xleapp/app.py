@@ -19,13 +19,13 @@ import xleapp.report as report
 import xleapp.report.db as db
 import xleapp.templating as templating
 
-from ._version import __project__, __version__
-from .gui.utils import ProcessThread
-from .helpers.descriptors import Validator
-from .helpers.search import FileSeekerBase, search_providers
-from .helpers.strings import split_camel_case
-from .helpers.utils import is_list
-from .templating.ext import IncludeLogFileExtension
+from xleapp._version import __project__, __version__
+from xleapp.gui.utils import ProcessThread
+from xleapp.helpers.descriptors import Validator
+from xleapp.helpers.search import FileSeekerBase, search_providers
+from xleapp.helpers.strings import split_camel_case
+from xleapp.helpers.utils import is_list
+from xleapp.templating.ext import IncludeLogFileExtension
 
 
 __ARTIFACT_PLUGINS__ = artifact_service.Artifacts()
@@ -40,6 +40,18 @@ else:
 
 class Device(BaseUserDict):
     """Device information for report"""
+
+    def __repr__(self) -> str:
+        device_info = ", ".join(
+            [f"{k.replace(' ', '_')}={v!r}" for k, v in self.data.items()]
+        )
+        return f"<Device ({device_info})>"
+
+    def __str__(self) -> str:
+        device_info = "; ".join(
+            [f"{k.replace(' ', '_')}: {v!r}" for k, v in self.data.items()]
+        )
+        return f"The processed device has the following attributes: {device_info}"
 
     def table(self) -> list[list[t.Any]]:
         """Creates list for table information on the "Device" Tab
@@ -116,6 +128,12 @@ class Application:
         self.discover_plugins()
         self.project = __project__
         self.version = __version__
+
+    def __repr__(self) -> str:
+        return f"<Application (project={self.project!r}, version={self.version!r}, device_type={self.device['Type']!r}, default_configs={self.default_configs!r})>"
+
+    def __str__(self) -> str:
+        return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
     def __call__(
         self,

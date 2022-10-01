@@ -17,6 +17,7 @@ from zipfile import ZipFile
 import magic
 import xleapp.artifact.regex as regex
 import xleapp.helpers.descriptors as descriptors
+import xleapp.helpers.strings as strings
 import xleapp.helpers.utils as utils
 
 
@@ -123,6 +124,9 @@ class Handle:
     def __repr__(self) -> str:
         return f"<Handle file_handle={self.file_handle!r}, path={self.path!r}>"
 
+    def __str__(self) -> str:
+        return f"Handle {self.file_handle!r} of {self.path!r}"
+
 
 class FileHandles(collections.UserDict):
     """Container to hold file information for artifacts.
@@ -144,6 +148,9 @@ class FileHandles(collections.UserDict):
 
     def __len__(self) -> int:
         return sum(count for count in self.values())
+
+    def __repr__(self) -> str:
+        return f"<FileHandles default_factory={self.default_factory}>"
 
     def add(self, regex: regex.Regex, files, file_names_only: bool = False) -> None:
         """Adds files for each regex to be tracked
@@ -250,6 +257,20 @@ class FileSeekerBase(abc.ABC):
     input_path: InputPathValidation = InputPathValidation()
     _all_files: t.Union[list[str], dict[str, str]] = []
     _file_handles = FileHandles()
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} input_path={self.input_path!r} "
+            f"priority={self.priority!r}>"
+        )
+
+    def __str__(self) -> str:
+        name_lst = strings.split_camel_case(type(self).__name__)
+        name = name_lst.pop()
+        return (
+            f"File Seeker ({name}) has the input path of {self.input_path!r} with "
+            f"a priority {self.priority!r}"
+        )
 
     @abc.abstractmethod
     def __call__(

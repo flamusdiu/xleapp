@@ -4,7 +4,7 @@ from xleapp.artifact.abstract import Artifact
 from xleapp.artifact.decorators import core_artifact, long_running_process
 
 
-class DummyArtifactClass(Artifact, label="Dummy Artifact"):
+class DummyArtifactClass(Artifact, category="Dummy", label="Dummy Artifact"):
     pass
 
     def process(self):

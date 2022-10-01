@@ -36,10 +36,7 @@ class Validator(abc.ABC):
             setattr(obj, self.private_name, value)
 
     def __repr__(self) -> str:
-        return f"{type(self.__name__)}()"
-
-    def __str__(self) -> str:
-        return f"{type(self.__name__)}"
+        return f"<{type(self).__name__} ()>"
 
     @abc.abstractmethod
     def validator(self, value: t.Any) -> t.Any:

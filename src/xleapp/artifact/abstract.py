@@ -91,7 +91,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         """
 
     @classmethod
-    def __init_subclass__(cls, *, label):
+    def __init_subclass__(cls, *, category, label):
         super().__init_subclass__()
         if not inspect.isabstract(cls):
 
@@ -99,6 +99,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
                 raise ValueError(f"Name {label!r} already registered!")
 
             cls.name = label
+            cls.category = category
             app.__ARTIFACT_PLUGINS__.store.append(cls())
 
     @contextlib.contextmanager

@@ -52,7 +52,15 @@ class Artifacts:
         return len(self)
 
     def __repr__(self) -> str:
-        return "Application()"
+        return "Artifacts()"
+
+    def __str__(self) -> str:
+        artifact_lst = {artifact.name for artifact in self.store}
+        return (
+            "Artifacts service contains the following artifacts: "
+            f"{'; '.join(artifact_lst)}. Process queue contains "
+            f"{len(self.process_queue)!r} artifacts to be processed!"
+        )
 
     def create_queue(self):
         for _, artifact in self:

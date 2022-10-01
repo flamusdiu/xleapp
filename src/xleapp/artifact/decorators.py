@@ -102,3 +102,12 @@ class Search:
     def __get__(self, obj, objtype):
         """Support instance methods."""
         return functools.partial(self.__call__, obj)
+
+    def __repr__(self) -> str:
+        return f"Search(*{self.search!r})"
+
+    def __str__(self) -> str:
+        return (
+            f"Search {self.search[0]!r}; file_names_only = {self.search[1]!r}; "
+            f"return_on_first_hit = {self.search[2]!r}"
+        )
