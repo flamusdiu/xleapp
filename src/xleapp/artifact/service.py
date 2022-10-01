@@ -52,7 +52,7 @@ class Artifacts:
         return len(self)
 
     def __repr__(self) -> str:
-        return repr(self)
+        return "Application()"
 
     def create_queue(self):
         for _, artifact in self:
