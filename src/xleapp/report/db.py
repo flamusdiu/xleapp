@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import abc
 import codecs
+import contextlib
 import csv
 import pathlib
 import sqlite3
 import typing as t
+
+from dataclasses import dataclass
 
 import simplekml
 import xleapp.helpers.descriptors as descriptors
@@ -46,7 +49,7 @@ class DBFile(descriptors.Validator):
                 return pathlib.Path(f"\\\\?\\{value.resolve()}")
 
 
-class DBManager:
+class DBManager(contextlib.AbstractContextManager):
     connection: t.Union[sqlite3.Connection, codecs.StreamReaderWriter]
     db_file: DBFile = DBFile()
     db_folder: pathlib.Path = None
@@ -64,6 +67,15 @@ class DBManager:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.connection.commit()
 
+    def __str__(self) -> str:
+        return (
+            f"{type(self).__name__} using folder located at {self.db_folder} to "
+            "save database files."
+        )
+
+    def __repr__(self) -> str:
+        return f"<{type(self).__name__} db_folder={self.db_folder!r}>"
+
     @abc.abstractmethod
     def save(self, name: str, data_list, data_headers) -> None:
         """Saves files to database
@@ -74,13 +86,13 @@ class DBManager:
         raise NotImplementedError(f"{self!r} requires a `save()` function!")
 
     @abc.abstractmethod
-    def _create(self) -> None:
+    def create(self) -> None:
         """Creates database file
 
         Returns:
             None
         """
-        raise NotImplementedError(f"{self!r} requires a `_create()` function!")
+        raise NotImplementedError(f"{self!r} requires a `create()` function!")
 
 
 class KmlDBManager(DBManager):
@@ -89,9 +101,7 @@ class KmlDBManager(DBManager):
         super().__init__(db_folder=report_folder / db_folder)
         self.db_file = report_folder / db_folder / "_latlong.db"
 
-        self._create()
-
-    def _create(self) -> None:
+    def create(self) -> None:
         if not self.db_file.exists():
             db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
@@ -136,9 +146,9 @@ class TimelineDBManager(DBManager):
 
         super().__init__(db_folder=report_folder / db_folder)
         self.db_file = report_folder / db_folder / "t1.db"
-        self._create()
+        self.create()
 
-    def _create(self) -> None:
+    def create(self) -> None:
         if not self.db_file.exists():
             db = sqlite3.connect(self.db_file, isolation_level="exclusive")
             cursor = db.cursor()
@@ -175,7 +185,7 @@ class TsvManager(DBManager):
         self.db_file = self.db_folder / f"{name}.tsv"
         return self
 
-    def _create(self) -> None:
+    def create(self) -> None:
         pass
 
     def __enter__(self) -> codecs.StreamReaderWriter:
@@ -194,9 +204,9 @@ class TsvManager(DBManager):
                 tsv_writer.writerow(i)
 
 
+@dataclass
 class DBService:
-    _databases: dict[str, t.Type[DBManager]]
-    _report_folder: pathlib.Path
+    __slots__ = ["_report_folder", "_databases"]
 
     def __init__(self, report_folder: pathlib.Path) -> None:
         self._report_folder = report_folder
@@ -205,12 +215,16 @@ class DBService:
         self._databases["timeline"] = TimelineDBManager(report_folder)
         self._databases["tsv"] = TsvManager(report_folder)
 
+        self._databases["kml"].create()
+        self._databases["timeline"].create()
+        self._databases["tsv"].create()
+
     def save(self, db_type: str, name: str, data_list: list[t.Any], data_headers):
-        if db_type in self._databases:
+        try:
             db = self._databases[db_type]
             if db_type == "tsv":
                 db(name).save(name=name, data_list=data_list, data_headers=data_headers)
             else:
                 db.save(name=name, data_list=data_list, data_headers=data_headers)
-        else:
-            raise DatabaseError(f"Database type {str(db_type)} does not exists!")
+        except KeyError:
+            raise DatabaseError(f"Database type {db_type!r} does not exists!")
