@@ -8,7 +8,6 @@ import PySimpleGUI as PySG
 import xleapp.helpers.utils as utils
 
 from PySimpleGUI import LISTBOX_SELECT_MODE_MULTIPLE, LISTBOX_SELECT_MODE_SINGLE
-from xleapp.artifacts.services import ArtifactEnum
 
 
 class Font(Enum):
@@ -31,7 +30,7 @@ def get_title(device_type: str):
     pass
 
 
-def generate_artifact_list(artifacts: t.Type[ArtifactEnum]) -> list[str]:
+def generate_artifact_list(artifacts: t.Type[t.Mapping]) -> list[str]:
     """Generates artifact list for GUI
 
     Args:

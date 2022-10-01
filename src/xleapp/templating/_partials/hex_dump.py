@@ -3,18 +3,17 @@ import math
 
 from dataclasses import dataclass
 
-import xleapp.helpers.strings as istrings
-
-from xleapp.templating.html import HtmlPage, Template
+import xleapp.helpers.strings as is_strings
+import xleapp.templating as templating
 
 
 @dataclass
-class HexDumpHtml(HtmlPage):
-    @Template("hexdump")
+class HexDumpHtml(templating.HtmlPage):
+    @templating.Template("hexdump")
     def html(self, data, char_per_row=5) -> str:
         """Retuns HTML table of the hexdump of the passed in data."""
         data_hex = binascii.hexlify(data).decode("utf-8")
-        str_raw = istrings.raw(data)
+        str_raw = is_strings.raw(data)
         str_hex = ""
         str_ascii = ""
 

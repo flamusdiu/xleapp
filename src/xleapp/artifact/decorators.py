@@ -5,7 +5,8 @@ import logging
 import sqlite3
 import typing as t
 
-from ..helpers.types import DecoratedFunc
+from xleapp.helpers.types import DecoratedFunc
+
 from .abstract import Artifact
 
 
@@ -74,11 +75,17 @@ class Search:
        return_on_first_hit: Returns only the first found file. Defaults to True.
     """
 
-    def __init__(self, *args: tuple[str] | str):
-        self.search = args
+    def __init__(
+        self,
+        search: str,
+        *,
+        file_names_only: bool = False,
+        return_on_first_hit: bool = True,
+    ):
+        self.search = (search, file_names_only, return_on_first_hit)
 
     def __call__(self, func):
-        def search_wrapper(cls) -> bool:
+        def search_wrapper(cls: Artifact) -> bool:
             try:
                 cls.regex = self.search
                 with cls.context() as artifact:

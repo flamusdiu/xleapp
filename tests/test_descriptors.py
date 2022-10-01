@@ -1,17 +1,17 @@
 import re
 
 import pytest
-import xleapp.artifacts.descriptors as descriptors
+import xleapp.artifact.descriptors as descriptors
 
 from xleapp.app import OutputFolder
-from xleapp.artifacts.descriptors import FoundFiles, Icon, ReportHeaders
-from xleapp.artifacts.regex import Regex
+from xleapp.artifact.descriptors import FoundFiles, Icon, ReportHeaders
+from xleapp.artifact.regex import Regex
 from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator
 
 
 @pytest.fixture
 def regex_validator():
-    from xleapp.artifacts.descriptors import SearchRegex
+    from xleapp.artifact.descriptors import SearchRegex
 
     class DummyClass:
         """Dummy class to assign the descriptor to.
@@ -30,24 +30,27 @@ def regex_validator():
 def regex(request, regex_validator):
 
     search = regex_validator
-    search.regex = request.param
-
     if isinstance(request.param, str):
+        regex_params = [request.param]
         search.lookup.update({request.param: []})
+        search.regex = request.param
     else:
-        for regex_item in request.param:
+        regex_params = request.param
+
+        for regex_item in regex_params:
             if isinstance(regex_item, tuple):
                 search.lookup.update({regex_item[0]: regex_item[1:]})
             else:
                 search.lookup.update({regex_item: []})
 
+            search.regex = regex_item
     return search
 
 
 class TestValidatorABC:
     @pytest.fixture(scope="class", autouse=True)
     def test_validator(self):
-        from xleapp.artifacts.descriptors import Validator
+        from xleapp.helpers.descriptors import Validator
 
         class DummyValidator(Validator):
             default_value = 10
@@ -132,8 +135,8 @@ class TestValidatorABC:
     [
         (
             (
-                ("**/test.sqlite", "return_on_first_hit", "file_names_only"),
-                ("**/test1.sqlite", "return_on_first_hit"),
+                ("**/test.sqlite", True, True),
+                ("**/test1.sqlite", True, False),
                 "**/test2.sqlite",
             ),
             3,
@@ -147,44 +150,40 @@ class TestValidatorABC:
             3,
         ),
         ("**/myregex", 1),
-        ((), 0),
+        ([], 0),
     ],
     indirect=["regex"],
 )
 class TestSearchRegexDescriptor:
     def test_tuples(self, regex, num):
-
-        assert len(regex.regex) == num
-        assert isinstance(regex.regex, tuple)
-        for search in regex.regex:
+        regexes = regex.regex
+        assert len(regexes) == num
+        assert isinstance(regexes, set)
+        for search in regexes:
             assert isinstance(search, Regex)
 
     def test_return_value(self, regex, num):
 
         for regex_search in regex.regex:
+            attrs = regex.lookup[regex_search.regex]
+            if len(attrs) == 0:
+                # set defaults
+                attrs = [False, True]
             assert isinstance(regex_search, Regex)
-            assert regex_search.file_names_only == (
-                "file_names_only" in regex.lookup[regex_search.regex]
-            )
-
-            assert regex_search.file_names_only == (
-                "file_names_only" in regex.lookup[regex_search.regex]
-            )
+            assert regex_search.file_names_only == attrs[0]
+            assert regex_search.return_on_first_hit == attrs[1]
 
     def test_convert_to_string(self, regex, num):
 
         for regex_search in regex.regex:
             assert str(regex_search) == regex_search.regex
 
-    def test_hash(self, regex, num):
-        assert hash(regex.regex)
-
 
 def test_search_descriptor_invalid_argument(regex_validator):
 
     with pytest.raises(
         TypeError,
-        match=re.escape("Expected 42 to be a list of list or tuple of strings!"),
+        match=re.escape("Expected 42 to be a str or tuple!"),
     ):
         regex_validator.regex = 42
 
@@ -203,8 +202,6 @@ class TestDescriptorRecursiveBoolReturn:
     @pytest.mark.parametrize(
         "descriptor, test_strings, validation, results",
         [
-            [descriptors.SearchRegex, ("**/regex", "**/regex2"), [True, True], True],
-            [descriptors.SearchRegex, "**/regex", [], True],
             [
                 descriptors.ReportHeaders,
                 [("header1", "header2", "header2"), ("header3", "header4")],
@@ -217,27 +214,9 @@ class TestDescriptorRecursiveBoolReturn:
                 [True, True, True],
                 True,
             ],
-            [descriptors.SearchRegex, (42, "**/regex"), [], False],
-            [descriptors.SearchRegex, object(), [], False],
-            [
-                descriptors.ReportHeaders,
-                [(42, 42), (object(), "header")],
-                [],
-                False,
-            ],
-            [
-                descriptors.ReportHeaders,
-                (42, "header2", object()),
-                [],
-                False,
-            ],
-            [descriptors.SearchRegex, ("**/regex", 42), [True], False],
-            [
-                descriptors.ReportHeaders,
-                ("header2", object(), 42),
-                [],
-                False,
-            ],
+            [descriptors.ReportHeaders, [(42, 42), (object(), "header")], [], False],
+            [descriptors.ReportHeaders, (42, "header2", object()), [], False],
+            [descriptors.ReportHeaders, ("header2", object(), 42), [], False],
         ],
     )
     def test_recursion(self, monkeypatch, descriptor, test_strings, validation, results):

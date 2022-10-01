@@ -9,7 +9,7 @@ from pathlib import Path
 import xleapp.globals as g
 import yaml
 
-from ..helpers.utils import generate_program_header
+from xleapp.helpers.utils import generate_program_header
 
 
 StrPath = t.Union[str, os.PathLike[str]]

@@ -20,7 +20,7 @@ PLUGINS :=  '$(shell $$(Get-ChildItem -Directory $(PLUGINDIR)).name)'
 ifdef DL_PLUGINS
 	GIT_PLUGINS := @('$(DL_PLUGINS)'.split(' '))
 else
-	GIT_PLUGINS := 'ios', 'ios-non-free'
+	GIT_PLUGINS := 'extensions', 'extensions-non-free'
 endif
 
 # Function to wrap calls needing to run in each plugin directory
@@ -29,10 +29,10 @@ define plugin_run
 endef
 
 install: pkg-update
-	@poetry install --extras lint,tests
+	@poetry install -E lint -E tests -E docs -E vscode
 	$(call plugin_run, poetry install)
-# Need to install the plugins in the make application folder. This created dev_depends. However,
-# this are not saved in poetry file at the time.
+# Need to install the plugins in the make application folder. This created dev_depends.
+# However, these are not saved in poetry file at the time.
 	$(PLUGINS) | foreach {pip install -e $(PLUGINDIR)/$$_}
 
 pkg-update:

@@ -10,7 +10,6 @@ import xleapp.templating as templating
 
 from ._version import __project__, __version__
 from .app import Application
-from .artifacts import generate_artifact_path_list, generate_artifact_table
 from .helpers.decorators import timed
 from .helpers.utils import generate_program_header
 
@@ -116,20 +115,19 @@ def get_parser() -> argparse.ArgumentParser:
 def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     args = parser.parse_args()
     artifacts = args.artifacts or ()
-    g.app = Application()
+    g.app = Application(args.device_type)
 
     if args.gui:
         import xleapp.gui as gui
 
         gui.main(g.app)
     elif args.artifact_paths:
-        generate_artifact_path_list(artifacts)
+        g.app.generate_artifact_path_list()
     elif args.artifact_table:
-        generate_artifact_table(artifacts)
+        g.app.generate_artifact_table()
     else:
         g.app(
             *artifacts,
-            device_type=args.device_type,
             output_path=args.output_folder,
             input_path=args.input_path,
         )

@@ -14,15 +14,18 @@ The class order ABC > AbstractArtifactDefaults > AbstractBase ensures this is co
 
 from __future__ import annotations
 
+import abc
+import contextlib
+import inspect
 import logging
+import pathlib
 import typing as t
 
-from abc import ABC, abstractmethod
-from contextlib import contextmanager
 from dataclasses import dataclass, field
-from pathlib import Path
 
-import xleapp.artifacts as artifacts
+import xleapp.app as app
+import xleapp.artifact as artifact
+import xleapp.globals as g
 
 from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
 from .regex import Regex
@@ -36,8 +39,8 @@ if t.TYPE_CHECKING:
 class AbstractBase:
     """Base class to set any properties for :obj: `Artifact` Class."""
 
-    description: str = field(init=False, repr=False, compare=False)
     name: str = field(init=False)
+    description: str = field(init=False, repr=False, compare=False)
     regex: set[Regex] = field(
         init=False,
         repr=False,
@@ -78,19 +81,28 @@ class AbstractArtifactDefaults:
 
 
 @dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
-class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
+class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
     """Abstract class for creating Artifacts"""
 
-    @abstractmethod
+    @abc.abstractmethod
     def process(self) -> None:
         """Gets artifacts located in `files_found` params by the
         `seeker`. It saves should save the report in `report_folder`.
         """
 
-    @contextmanager
-    def context(
-        self,
-    ) -> t.Iterator[Artifact]:
+    @classmethod
+    def __init_subclass__(cls, *, label):
+        super().__init_subclass__()
+        if not inspect.isabstract(cls):
+
+            if label in app.__ARTIFACT_PLUGINS__:
+                raise ValueError(f"Name {label!r} already registered!")
+
+            cls.name = label
+            app.__ARTIFACT_PLUGINS__.store.append(cls())
+
+    @contextlib.contextmanager
+    def context(self) -> t.Iterator[Artifact]:
         """Creates a context manager for an artifact.
 
         This will automatically search and add the regex and files to an artifact when
@@ -111,54 +123,55 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         Yields:
             Artifact: Updated object
         """
-        seeker = self.app.seeker
-        files = seeker.file_handles
+        with contextlib.suppress(AttributeError):
+            seeker = g.app.seeker
 
-        for artifact_regex in self.regex:
-            handles = None
-            results = None
-            regex = str(artifact_regex.regex)
-            if artifact_regex.processed:
-                handles = files[regex]
-            else:
-                try:
-                    if artifact_regex.return_on_first_hit:
-                        results = {next(seeker.search(regex))}
-                    else:
-                        results = set(seeker.search(regex))
-                except StopIteration:
-                    results = None
+            files = seeker.file_handles
 
-                if results:
-                    files.add(artifact_regex, results, artifact_regex.file_names_only)
-
-                artifact_regex.processed = True
-
-            if handles or results:
-                if artifact_regex.return_on_first_hit or len(results) == 1:
-                    self.found = self.found | {files[artifact_regex].copy().pop()}
+            for artifact_regex in self.regex:
+                handles = None
+                results = None
+                regex = str(artifact_regex.regex)
+                if artifact_regex.processed:
+                    handles = files[regex]
                 else:
-                    self.found = self.found | files[artifact_regex]
+                    try:
+                        if artifact_regex.return_on_first_hit:
+                            results = {next(seeker.search(regex))}
+                        else:
+                            results = set(seeker.search(regex))
+                    except StopIteration:
+                        results = None
+
+                    if results:
+                        files.add(artifact_regex, results, artifact_regex.file_names_only)
+
+                    artifact_regex.processed = True
+
+                if handles or results:
+                    if artifact_regex.return_on_first_hit or len(results) == 1:
+                        self.found = self.found | {files[artifact_regex].copy().pop()}
+                    else:
+                        self.found = self.found | files[artifact_regex]
 
         yield self
 
     @property
     def cls_name(self) -> str:
         """Returns class Name of object
-
         Returns:
             str: class name
         """
         return type(self).__name__
 
     @property
-    def data_save_folder(self) -> Path:
+    def data_save_folder(self) -> pathlib.Path:
         """Locate to save files from this artifact
 
         Returns:
             Path to the folder to save files
         """
-        return Path(self.app.report_folder / "export" / self.cls_name)
+        return pathlib.Path(self.app.report_folder / "export" / self.cls_name)
 
     @property
     def kml(self) -> bool:
@@ -177,7 +190,9 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
                     return True
         return False
 
-    def copyfile(self, input_file: Path | bytes, output_file: str) -> Path:
+    def copyfile(
+        self, input_file: pathlib.Path | bytes, output_file: str
+    ) -> pathlib.Path:
         """Exports file to report folder
 
         File will be located under report_folder\\export\\artifact_class
@@ -192,7 +207,7 @@ class Artifact(ABC, AbstractArtifactDefaults, AbstractBase):
         Returns:
             Path: Path object of the file save location and name.
         """
-        return artifacts.copyfile(
+        return artifact.copyfile(
             input_file=input_file,
             output_file=self.data_save_folder / output_file,
         )

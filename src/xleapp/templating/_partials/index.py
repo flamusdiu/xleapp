@@ -1,14 +1,13 @@
 from dataclasses import dataclass, field
 
 import xleapp.templating as templating
+import xleapp.templating.html as html
 
 from xleapp._authors import __authors__, __contributors__
 
-from ..html import Contributor, HtmlPage, Template
-
 
 @dataclass
-class Index(HtmlPage):
+class Index(html.HtmlPage):
     """Main index page for HTML report
 
     Attributes:
@@ -16,14 +15,14 @@ class Index(HtmlPage):
         contributors (list): list of contributors
     """
 
-    authors: list[Contributor] = field(init=False)
-    contributors: list[Contributor] = field(init=False)
+    authors: list[html.Contributor] = field(init=False)
+    contributors: list[html.Contributor] = field(init=False)
 
     def __post_init__(self) -> None:
         self.authors = templating.get_contributors(__authors__)
         self.contributors = templating.get_contributors(__contributors__)
 
-    @Template("index")
+    @html.Template("index")
     def html(self) -> str:
         """Generates html for page
 

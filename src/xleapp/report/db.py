@@ -2,18 +2,16 @@
 """
 from __future__ import annotations
 
+import abc
 import codecs
 import csv
+import pathlib
 import sqlite3
 import typing as t
 
-from abc import abstractmethod
-from pathlib import Path
-
 import simplekml
+import xleapp.helpers.descriptors as descriptors
 import xleapp.helpers.utils as utils
-
-from xleapp.helpers.descriptors import Validator
 
 
 class DatabaseError(Exception):
@@ -37,23 +35,23 @@ class Options:
                 obj.__dict__[name] = option
 
 
-class DBFile(Validator):
-    default_value = Path()
+class DBFile(descriptors.Validator):
+    default_value = pathlib.Path()
 
-    def validator(self, value) -> Path | None:
-        if not isinstance(value, (Path, str)):
-            raise TypeError(f"Expected {value!r} to be Path or str!")
+    def validator(self, value) -> pathlib.Path | None:
+        if not isinstance(value, (pathlib.Path, str)):
+            raise TypeError(f"Expected {value!r} to be pathlib.Path or str!")
         else:
             if utils.is_platform_windows():
-                return Path(f"\\\\?\\{value.resolve()}")
+                return pathlib.Path(f"\\\\?\\{value.resolve()}")
 
 
 class DBManager:
     connection: t.Union[sqlite3.Connection, codecs.StreamReaderWriter]
     db_file: DBFile = DBFile()
-    db_folder: Path = None
+    db_folder: pathlib.Path = None
 
-    def __init__(self, db_folder: Path) -> None:
+    def __init__(self, db_folder: pathlib.Path) -> None:
         if not self.db_folder:
             self.db_folder = db_folder
             self.db_folder.mkdir(parents=True, exist_ok=True)
@@ -66,7 +64,7 @@ class DBManager:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.connection.commit()
 
-    @abstractmethod
+    @abc.abstractmethod
     def save(self, name: str, data_list, data_headers) -> None:
         """Saves files to database
 
@@ -75,7 +73,7 @@ class DBManager:
         """
         raise NotImplementedError(f"{self!r} requires a `save()` function!")
 
-    @abstractmethod
+    @abc.abstractmethod
     def _create(self) -> None:
         """Creates database file
 
@@ -86,7 +84,7 @@ class DBManager:
 
 
 class KmlDBManager(DBManager):
-    def __init__(self, report_folder: Path) -> None:
+    def __init__(self, report_folder: pathlib.Path) -> None:
         db_folder = "_KML_Exports"
         super().__init__(db_folder=report_folder / db_folder)
         self.db_file = report_folder / db_folder / "_latlong.db"
@@ -133,7 +131,7 @@ class KmlDBManager(DBManager):
 
 
 class TimelineDBManager(DBManager):
-    def __init__(self, report_folder: Path) -> None:
+    def __init__(self, report_folder: pathlib.Path) -> None:
         db_folder = "_Timeline"
 
         super().__init__(db_folder=report_folder / db_folder)
@@ -167,7 +165,7 @@ class TimelineDBManager(DBManager):
 
 
 class TsvManager(DBManager):
-    def __init__(self, report_folder: Path) -> None:
+    def __init__(self, report_folder: pathlib.Path) -> None:
 
         db_folder: str = "_TSV Exports"
 
@@ -198,9 +196,9 @@ class TsvManager(DBManager):
 
 class DBService:
     _databases: dict[str, t.Type[DBManager]]
-    _report_folder: Path
+    _report_folder: pathlib.Path
 
-    def __init__(self, report_folder: Path) -> None:
+    def __init__(self, report_folder: pathlib.Path) -> None:
         self._report_folder = report_folder
         self._databases = {}
         self._databases["kml"] = KmlDBManager(report_folder)

@@ -1,10 +1,10 @@
 import pytest
 
-from xleapp.artifacts.abstract import Artifact
-from xleapp.artifacts.decorators import core_artifact, long_running_process
+from xleapp.artifact.abstract import Artifact
+from xleapp.artifact.decorators import core_artifact, long_running_process
 
 
-class DummyArtifactClass(Artifact):
+class DummyArtifactClass(Artifact, label="Dummy Artifact"):
     pass
 
     def process(self):

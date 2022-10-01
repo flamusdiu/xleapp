@@ -1,7 +1,6 @@
+import collections
+import pathlib
 import typing as t
-
-from collections import defaultdict
-from pathlib import Path
 
 from ._partials.index import Index
 from .ext import IncludeLogFileExtension as IncludeLogFileExtension
@@ -14,7 +13,7 @@ from .html import Template as Template
 
 if t.TYPE_CHECKING:
     from xleapp.app import Application
-    from xleapp.artifacts.services import Artifacts
+    from xleapp.artifact.service import Artifacts
 
 
 def generate_index(app: "Application") -> None:
@@ -50,7 +49,7 @@ def get_contributors(contributors: list[list[str]]) -> list[Contributor]:
 
 
 def generate_nav(
-    report_folder: Path,
+    report_folder: pathlib.Path,
     artifacts: "Artifacts",
 ) -> dict[str, set[NavigationItem]]:
     """Generates a dictionary containing the navigation of the
@@ -65,7 +64,7 @@ def generate_nav(
     Returns:
         dict: dictionary of navigation items for HTML Report
     """
-    nav = defaultdict(set)
+    nav = collections.defaultdict(set)
 
     for artifact in artifacts.data:
         if artifact.select:

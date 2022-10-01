@@ -65,6 +65,11 @@ tqdm = {version = "^4.64.0", optional = true}
 types-Jinja2 = {version = "^2.11.9", optional = true}
 types-PyYAML = {version = "^6.0.9", optional = true}
 atomicwrites = {version = "^1.4.1", optional = true}
+sphinx-rtd-theme = {version = "^1.0.0", optional = true}
+recommonmark = {version = "^0.7.1", optional = true}
+sphinxcontrib-images = {version = "^0.9.4", optional = true}
+sphinxcontrib-napoleon = {version = "^0.7", optional = true}
+sphinxcontrib-mermaid = {version = "^0.7.1", optional = true}
 
 
 [tool.poetry.scripts]
@@ -116,7 +121,7 @@ pylint = ["+F*", "+E*", "-E0611", "-E1101", "-E0401", "-E1102", "-E1123"]
 [tool.flakeheaven.exceptions."**/__init__.py"]
 pyflakes = ["-F401", "-E501"]
 
-[tool.flakeheaven.exceptions."**/gui/__init__.py"]
+[tool.flakeheaven.exceptions."**/gui/gui.py"]
 mccabe = ["-C901"]
 
 [tool.flakeheaven.exceptions."**/types.py"]
@@ -220,6 +225,13 @@ lint = [
 exe = [
   "mypy",
   "pyinstaller"
+]
+docs = [
+  "recommonmark",
+  "sphinx_rtd_theme",
+  "sphinxcontrib-napoleon",
+  "sphinxcontrib-mermaid",
+  "sphinxcontrib-images"
 ]
 
 [tool.pytest.ini_options]

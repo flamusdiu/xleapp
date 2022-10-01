@@ -5,4 +5,3 @@ xLEAPP
    :maxdepth: 4
 
    xleapp
-   xleappGUI

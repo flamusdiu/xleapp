@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import io
 import logging
 import shutil
 import typing as t
@@ -11,19 +10,24 @@ from textwrap import TextWrapper
 import prettytable
 import xleapp.helpers.utils as utils
 
+from .abstract import AbstractBase as AbstractBase
 from .abstract import Artifact as Artifact
 from .decorators import Search as Search
 from .decorators import core_artifact as core_artifact
 from .decorators import long_running_process as long_running_process
-from .services import ArtifactEnum as ArtifactEnum
-from .services import ArtifactError as ArtifactError
-from .services import Artifacts as Artifacts
+from .service import Artifacts as Artifacts
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 
 
-def generate_artifact_path_list(artifacts: Artifacts) -> None:
+class ArtifactError(Exception):
+    """Basic exception for Artifacts"""
+
+    pass
+
+
+def generate_artifact_path_list(artifacts) -> None:
     """Generates path file for usage with Autopsy
 
     Args:
@@ -43,7 +47,7 @@ def generate_artifact_path_list(artifacts: Artifacts) -> None:
         logger_log.info("Artifact path list generation completed")
 
 
-def generate_artifact_table(artifacts: Artifacts) -> None:
+def generate_artifact_table(artifacts) -> None:
     """Generates artifact list table.
 
     Args:
@@ -58,12 +62,17 @@ def generate_artifact_table(artifacts: Artifacts) -> None:
     logger_log.info("Artifact table generation started.")
 
     with open(output_file, "w") as paths:
-        for artifact in artifacts.data:
-            short_name: str = artifact.cls_name
-            full_name: str = artifact.value.name
-            search_regex: set[str] = artifact.regex
-            search_regex_list = "\n".join(search_regex)
-            output_table.add_row([short_name, full_name, wrapper.fill(search_regex_list)])
+        for _, category_artifacts in artifacts:
+            for _, artifact_cls in category_artifacts:
+                artifact: Artifact = artifact_cls()
+                artifact.process()
+                short_name: str = artifact.cls_name
+                full_name: str = artifact.name
+                search_regex: set[str] = {str(r) for r in artifact.regex}
+                search_regex_list = "\n".join(search_regex)
+                output_table.add_row(
+                    [short_name, full_name, wrapper.fill(search_regex_list)]
+                )
         paths.write(output_table.get_string(title="Artifact List", sortby="Short Name"))
     logger_log.info(f"Table saved to: {output_file}")
     logger_log.info("Artifact table generation completed")
