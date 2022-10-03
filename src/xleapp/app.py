@@ -106,13 +106,14 @@ class Application:
     default_configs: dict[str, t.Any]
     device: Device = Device()
     extraction_type: str
-    input_path: pathlib.Path
+    input_path: pathlib.Path = None
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
+    input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
-    report_folder: pathlib.Path
+    report_folder: pathlib.Path = None
     seeker: FileSeekerBase
     version: str
     dbservice: db.DBService
@@ -181,7 +182,12 @@ class Application:
     def discover_plugins() -> set[plugins.Plugin]:
         eps = importlib.metadata.entry_points()
 
-        found = {plugin.name: importlib.import_module(plugin.module) for plugin in eps}
+        found = {}
+
+        for plugin in eps:
+            if __project__.lower() in plugin:
+                for ep in eps[plugin]:
+                    found.update({plugin: importlib.import_module(ep.module)})
 
         if len(found) == 0:
             raise plugins.PluginMissingError("No plugins installed! Exiting!")

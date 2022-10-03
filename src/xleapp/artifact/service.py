@@ -118,7 +118,7 @@ class Artifacts:
             The list of artifacts
         """
 
-        return [artifact.name for artifact in self.store]
+        return sorted({artifact.name for artifact in self.store})
 
     @property
     def selected(self) -> set[str]:
@@ -131,7 +131,7 @@ class Artifacts:
         for artifact in self.store:
             if artifact.select:
                 selected_artifacts.add(artifact.name)
-        return selected_artifacts
+        return sorted(selected_artifacts)
 
     def reset(self) -> None:
         """Resets the list of selected artifacts."""

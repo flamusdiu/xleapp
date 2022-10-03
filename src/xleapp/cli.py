@@ -88,7 +88,7 @@ def artifact_path_lists(application: app.Application):
     version=version.__version__,
 )
 @pass_application
-def cli(application: app.Application, artifact_table, artifact_paths_list):
+def cli(application: app.Application):
     click.echo(
         utils.generate_program_header(
             f"{version.__project__} v{version.__version__}",
