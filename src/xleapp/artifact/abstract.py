@@ -47,7 +47,7 @@ class AbstractBase:
         compare=False,
         default=SearchRegex(),
     )
-    app: Application = field(init=False, repr=False)
+    device_type: str = field(init=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 

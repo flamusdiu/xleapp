@@ -14,7 +14,6 @@ import jinja2.ext
 import PySimpleGUI as PySG
 import xleapp.artifact as artifact
 import xleapp.artifact.service as artifact_service
-import xleapp.globals as g
 import xleapp.plugins as plugins
 import xleapp.report as report
 import xleapp.report.db as db
@@ -118,14 +117,12 @@ class Application:
     version: str
     dbservice: db.DBService
 
-    def __init__(self, device_type: str) -> None:
+    def __init__(self) -> None:
         self.default_configs = {
             "thumbnail_root": "**/Media/PhotoData/Thumbnails/**",
             "media_root": "**/Media",
             "thumbnail_size": (256, 256),
         }
-
-        self.device.update({"Type": device_type})
         self.discover_plugins()
         self.project = __project__
         self.version = __version__
@@ -135,12 +132,6 @@ class Application:
 
     def __str__(self) -> str:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
-
-    def __enter__(self, device_type: str):
-        g.app = self(device_type)
-
-    def __exit__(self):
-        pass
 
     def __call__(
         self,
