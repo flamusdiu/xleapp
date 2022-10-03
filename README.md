@@ -31,7 +31,7 @@ This project requires you to have Python >= 3.9
 
 > Notice: Extensions have been merged into a single repo. Please ensure ths post [[v0.2.1](https://github.com/flamusdiu/xleapp/releases/tag/v0.2.1)] version.
 
-Here is a list of plugins that need to be completed. Plugin package suffixed with "non-free" use licenses that may not conform with MIT licenses and are seperated out. 
+Here is a list of plugins that need to be completed. Plugin package suffixed with "non-free" use licenses that may not conform with MIT licenses and are seperated out.
 
 - [X] xleapp-extensions [[Github](https://github.com/flamusdiu/xleapp-extensions)] [[PyPI](https://pypi.org/project/xleapp-extensions/)]
 - [ ] xleapp-non-free-extensions [[Github](https://github.com/flamusdiu/xleapp-non-free-extensions)]
