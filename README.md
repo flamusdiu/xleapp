@@ -29,20 +29,12 @@ This project requires you to have Python >= 3.9
 
 ## Plugins
 
-Here is a list of plugins that need to be completed. Plugin package suffixed with "non-free" use licenses that may not conform with MIT licenses and are seperated out.
+> Notice: Extensions have been merged into a single repo. Please ensure ths post [[v0.2.1](https://github.com/flamusdiu/xleapp/releases/tag/v0.2.1)] version.
 
-- [X] xleapp-ios [[Github](https://github.com/flamusdiu/xleapp-ios)] [[PyPI](https://pypi.org/project/xleapp-ios/)]
-- [ ] xleapp-ios-non-free [[Github](https://github.com/flamusdiu/xleapp-ios)]
-- [ ] xleapp-android
-- [ ] xleapp-android-non-free
-- [ ] xleapp-chrome
-- [ ] xleapp-chrome-non-free
-- [ ] xleapp-returns
-- [ ] xleapp-returns-non-free
-- [ ] xleapp-vehicles
-- [ ] xleapp-vehicles-non-free
-- [ ] xleapp-windows
-- [ ] xleapp-windows-non-free
+Here is a list of plugins that need to be completed. Plugin package suffixed with "non-free" use licenses that may not conform with MIT licenses and are seperated out. 
+
+- [X] xleapp-extensions [[Github](https://github.com/flamusdiu/xleapp-extensions)] [[PyPI](https://pypi.org/project/xleapp-extensions/)]
+- [ ] xleapp-non-free-extensions [[Github](https://github.com/flamusdiu/xleapp-non-free-extensions)]
 
 ## Installation
 
