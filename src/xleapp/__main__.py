@@ -4,6 +4,7 @@ import argparse
 import logging
 import time
 
+import click
 import xleapp.globals as g
 import xleapp.log as log
 import xleapp.templating as templating
@@ -135,8 +136,29 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     exit()
 
 
-def _main(app: Application) -> None:
+@click.command()
+@click.option("--gui", help=f"Runs {__project__} into graphical mode")
+def run_gui():
+    import xleapp.gui as gui
 
+    gui.main(g.app)
+
+
+@click.command()
+def artifact_paths():
+    g.app.generate_artifact_path_list()
+
+
+@click.command()
+def artifact_table():
+    g.app.generate_artifact_table()
+
+
+@click.command()
+@click.pass_context
+def _main(ctx) -> None:
+
+    ctx.app = ctx.with_resource(Application())
     start_time = time.perf_counter()
 
     print(

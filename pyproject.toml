@@ -70,6 +70,7 @@ recommonmark = {version = "^0.7.1", optional = true}
 sphinxcontrib-images = {version = "^0.9.4", optional = true}
 sphinxcontrib-napoleon = {version = "^0.7", optional = true}
 sphinxcontrib-mermaid = {version = "^0.7.1", optional = true}
+click = "^8.1.3"
 
 
 [tool.poetry.scripts]
