@@ -106,25 +106,24 @@ class Application:
     default_configs: dict[str, t.Any]
     device: Device = Device()
     extraction_type: str
-    input_path: pathlib.Path
+    input_path: pathlib.Path = None
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
+    input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
-    report_folder: pathlib.Path
+    report_folder: pathlib.Path = None
     seeker: FileSeekerBase
     version: str
     dbservice: db.DBService
 
-    def __init__(self, device_type: str) -> None:
+    def __init__(self) -> None:
         self.default_configs = {
             "thumbnail_root": "**/Media/PhotoData/Thumbnails/**",
             "media_root": "**/Media",
             "thumbnail_size": (256, 256),
         }
-
-        self.device.update({"Type": device_type})
         self.discover_plugins()
         self.project = __project__
         self.version = __version__
@@ -183,7 +182,12 @@ class Application:
     def discover_plugins() -> set[plugins.Plugin]:
         eps = importlib.metadata.entry_points()
 
-        found = {plugin.name: importlib.import_module(plugin.module) for plugin in eps}
+        found = {}
+
+        for plugin in eps:
+            if __project__.lower() in plugin:
+                for ep in eps[plugin]:
+                    found.update({plugin: importlib.import_module(ep.module)})
 
         if len(found) == 0:
             raise plugins.PluginMissingError("No plugins installed! Exiting!")

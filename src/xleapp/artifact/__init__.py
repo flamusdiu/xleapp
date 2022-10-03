@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import operator
 import shutil
 import typing as t
 
@@ -53,7 +54,7 @@ def generate_artifact_table(artifacts) -> None:
     Args:
         artifacts: List of artifacts to get regex from.
     """
-    headers = ["Short Name", "Full Name", "Search Regex"]
+    headers = ["Device Type", "Category", "Short Name", "Full Name", "Search Regex"]
     wrapper = TextWrapper(expand_tabs=False, replace_whitespace=False, width=60)
     output_table = prettytable.PrettyTable(headers, align="l")
     output_table.hrules = prettytable.ALL
@@ -62,18 +63,25 @@ def generate_artifact_table(artifacts) -> None:
     logger_log.info("Artifact table generation started.")
 
     with open(output_file, "w") as paths:
-        for _, category_artifacts in artifacts:
-            for _, artifact_cls in category_artifacts:
-                artifact: Artifact = artifact_cls()
-                artifact.process()
-                short_name: str = artifact.cls_name
-                full_name: str = artifact.name
-                search_regex: set[str] = {str(r) for r in artifact.regex}
-                search_regex_list = "\n".join(search_regex)
-                output_table.add_row(
-                    [short_name, full_name, wrapper.fill(search_regex_list)]
-                )
-        paths.write(output_table.get_string(title="Artifact List", sortby="Short Name"))
+        artifact: Artifact
+        for artifact in artifacts:
+            artifact.process()
+            device = artifact.device_type
+            category = artifact.category
+            short_name: str = artifact.cls_name
+            full_name: str = artifact.name
+            search_regex: set[str] = {str(r) for r in artifact.regex}
+            search_regex_list = "\n".join(search_regex)
+            output_table.add_row(
+                [device, category, short_name, full_name, wrapper.fill(search_regex_list)]
+            )
+        paths.write(
+            output_table.get_string(
+                title="Artifact List",
+                sort_key=operator.itemgetter(2, 1, 0),
+                sortby="Short Name",
+            )
+        )
     logger_log.info(f"Table saved to: {output_file}")
     logger_log.info("Artifact table generation completed")
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import contextlib
 import threading
@@ -22,7 +24,7 @@ class ProcessThread(abc.ABC, threading.Thread):
 
     def __init__(
         self,
-        app: "Application",
+        app: Application,
         window: PySG.Window = None,
         sleep_time: float = 0.1,
         daemon=True,

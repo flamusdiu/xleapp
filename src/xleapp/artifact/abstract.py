@@ -31,10 +31,6 @@ from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
 from .regex import Regex
 
 
-if t.TYPE_CHECKING:
-    from xleapp.app import Application
-
-
 @dataclass
 class AbstractBase:
     """Base class to set any properties for :obj: `Artifact` Class."""
@@ -47,7 +43,7 @@ class AbstractBase:
         compare=False,
         default=SearchRegex(),
     )
-    app: Application = field(init=False, repr=False)
+    device_type: str = field(init=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
@@ -98,6 +94,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
             if label in app.__ARTIFACT_PLUGINS__:
                 raise ValueError(f"Name {label!r} already registered!")
 
+            cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
             cls.category = category
             app.__ARTIFACT_PLUGINS__.store.append(cls())
