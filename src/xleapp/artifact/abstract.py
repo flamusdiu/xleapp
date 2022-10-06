@@ -97,7 +97,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
             cls.category = category
-            app.__ARTIFACT_PLUGINS__.store.append(cls())
+            app.__ARTIFACT_PLUGINS__[label] = cls()
 
     @contextlib.contextmanager
     def context(self) -> t.Iterator[Artifact]:

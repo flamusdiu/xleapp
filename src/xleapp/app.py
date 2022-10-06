@@ -317,7 +317,7 @@ class Application:
 
     @property
     def num_to_process(self) -> int:
-        return len(self.artifacts.selected)
+        return len(self.artifacts.selected(self.device["Type"]))
 
     @property
     def num_of_categories(self) -> int:

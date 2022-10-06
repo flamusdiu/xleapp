@@ -23,30 +23,32 @@ class ArtifactError(Exception):
 
 
 class Artifacts:
-    __slots__ = ("store", "process_queue")
+
+    __slots__ = ("_store", "process_queue", "processing_device_type")
 
     def __init__(self) -> None:
-        self.store: list = list()
-        self.process_queue: queue.PriorityQueue = queue.PriorityQueue()
+        self._store: list = list()
+        self._process_queue: queue.PriorityQueue = queue.PriorityQueue()
+        self._processing_device_type = None
 
     def __getitem__(self, __key: str) -> Artifact:
-        for artifact in self.store:
-            if artifact.name == __key:
-                break
-        return artifact
+        for artifact in self._store:
+            if artifact.cls_name.lower() == __key:
+                return artifact
+        ValueError(f"Artifact '{__key}' not found in artifact service!")
 
     def __setitem__(self, __key: str, __value: Artifact) -> None:
         if __key in self:
             ValueError(f"Artifact '{__key}' already registered!")
-        self.store.append(__value)
+        self._store.append(__value)
 
     def __delitem__(self, __key: str) -> None:
-        for artifact in self.store:
+        for artifact in self._store:
             if artifact.name == __key:
-                self.store.remove[artifact]
+                self._store.remove[artifact]
 
     def __iter__(self) -> t.Iterator[str, Artifact]:
-        return iter(self.store)
+        return iter(self._store)
 
     def __len__(self) -> int:
         return len(self)
@@ -55,12 +57,29 @@ class Artifacts:
         return "Artifacts()"
 
     def __str__(self) -> str:
-        artifact_lst = {artifact.name for artifact in self.store}
+        artifact_lst = {artifact.name for artifact in self._store}
         return (
             "Artifacts service contains the following artifacts: "
             f"{'; '.join(artifact_lst)}. Process queue contains "
             f"{len(self.process_queue)!r} artifacts to be processed!"
         )
+
+    @property
+    def process_queue(self) -> queue.PriorityQueue:
+        return self._process_queue
+
+    @property
+    def processing_device_type(self) -> str:
+        return self._processing_device_type
+
+    @processing_device_type.setter
+    def processing_device_type(self, device_type: str):
+        self._processing_device_type = device_type
+        self.reset()
+
+        for artifact in self:
+            if artifact.core and artifact.device_type == device_type:
+                artifact.select
 
     def create_queue(self):
         for _, artifact in self:
@@ -110,7 +129,16 @@ class Artifacts:
         if window and not thread.stopped:
             window.write_event_value("<DONE>", None)
 
-    @property
+    def toggle_artifact(self, name: str):
+        """Selects/Deselects artifact for processing
+
+        Args:
+            name (str): Artifact to be selected/deselected.
+        """
+        artifact = self[name]
+        if not artifact.core:
+            artifact.select = not artifact.select
+
     def installed(self) -> list[str]:
         """Returns the list of installed artifacts
 
@@ -118,9 +146,17 @@ class Artifacts:
             The list of artifacts
         """
 
-        return sorted({artifact.name for artifact in self.store})
+        return sorted({artifact.name for artifact in self})
 
-    @property
+    def installed_categories(self) -> list[str]:
+        """Returns the list of installed artifact categories
+
+        Returns:
+            The list of artifacts
+        """
+
+        return sorted({artifact.category for artifact in self})
+
     def selected(self) -> set[str]:
         """Returns the list of selected artifacts for processing
 
@@ -128,13 +164,18 @@ class Artifacts:
             The list of selected artifacts.
         """
         selected_artifacts = set()
-        for artifact in self.store:
-            if artifact.select:
+        for artifact in self:
+            if artifact.select and (
+                artifact.device_type == self.processing_device_type
+                or not self.processing_device_type
+            ):
                 selected_artifacts.add(artifact.name)
         return sorted(selected_artifacts)
 
     def reset(self) -> None:
         """Resets the list of selected artifacts."""
-        for artifact in self.store:
-            if not artifact.core:
+        for artifact in self:
+            if not artifact.core and not (
+                artifact.device_type == self.processing_device_type
+            ):
                 artifact.selected = False
