@@ -134,15 +134,8 @@ class Application:
     def __str__(self) -> str:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
-    def __call__(
-        self,
-        *artifacts_list: str,
-        output_path: t.Optional[pathlib.Path] = None,
-        input_path: pathlib.Path,
-    ) -> Application:
-        self.output_path = output_path
+    def __call__(self) -> Application:
         self.create_output_folder()
-        self.input_path = input_path
 
         self.dbservice = db.DBService(self.report_folder)
 
@@ -153,29 +146,13 @@ class Application:
         for extraction_type, _ in sorted_plugins:
             provider: FileSeekerBase = search_providers(
                 extraction_type=extraction_type.upper(),
-                input_path=input_path,
+                input_path=self.input_path,
                 temp_folder=self.temp_folder,
             )
             if provider.validate:
                 self.seeker = provider
                 self.extraction_type = extraction_type
                 break
-
-        artifacts_str_list: t.Sequence[str]
-        if artifacts_list:
-            artifacts_str_list = [selected.lower() for selected in artifacts_list]
-
-            for artifact_plugin in self.artifacts:
-                if (
-                    artifacts_list
-                    and type(artifact_plugin).__name__ in artifacts_str_list
-                ):
-                    artifact_plugin.select = True
-                elif not artifacts_list:
-                    artifact_plugin.select = True
-                else:
-                    if not artifact_plugin.core:
-                        artifact_plugin.select = False
         return self
 
     @staticmethod

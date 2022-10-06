@@ -24,11 +24,11 @@ class ArtifactError(Exception):
 
 class Artifacts:
 
-    __slots__ = ("_store", "process_queue", "processing_device_type")
+    __slots__ = ("_store", "process_queue", "_processing_device_type")
 
     def __init__(self) -> None:
         self._store: list = list()
-        self._process_queue: queue.PriorityQueue = queue.PriorityQueue()
+        self.process_queue: queue.PriorityQueue = queue.PriorityQueue()
         self._processing_device_type = None
 
     def __getitem__(self, __key: str) -> Artifact:
@@ -63,10 +63,6 @@ class Artifacts:
             f"{'; '.join(artifact_lst)}. Process queue contains "
             f"{len(self.process_queue)!r} artifacts to be processed!"
         )
-
-    @property
-    def process_queue(self) -> queue.PriorityQueue:
-        return self._process_queue
 
     @property
     def processing_device_type(self) -> str:
@@ -163,13 +159,16 @@ class Artifacts:
         Returns:
             The list of selected artifacts.
         """
-        selected_artifacts = set()
-        for artifact in self:
-            if artifact.select and (
-                artifact.device_type == self.processing_device_type
-                or not self.processing_device_type
-            ):
-                selected_artifacts.add(artifact.name)
+        selected_artifacts = set(
+            filter(
+                lambda artifact: artifact.select
+                and (
+                    artifact.device_type == self.processing_device_type
+                    or not self.processing_device_type
+                ),
+                self,
+            )
+        )
         return sorted(selected_artifacts)
 
     def reset(self) -> None:
