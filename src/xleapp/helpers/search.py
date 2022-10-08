@@ -366,6 +366,9 @@ class FileSeekerDir(FileSeekerBase):
     def build_files_list(self, folder):
         sub_folders, files = [], []
 
+        for _fd, sub_folders, _files in os.walk(folder):
+            sub_folders.append()
+
         for item in os.scandir(folder):
             if item.is_dir():
                 sub_folders.append(item.path)

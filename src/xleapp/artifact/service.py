@@ -5,7 +5,6 @@ import queue
 import typing as t
 
 import PySimpleGUI as PySG
-import xleapp.globals as g
 
 
 if t.TYPE_CHECKING:
@@ -98,8 +97,7 @@ class Artifacts:
             thread: :mod:`threading` instance for processing artifacts. Defaults to None.
         """
         num_processed = 0
-        device_type: str = g.app.device["Type"]
-        plugins: Plugin = list(g.app.plugins[device_type])[0]
+        plugins: Plugin = self.selected()
 
         if hasattr(plugins, "pre_process"):
             plugins.pre_process(self)
@@ -107,7 +105,7 @@ class Artifacts:
         if window:
             window["<PROGRESSBAR>"].update(0, self.app.num_to_process)
 
-        while not self.queue.empty():
+        while not self.process_queue.empty():
             if thread and thread.stopped:
                 break
 
@@ -159,7 +157,7 @@ class Artifacts:
         Returns:
             The list of selected artifacts.
         """
-        selected_artifacts = set(
+        return list(
             filter(
                 lambda artifact: artifact.select
                 and (
@@ -169,7 +167,6 @@ class Artifacts:
                 self,
             )
         )
-        return sorted(selected_artifacts)
 
     def reset(self) -> None:
         """Resets the list of selected artifacts."""

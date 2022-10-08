@@ -134,8 +134,10 @@ class Application:
     def __str__(self) -> str:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
-    def __call__(self) -> Application:
-        self.create_output_folder()
+    def __call__(
+        self, output_folder: pathlib.Path, input_path: pathlib.path
+    ) -> Application:
+        self.create_output_folder(output_folder)
 
         self.dbservice = db.DBService(self.report_folder)
 
@@ -146,7 +148,7 @@ class Application:
         for extraction_type, _ in sorted_plugins:
             provider: FileSeekerBase = search_providers(
                 extraction_type=extraction_type.upper(),
-                input_path=self.input_path,
+                input_path=input_path,
                 temp_folder=self.temp_folder,
             )
             if provider.validate:
@@ -180,7 +182,14 @@ class Application:
     def jinja_env(self) -> jinja2.Environment:
         return self.create_jinja_environment()
 
-    def create_output_folder(self) -> None:
+    def create_output_folder(self, output_path: pathlib.Path) -> None:
+        if not output_path:
+            raise ValueError(
+                "Output path cannot be 'None'. You must set 'output_path' before "
+                "trying to create the output folder."
+            )
+
+        self.output_path = output_path
         now = datetime.datetime.now()
         current_time = now.strftime("%Y-%m-%d_%A_%H%M%S")
 
@@ -294,10 +303,13 @@ class Application:
 
     @property
     def num_to_process(self) -> int:
-        return len(self.artifacts.selected(self.device["Type"]))
+        return len(self.artifacts.selected())
 
     @property
     def num_of_categories(self) -> int:
         return len(
             {artifact.category for artifact in self.artifacts if artifact.select},
         )
+
+    def set_device_type(self, device_type: str):
+        self.device.update({"Type": device_type})

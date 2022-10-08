@@ -115,6 +115,7 @@ def test_artifact():
     class TestArtifact(Artifact, category="Test", label="Test Artifact"):
 
         __test__ = False
+        device_type = "test"
 
         def __post_init__(self) -> None:
             self.name = "Accounts"
@@ -154,7 +155,7 @@ def test_artifact():
                         row_dict = dict_from_row(row)  # noqa
                         self.data.append(tuple(row_dict.values()))
 
-    return dataclass(TestArtifact)
+    return dataclass(TestArtifact, frozen=True, eq=True)
 
 
 @pytest.fixture
@@ -185,7 +186,7 @@ def app(
     mocker.patch(
         "xleapp.app.Application.discover_plugins", return_value=fake_discover_plugins()
     )
-    app = Application(device_type="ios")
+    app = Application()
     for artifact in app.artifacts:
         artifact.select = True
 
@@ -194,7 +195,10 @@ def app(
     except AttributeError:
         xleapp.globals.app = app
 
-    yield app(input_path=ios_image, output_path=output_path)
+    app.device.update({"Type": "device_type"})
+    app.output_path = output_path
+
+    yield app()
 
     shutil.rmtree(app.report_folder)
 

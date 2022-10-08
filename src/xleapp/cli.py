@@ -54,9 +54,8 @@ def device(
     """
     start_time = time.perf_counter()
 
-    application.device.update({"Type": device_type})
-    application.output_path = output_folder
-    application.input_path = input_path
+    application.set_device_type(device_type)
+    application = application(output_folder, input_path)
 
     if len(artifacts) == 0:
         for artifact in application.artifacts:
