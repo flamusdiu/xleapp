@@ -32,7 +32,7 @@ class Artifacts:
 
     def __getitem__(self, __key: str) -> Artifact:
         for artifact in self._store:
-            if artifact.cls_name.lower() == __key:
+            if artifact.cls_name == _Artifacts__key:
                 return artifact
         ValueError(f"Artifact '{__key}' not found in artifact service!")
 

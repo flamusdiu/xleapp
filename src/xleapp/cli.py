@@ -7,6 +7,7 @@ import xleapp.app as app
 import xleapp.globals as g
 import xleapp.helpers.decorators as decorators
 import xleapp.helpers.utils as utils
+import xleapp.log as log
 import xleapp.templating as templating
 
 
@@ -52,18 +53,32 @@ def device(
         output_folder (click.Path): path to the output folder to create the report
         artifacts (list): list of artifacts to parse. Default: All
     """
+
     start_time = time.perf_counter()
 
     application.set_device_type(device_type)
-    application = application(output_folder, input_path)
+    application.create_output_folder(output_folder)
+    log.init()
 
     if len(artifacts) == 0:
         for artifact in application.artifacts:
-            if artifact.device == device_type:
+            if artifact.device_type == device_type:
                 application.artifacts.toggle_artifact(artifact.cls_name)
     else:
         for artifact in artifacts:
             application.artifacts.toggle_artifact(artifact)
+
+    click.echo(
+        utils.generate_program_header(
+            f"{version.__project__} {version.__version__}",
+            input_path,
+            application.report_folder,
+            application.num_to_process,
+            application.num_of_categories,
+        ),
+    )
+
+    application = application(output_folder, input_path)
 
     @decorators.timed
     def process():
@@ -137,19 +152,19 @@ def cli(application: app.Application):
             application.artifacts.installed_categories()
         )
 
-    else:
+    if current_ctx.invoked_subcommand not in ["device"]:
         num_of_installed_or_process = application.num_to_process
         num_of_installed_or_process_categories = application.num_of_categories
 
-    click.echo(
-        utils.generate_program_header(
-            f"{version.__project__} v{version.__version__}",
-            application.input_path,
-            application.report_folder,
-            num_of_installed_or_process,
-            num_of_installed_or_process_categories,
-        ),
-    )
+        click.echo(
+            utils.generate_program_header(
+                f"{version.__project__} {version.__version__}",
+                application.input_path,
+                application.report_folder,
+                num_of_installed_or_process,
+                num_of_installed_or_process_categories,
+            ),
+        )
 
 
 cli.add_command(artifact_table)

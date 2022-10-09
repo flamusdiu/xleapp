@@ -137,8 +137,6 @@ class Application:
     def __call__(
         self, output_folder: pathlib.Path, input_path: pathlib.path
     ) -> Application:
-        self.create_output_folder(output_folder)
-
         self.dbservice = db.DBService(self.report_folder)
 
         sorted_plugins = sorted(
@@ -248,7 +246,7 @@ class Application:
             artifacts=self.artifacts,
         )
 
-        for selected_artifact in artifact.filter_artifacts(self.artifacts):
+        for selected_artifact in self.artifacts.selected():
             msg_artifact = (
                 f"-> {selected_artifact.category} [{selected_artifact.cls_name}]"
             )
