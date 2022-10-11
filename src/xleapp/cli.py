@@ -83,7 +83,7 @@ def device(
     @decorators.timed
     def process():
         logger_log.info(f"Processing {application.num_to_process} artifacts...")
-        application.artifacts.run_queue()
+        application.run()
 
     run_time, _ = process()
     logger_log.info(f"\nCompleted processing artifacts in {run_time:.2f}s")

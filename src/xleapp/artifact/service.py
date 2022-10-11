@@ -77,13 +77,13 @@ class Artifacts:
                 artifact.select
 
     def create_queue(self):
-        for _, artifact in self:
+        for artifact in self:
             priority = 10
             if artifact.core:
                 priority = 1
 
-            priority = artifact.priority or priority
-            self.queue.put((priority, artifact))
+            priority = getattr(artifact, "priority", None) or priority
+            self.process_queue.put((priority, artifact))
 
     def run_queue(
         self,

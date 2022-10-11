@@ -64,16 +64,16 @@ class AbstractArtifactDefaults:
         compare=False,
         default_factory=lambda: [],
     )
-    found: FoundFiles = field(init=False, default=FoundFiles())
-    long_running_process: bool = field(init=False, default=False)
-    processed: bool = field(init=False, default=False)
-    process_time: float = field(init=False, default=float())
-    report: bool = field(init=False, default=True)
+    found: FoundFiles = field(init=False, default=FoundFiles(), compare=False)
+    long_running_process: bool = field(init=False, default=False, compare=False)
+    processed: bool = field(init=False, default=False, compare=False)
+    process_time: float = field(init=False, default=float(), compare=False)
+    report: bool = field(init=False, default=True, compare=False)
     report_title: str = field(init=False, default="")
     report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
-    select: bool = field(init=False, default=False)
-    timeline: bool = field(init=False, default=False)
-    web_icon: Icon = field(init=False, default=Icon())
+    select: bool = field(init=False, default=False, compare=False)
+    timeline: bool = field(init=False, default=False, compare=False)
+    web_icon: Icon = field(init=False, default=Icon(), compare=False)
 
 
 @dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374

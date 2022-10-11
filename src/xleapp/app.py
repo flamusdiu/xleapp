@@ -227,9 +227,10 @@ class Application:
 
     def run(
         self,
-        window: t.Optional[PySG.Window],
-        thread: t.Optional[ProcessThread],
+        window: t.Optional[PySG.Window] = None,
+        thread: t.Optional[ProcessThread] = None,
     ) -> None:
+        self.artifacts.create_queue()
         self.artifacts.run_queue(window=window, thread=thread)
 
     def generate_artifact_table(self) -> None:
