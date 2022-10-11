@@ -32,7 +32,7 @@ class Artifacts:
 
     def __getitem__(self, __key: str) -> Artifact:
         for artifact in self._store:
-            if artifact.cls_name == _Artifacts__key:
+            if artifact.cls_name.lower() == __key:
                 return artifact
         ValueError(f"Artifact '{__key}' not found in artifact service!")
 
@@ -43,7 +43,7 @@ class Artifacts:
 
     def __delitem__(self, __key: str) -> None:
         for artifact in self._store:
-            if artifact.name == __key:
+            if artifact.cls_name.lower() == __key:
                 self._store.remove[artifact]
 
     def __iter__(self) -> t.Iterator[str, Artifact]:

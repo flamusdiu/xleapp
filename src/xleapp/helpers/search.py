@@ -357,11 +357,8 @@ class FileSeekerDir(FileSeekerBase):
         self.input_path = pathlib.Path(directory_or_file)
         if self.validate:
             logger_log.info("Building files listing...")
-            sub_folders, files = self.build_files_list(directory_or_file)
-            self.all_files.union(sub_folders)
-            self.all_files.union(files)
-            self.all_files = sorted(self.all_files)
-            logger_log.info(f"File listing complete - {len(self._all_files)} files")
+            self.all_files = self.build_files_list(directory_or_file)
+            logger_log.info(f"File listing complete - {len(self.all_files)} files")
         return self
 
     def build_files_list(self, folder):
@@ -374,7 +371,7 @@ class FileSeekerDir(FileSeekerBase):
             for f in fls:
                 files.add(f"{root}\\{f}")
 
-        return folders, files
+        return folders | files
 
     def search(self, file_pattern):
         return iter(fnmatch.filter(self.all_files, file_pattern))
