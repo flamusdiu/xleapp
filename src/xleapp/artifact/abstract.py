@@ -97,7 +97,27 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
             cls.category = category
-            app.__ARTIFACT_PLUGINS__[label] = dataclass(cls)()
+            app.__ARTIFACT_PLUGINS__[label] = dataclass(cls, eq=False)()
+
+    def __eq__(self, __o: object) -> bool:
+        if isinstance(__o, str):
+            return self.name == __o
+
+        if isinstance(__o, Artifact):
+            return (self.category, self.name, self.device_type) == (
+                __o.category,
+                __o.name,
+                __o.device_type,
+            )
+
+        return False
+
+    def __lt__(self, __o: object) -> bool:
+        return (self.device_type, self.category, self.name) < (
+            __o.device_type,
+            __o.category,
+            __o.name,
+        )
 
     @contextlib.contextmanager
     def context(self) -> t.Iterator[Artifact]:
