@@ -124,7 +124,6 @@ class Application:
             "media_root": "**/Media",
             "thumbnail_size": (256, 256),
         }
-        self.discover_plugins()
         self.project = __project__
         self.version = __version__
 
@@ -271,7 +270,7 @@ class Application:
                 )
 
             if selected_artifact.processed and hasattr(selected_artifact, "data"):
-                artifact_name = selected_artifact.value.name
+                artifact_name = selected_artifact.name
                 data_list = selected_artifact.data
                 data_headers = selected_artifact.report_headers
 
@@ -311,4 +310,4 @@ class Application:
         )
 
     def set_device_type(self, device_type: str):
-        self.device.update({"Type": device_type})
+        self.artifacts.processing_device_type = device_type

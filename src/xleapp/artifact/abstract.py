@@ -44,6 +44,7 @@ class AbstractBase:
         default=SearchRegex(),
     )
     device_type: str = field(init=False)
+    device: app.Device = field(init=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
@@ -97,9 +98,12 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
             cls.category = category
-            app.__ARTIFACT_PLUGINS__[label] = dataclass(cls, eq=False)()
+            cls.device = g.app.device
 
-    def __eq__(self, __o: object) -> bool:
+            artifact = dataclass(cls, eq=False)()
+            app.__ARTIFACT_PLUGINS__[label] = artifact
+
+    def __eq__(self, __o: t.Union[str, Artifact]) -> bool:
         if isinstance(__o, str):
             return self.name == __o
 
@@ -112,7 +116,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
 
         return False
 
-    def __lt__(self, __o: object) -> bool:
+    def __lt__(self, __o: Artifact) -> bool:
         return (self.device_type, self.category, self.name) < (
             __o.device_type,
             __o.category,
@@ -189,7 +193,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         Returns:
             Path to the folder to save files
         """
-        return pathlib.Path(self.app.report_folder / "export" / self.cls_name)
+        return pathlib.Path(g.app.report_folder / "export" / self.cls_name)
 
     @property
     def kml(self) -> bool:

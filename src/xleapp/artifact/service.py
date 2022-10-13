@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import functools
 import logging
 import queue
 import typing as t
 
 import PySimpleGUI as PySG
+
+from xleapp.helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
@@ -13,6 +16,20 @@ if t.TYPE_CHECKING:
     from xleapp.plugins import Plugin
 
 logger_log = logging.getLogger("xleapp.logfile")
+
+
+def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
+    @functools.wraps(cls)
+    def process_wrapper() -> None:
+        msg_artifact = f"{cls.category} [{cls.cls_name}] artifact"
+        logger_log.info(f"\n{msg_artifact} processing...")
+        cls.process_time = process_wrapper.orig_func()
+        if not cls.processed:
+            logger_log.warn("-> Failed to processed!")
+        logger_log.info(f"{msg_artifact} finished in {cls.process_time:.2f}s")
+
+    process_wrapper.orig_func = cls.process
+    return t.cast(DecoratedFunc, process_wrapper)
 
 
 class ArtifactError(Exception):
@@ -32,13 +49,13 @@ class Artifacts:
 
     def __getitem__(self, __key: str) -> Artifact:
         for artifact in self._store:
-            if artifact.cls_name.lower() == __key:
+            if artifact.cls_name.lower() == __key.lower():
                 return artifact
-        ValueError(f"Artifact '{__key}' not found in artifact service!")
+        raise ValueError(f"Artifact '{__key}' not found in artifact service!")
 
     def __setitem__(self, __key: str, __value: Artifact) -> None:
         if __key in self:
-            ValueError(f"Artifact '{__key}' already registered!")
+            raise ValueError(f"Artifact '{__key}' already registered!")
         self._store.append(__value)
 
     def __delitem__(self, __key: str) -> None:
@@ -83,6 +100,8 @@ class Artifacts:
                 priority = 1
 
             priority = getattr(artifact, "priority", None) or priority
+
+            artifact.process = artifact_process(artifact)
             self.process_queue.put((priority, artifact))
 
     def run_queue(
@@ -109,17 +128,17 @@ class Artifacts:
             if thread and thread.stopped:
                 break
 
-            _, artifact = self.queue.get()
+            _, artifact = self.process_queue.get()
 
             if not artifact.select:
-                self.queue.task_done()
+                self.process_queue.task_done()
                 continue
 
             artifact.process()
             num_processed += 1
             if window:
                 window.write_event_value("<THREAD>", num_processed)
-            self.queue.task_done()
+            self.process_queue.task_done()
         if window and not thread.stopped:
             window.write_event_value("<DONE>", None)
 
@@ -174,4 +193,6 @@ class Artifacts:
             if not artifact.core and not (
                 artifact.device_type == self.processing_device_type
             ):
-                artifact.selected = False
+                artifact.select = False
+            elif artifact.core and (artifact.device_type == self.processing_device_type):
+                artifact.select = True

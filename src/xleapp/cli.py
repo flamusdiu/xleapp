@@ -144,6 +144,8 @@ def artifact_path_lists(application: app.Application):
 @pass_application
 def cli(application: app.Application):
     g.app = application
+    g.app.discover_plugins()
+
     current_ctx = click.get_current_context()
 
     if current_ctx.invoked_subcommand in ["artifact-table", "artifact-path-lists"]:
