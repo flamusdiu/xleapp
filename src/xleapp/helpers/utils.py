@@ -148,7 +148,7 @@ def deep_get(dictionary: dict, *keys: str) -> t.Any:
     )
 
 
-def filter_json(self, json: t.Any, fields: tuple[str | tuple[str]]) -> dict:
+def filter_json(json: t.Any, fields: tuple[str | tuple[str]]) -> dict:
     """Returns a dictionary from a json object
 
     Args:

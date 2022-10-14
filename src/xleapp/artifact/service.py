@@ -5,8 +5,11 @@ import logging
 import queue
 import typing as t
 
+from plistlib import InvalidFileException
+
 import PySimpleGUI as PySG
 
+from xleapp.helpers.decorators import timed
 from xleapp.helpers.types import DecoratedFunc
 
 
@@ -23,12 +26,17 @@ def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
     def process_wrapper() -> None:
         msg_artifact = f"{cls.category} [{cls.cls_name}] artifact"
         logger_log.info(f"\n{msg_artifact} processing...")
-        cls.process_time = process_wrapper.orig_func()
+        try:
+            cls.process_time, _ = process_wrapper.orig_func()
+        except InvalidFileException as err:
+            logger_log.warn(f"-> {err}")
+            cls.processed = False
+
         if not cls.processed:
             logger_log.warn("-> Failed to processed!")
         logger_log.info(f"{msg_artifact} finished in {cls.process_time:.2f}s")
 
-    process_wrapper.orig_func = cls.process
+    process_wrapper.orig_func = timed(cls.process)
     return t.cast(DecoratedFunc, process_wrapper)
 
 
