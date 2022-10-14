@@ -1,10 +1,11 @@
+import click
 import xleapp._version as version
 
 from xleapp.helpers.utils import generate_program_header
 
 
 def test_generate_program_header(app, capsys):
-    print(
+    click.echo(
         generate_program_header(
             f"{version.__project__} v0.2.1",
             "C:\\4n6_output",

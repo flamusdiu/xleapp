@@ -44,6 +44,7 @@ class AbstractBase:
         default=SearchRegex(),
     )
     device_type: str = field(init=False)
+    device: app.Device = field(init=False)
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
@@ -64,16 +65,16 @@ class AbstractArtifactDefaults:
         compare=False,
         default_factory=lambda: [],
     )
-    found: FoundFiles = field(init=False, default=FoundFiles())
-    long_running_process: bool = field(init=False, default=False)
-    processed: bool = field(init=False, default=False)
-    process_time: float = field(init=False, default=float())
-    report: bool = field(init=False, default=True)
+    found: FoundFiles = field(init=False, default=FoundFiles(), compare=False)
+    long_running_process: bool = field(init=False, default=False, compare=False)
+    processed: bool = field(init=False, default=False, compare=False)
+    process_time: float = field(init=False, default=float(), compare=False)
+    report: bool = field(init=False, default=True, compare=False)
     report_title: str = field(init=False, default="")
     report_headers: ReportHeaders = field(init=False, default=ReportHeaders())
-    select: bool = field(init=False, default=False)
-    timeline: bool = field(init=False, default=False)
-    web_icon: Icon = field(init=False, default=Icon())
+    select: bool = field(init=False, default=False, compare=False)
+    timeline: bool = field(init=False, default=False, compare=False)
+    web_icon: Icon = field(init=False, default=Icon(), compare=False)
 
 
 @dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
@@ -97,7 +98,30 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
             cls.category = category
-            app.__ARTIFACT_PLUGINS__.store.append(cls())
+            cls.device = g.app.device
+
+            artifact = dataclass(cls, eq=False)()
+            app.__ARTIFACT_PLUGINS__[label] = artifact
+
+    def __eq__(self, __o: t.Union[str, Artifact]) -> bool:
+        if isinstance(__o, str):
+            return self.name == __o
+
+        if isinstance(__o, Artifact):
+            return (self.category, self.name, self.device_type) == (
+                __o.category,
+                __o.name,
+                __o.device_type,
+            )
+
+        return False
+
+    def __lt__(self, __o: Artifact) -> bool:
+        return (self.device_type, self.category, self.name) < (
+            __o.device_type,
+            __o.category,
+            __o.name,
+        )
 
     @contextlib.contextmanager
     def context(self) -> t.Iterator[Artifact]:
@@ -169,7 +193,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         Returns:
             Path to the folder to save files
         """
-        return pathlib.Path(self.app.report_folder / "export" / self.cls_name)
+        return pathlib.Path(g.app.report_folder / "export" / self.cls_name)
 
     @property
     def kml(self) -> bool:

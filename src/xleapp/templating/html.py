@@ -183,8 +183,7 @@ class ArtifactHtmlReport(HtmlPage):
         """Generates report information (html, tsv, kml, and timeline)"""
         html = self.html()
         output_file = (
-            self.report_folder
-            / f"{self.artifact.category} - {self.artifact.value.name}.html"
+            self.report_folder / f"{self.artifact.category} - {self.artifact.name}.html"
         )
         output_file.write_text(html, encoding="UTF-8")
 

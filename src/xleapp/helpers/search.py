@@ -255,7 +255,7 @@ class FileSeekerBase(abc.ABC):
 
     temp_folder: pathlib.Path
     input_path: InputPathValidation = InputPathValidation()
-    _all_files: t.Union[list[str], dict[str, str]] = []
+    _all_files: set = set()
     _file_handles = FileHandles()
 
     def __repr__(self) -> str:
@@ -315,16 +315,16 @@ class FileSeekerBase(abc.ABC):
         raise NotImplementedError(f"Need to set a priority for {self!r}")
 
     @property
-    def all_files(self) -> t.Union[list[str], dict[str, str]]:
-        """List of all files searched
+    def all_files(self) -> set:
+        """Set of all files searched
 
         Returns:
-            A list or a dictionary of files
+            A Set of all files
         """
         return self._all_files
 
     @all_files.setter
-    def all_files(self, files: t.Union[list[str], dict[str, str]]):
+    def all_files(self, files: set):
         self._all_files = files
 
     @property
@@ -357,27 +357,21 @@ class FileSeekerDir(FileSeekerBase):
         self.input_path = pathlib.Path(directory_or_file)
         if self.validate:
             logger_log.info("Building files listing...")
-            sub_folders, files = self.build_files_list(directory_or_file)
-            self.all_files.extend(sub_folders)
-            self.all_files.extend(files)
-            logger_log.info(f"File listing complete - {len(self._all_files)} files")
+            self.all_files = self.build_files_list(directory_or_file)
+            logger_log.info(f"File listing complete - {len(self.all_files)} files")
         return self
 
     def build_files_list(self, folder):
-        sub_folders, files = [], []
+        folders, files = set(), set()
 
-        for item in os.scandir(folder):
-            if item.is_dir():
-                sub_folders.append(item.path)
-            if item.is_file():
-                files.append(item.path)
+        for root, sub_folders, fls in os.walk(folder):
+            for folder in sub_folders:
+                folders.add(f"{root}\\{folder}")
 
-        for folder in list(sub_folders):
-            sf, items = self.build_files_list(folder)
-            sub_folders.extend(sf)
-            files.extend(items)
+            for f in fls:
+                files.add(f"{root}\\{f}")
 
-        return sub_folders, files
+        return folders | files
 
     def search(self, file_pattern):
         return iter(fnmatch.filter(self.all_files, file_pattern))

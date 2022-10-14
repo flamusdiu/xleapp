@@ -115,10 +115,3 @@ def copyfile(input_file: Path | bytes, output_file: Path) -> Path:
         shutil.copy2(input_file, output_file)
         logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
     return output_file
-
-
-def filter_artifacts(artifact_list: t.Iterable) -> filter:
-    return filter(
-        lambda artifact: getattr(artifact, "select", False) is True,
-        artifact_list,
-    )

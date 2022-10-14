@@ -66,13 +66,13 @@ def generate_nav(
     """
     nav = collections.defaultdict(set)
 
-    for artifact in artifacts.data:
-        if artifact.select:
+    for artifact in artifacts.selected():
+        if artifact.processed:
             temp_item = NavigationItem(
-                name=artifact.value.name,
+                name=artifact.name,
                 web_icon=artifact.web_icon.value,
                 href=str(
-                    report_folder / f"{artifact.category} - {artifact.value.name}.html",
+                    report_folder / f"{artifact.category} - {artifact.name}.html",
                 ),
             )
             nav[artifact.category].add(temp_item)

@@ -4,9 +4,9 @@ import typing as t
 
 import jinja2
 import jinja2.ext
-import jinja2.utils
 
 from jinja2 import nodes
+from jinja2.utils import markupsafe
 
 
 if t.TYPE_CHECKING:
@@ -28,4 +28,4 @@ class IncludeLogFileExtension(jinja2.ext.Extension):
             file_text = "".join(source.split("\r"))
         except Exception:
             file_text = f"{template} not found or missing! No logs available."
-        return jinja2.Markup(f'<pre class="log-file">{file_text}</pre>')
+        return markupsafe.Markup(f'<pre class="log-file">{file_text}</pre>')

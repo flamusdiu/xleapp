@@ -124,7 +124,6 @@ class Application:
             "media_root": "**/Media",
             "thumbnail_size": (256, 256),
         }
-        self.discover_plugins()
         self.project = __project__
         self.version = __version__
 
@@ -135,15 +134,8 @@ class Application:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
     def __call__(
-        self,
-        *artifacts_list: str,
-        output_path: t.Optional[pathlib.Path] = None,
-        input_path: pathlib.Path,
+        self, output_folder: pathlib.Path, input_path: pathlib.path
     ) -> Application:
-        self.output_path = output_path
-        self.create_output_folder()
-        self.input_path = input_path
-
         self.dbservice = db.DBService(self.report_folder)
 
         sorted_plugins = sorted(
@@ -160,22 +152,6 @@ class Application:
                 self.seeker = provider
                 self.extraction_type = extraction_type
                 break
-
-        artifacts_str_list: t.Sequence[str]
-        if artifacts_list:
-            artifacts_str_list = [selected.lower() for selected in artifacts_list]
-
-            for artifact_plugin in self.artifacts:
-                if (
-                    artifacts_list
-                    and type(artifact_plugin).__name__ in artifacts_str_list
-                ):
-                    artifact_plugin.select = True
-                elif not artifacts_list:
-                    artifact_plugin.select = True
-                else:
-                    if not artifact_plugin.core:
-                        artifact_plugin.select = False
         return self
 
     @staticmethod
@@ -203,7 +179,14 @@ class Application:
     def jinja_env(self) -> jinja2.Environment:
         return self.create_jinja_environment()
 
-    def create_output_folder(self) -> None:
+    def create_output_folder(self, output_path: pathlib.Path) -> None:
+        if not output_path:
+            raise ValueError(
+                "Output path cannot be 'None'. You must set 'output_path' before "
+                "trying to create the output folder."
+            )
+
+        self.output_path = output_path
         now = datetime.datetime.now()
         current_time = now.strftime("%Y-%m-%d_%A_%H%M%S")
 
@@ -243,9 +226,10 @@ class Application:
 
     def run(
         self,
-        window: t.Optional[PySG.Window],
-        thread: t.Optional[ProcessThread],
+        window: t.Optional[PySG.Window] = None,
+        thread: t.Optional[ProcessThread] = None,
     ) -> None:
+        self.artifacts.create_queue()
         self.artifacts.run_queue(window=window, thread=thread)
 
     def generate_artifact_table(self) -> None:
@@ -262,7 +246,7 @@ class Application:
             artifacts=self.artifacts,
         )
 
-        for selected_artifact in artifact.filter_artifacts(self.artifacts):
+        for selected_artifact in self.artifacts.selected():
             msg_artifact = (
                 f"-> {selected_artifact.category} [{selected_artifact.cls_name}]"
             )
@@ -286,7 +270,7 @@ class Application:
                 )
 
             if selected_artifact.processed and hasattr(selected_artifact, "data"):
-                artifact_name = selected_artifact.value.name
+                artifact_name = selected_artifact.name
                 data_list = selected_artifact.data
                 data_headers = selected_artifact.report_headers
 
@@ -317,10 +301,13 @@ class Application:
 
     @property
     def num_to_process(self) -> int:
-        return len(self.artifacts.selected)
+        return len(self.artifacts.selected())
 
     @property
     def num_of_categories(self) -> int:
         return len(
             {artifact.category for artifact in self.artifacts if artifact.select},
         )
+
+    def set_device_type(self, device_type: str):
+        self.artifacts.processing_device_type = device_type

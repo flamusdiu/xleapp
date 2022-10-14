@@ -28,7 +28,6 @@ def core_artifact(cls: DecoratedFunc) -> DecoratedFunc:
     def core_wrapper(cls):
         if issubclass(cls, Artifact):
             cls.core = True
-            cls.select = True
             return cls
         else:
             raise AttributeError(
@@ -64,6 +63,19 @@ def long_running_process(cls: DecoratedFunc) -> DecoratedFunc:
             )
 
     return t.cast(DecoratedFunc, lrp_wrapper(cls))
+
+
+def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
+    @functools.wraps(cls)
+    def process_wrapper(cls) -> None:
+        msg_artifact = f"{cls.category} [{cls.cls_name}] artifact"
+        logger_log.info(f"\n{msg_artifact} processing...")
+        cls.process_time, _ = cls.process()
+        if not cls.processed:
+            logger_log.warn("-> Failed to processed!")
+        logger_log.info(f"{msg_artifact} finished in {cls.process_time:.2f}s")
+
+    return t.cast(DecoratedFunc, process_wrapper)
 
 
 class Search:
