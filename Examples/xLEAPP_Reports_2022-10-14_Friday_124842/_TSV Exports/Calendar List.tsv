@@ -1,0 +1,15 @@
+﻿Title	Flags	Color	Symbolic Color Name	External ID	Self Identity Email
+Default	2	#CC73E1			
+DEFAULT_CALENDAR_NAME	0	#1BADF8			
+DEFAULT_TASK_CALENDAR_NAME	0	#1BADF8			
+Facebook Birthdays	519	#8295AF			
+Found in Mail	262149	#8295AF			
+Found in Natural Language	524295	#8295AF			
+Birthdays	5	#8295af	custom		
+thisisdfir@gmail.com	1048610	#FF9500		/17193901029/calendars/inbox/	thisisdfir@gmail.com
+thisisdfir@gmail.com	1048647	#FF9500		/17193901029/calendars/notification/	thisisdfir@gmail.com
+Work	1050880	#CC73E1FF	purple	/17193901029/calendars/work/	thisisdfir@gmail.com
+Home	1050880	#34AADCFF	custom	/17193901029/calendars/home/	thisisdfir@gmail.com
+US Holidays	4105	#FF9500		__HolidayCalendar__	
+thisisdfir@gmail.com	1048610	#63DA38		/calendar/dav/thisisdfir%40gmail.com/inbox/	thisisdfir@gmail.com
+thisisdfir@gmail.com	1048576	#9FE1E7FF	custom	/calendar/dav/thisisdfir%40gmail.com/events/	thisisdfir@gmail.com

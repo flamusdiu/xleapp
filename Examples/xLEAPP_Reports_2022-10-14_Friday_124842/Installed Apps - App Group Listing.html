@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>xLEAPP - App Group Listing</title>
+    <!-- Dark mode -->
+    <link rel="stylesheet" href="_static/dark-mode.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/bootstrap.min.css">
+    <!-- Material Design Bootstrap - TOGGLE THIS FOR ALTERNATE DESIGN!-->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/mdb.min.css">
+    <!-- Your custom styles (optional) -->
+    <link rel="stylesheet" href="_static/dashboard.css">
+    <link rel="stylesheet" href="_static/chats.css">
+    <!-- MDBootstrap Datatables  -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/addons/datatables.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <!--script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script-->
+    <script src="_static/feather.min.js"></script>
+</head>
+
+<body>
+    <!-- Start your project here-->
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="index.html">xLEAPP v0.2.1</a>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+            <label class="custom-control-label mr-2" for="darkSwitch" style="color:white">Dark Switch</label>
+        </div>
+        <script src="_static/dark-mode-switch.js"></script>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky" id="sidebar_id">
+                    <ul class="nav flex-column">
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Saved reports
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link " href="index.html"><span data-feather="home"></span>Report Home</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Accounts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Account Configuration.html"><span
+                                    data-feather="user"></span>Account Configuration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Accounts.html"><span
+                                    data-feather="user"></span>Accounts</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Address Book
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Address Book - Address Book.html"><span
+                                    data-feather="book-open"></span>Address Book</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Alarms
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Alarms - Alarms.html"><span
+                                    data-feather="alert-triangle"></span>Alarms</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            App Conduit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="App Conduit - App Conduit.html"><span
+                                    data-feather="alert-triangle"></span>App Conduit</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Podcasts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Episodes.html"><span
+                                    data-feather="alert-triangle"></span>Episodes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Shows.html"><span
+                                    data-feather="alert-triangle"></span>Shows</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Wallet
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Cards.html"><span
+                                    data-feather="alert-triangle"></span>Cards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Passes.html"><span
+                                    data-feather="alert-triangle"></span>Passes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Tranactions.html"><span
+                                    data-feather="alert-triangle"></span>Tranactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Bluetooth
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Other LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Other LE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired LE</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Calendar
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Identity.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Identity</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Items.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar List.html"><span
+                                    data-feather="alert-triangle"></span>Calendar List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Call History
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Call History - Call History.html"><span
+                                    data-feather="phone-call"></span>Call History</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Cash App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Cash App - Transactions.html"><span
+                                    data-feather="alert-triangle"></span>Transactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Celluar Wireless
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Celluar Wireless - Celluar Wireless.html"><span
+                                    data-feather="bar-chart"></span>Celluar Wireless</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            CloudKit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - CloudKit Note Sharing.html"><span
+                                    data-feather="alert-triangle"></span>CloudKit Note Sharing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - Participants.html"><span
+                                    data-feather="alert-triangle"></span>Participants</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Connected to
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Connected to - Connected Devices.html"><span
+                                    data-feather="alert-triangle"></span>Connected Devices</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Core
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Core - Build Information.html"><span
+                                    data-feather="git-commit"></span>Build Information</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            DHCP
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Hotspot Clients.html"><span
+                                    data-feather="settings"></span>Hotspot Clients</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Recevied List.html"><span
+                                    data-feather="alert-triangle"></span>Recevied List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Discord
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Accounts.html"><span
+                                    data-feather="message-square"></span>Discord Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Manifest.html"><span
+                                    data-feather="alert-triangle"></span>Discord Manifest</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Messages.html"><span
+                                    data-feather="message-square"></span>Discord Messages</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Facebook Messenger
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Calls.html"><span
+                                    data-feather="facebook"></span>Calls</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Chats.html"><span
+                                    data-feather="alert-triangle"></span>Chats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Contacts.html"><span
+                                    data-feather="facebook"></span>Contacts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Conversation Groups.html"><span
+                                    data-feather="facebook"></span>Conversation Groups</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Secret Conversations.html"><span
+                                    data-feather="facebook"></span>Secret Conversations</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Files App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Client Items.html"><span
+                                    data-feather="file-text"></span>iCloud Client Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Server Items.html"><span
+                                    data-feather="file-text"></span>iCloud Server Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Sync Names.html"><span
+                                    data-feather="file-text"></span>iCloud Sync Names</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iCloud Returns
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud - File Metadata.html"><span
+                                    data-feather="alert-triangle"></span>iCloud - File Metadata</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud Photos Metadata.html"><span
+                                    data-feather="cloud"></span>iCloud Photos Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Installed Apps
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Installed Apps - App Group Listing.html"><span
+                                    data-feather="package"></span>App Group Listing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - App Snapshots (screenshots).html"><span
+                                    data-feather="alert-triangle"></span>App Snapshots (screenshots)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - Application State.html"><span
+                                    data-feather="alert-triangle"></span>Application State</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - Itunes & Bundle Metadata.html"><span
+                                    data-feather="alert-triangle"></span>Itunes & Bundle Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            IOS Build
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iOS Device Activator Data.html"><span
+                                    data-feather="alert-triangle"></span>iOS Device Activator Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iTunes Backup.html"><span
+                                    data-feather="alert-triangle"></span>iTunes Backup</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iOS Screens
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iOS Screens - Apps per screen.html"><span
+                                    data-feather="alert-triangle"></span>Apps per screen</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Locations
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Group.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Group</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Search History.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Search History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Application.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Application</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Map Tiles.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Map Tiles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD PD Place Cache.html"><span
+                                    data-feather="alert-triangle"></span>GeoD PD Place Cache</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Google Maps Cache Routes.html"><span
+                                    data-feather="map-pin"></span>Google Maps Cache Routes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Known Networks.html"><span
+                                    data-feather="wifi"></span>Wifi Known Networks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Networks Scanned (private).html"><span
+                                    data-feather="wifi"></span>Wifi Networks Scanned (private)</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Voice-Recordings
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Voice-Recordings - Voice Recordings.html"><span
+                                    data-feather="mic"></span>Voice Recordings</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Wifi Connections
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Wifi Connections - iCloud Wifi Networks.html"><span
+                                    data-feather="alert-triangle"></span>iCloud Wifi Networks</a>
+                        </li>
+                        <script>
+                            feather.replace();
+                            var element = document.getElementById( "sidebar_id" );
+                            var searchParams = new URLSearchParams( window.location.search );
+                            if ( searchParams.has( 'navpos' ) ) {
+                                var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+                                if ( !isNaN( nav_pos ) )
+                                    element.scrollTop = nav_pos;
+                            }
+                        </script>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div
+                    class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="display-5">Bundle ID by AppGroup & PluginKit IDs</h1>
+                    <h6 class="animated fadeIn mb-3">List can included once installed but not present apps. Each file is
+                        named .com.apple.mobile_container_manager.metadata.plist</h6>
+                </div>
+                <p class="lead">App Group Listing located at:
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm nopagenate" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Paths</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\mobile\Containers\Shared\AppGroup\025D9250-8DA4-4E4D-B549-89D66AC45240\.com.apple.mobile_container_manager.metadata.plist
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\mobile\Containers\Data\PluginKitPlugin\4DF1B478-920C-4E06-AC0E-8E064C76C3E4\.com.apple.mobile_container_manager.metadata.plist
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                </p>
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm pagenate" cellspacing="0" width="100%">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>group.org.whispersystems.signal.group</td>
+                                <td>AppGroup</td>
+                                <td>025D9250-8DA4-4E4D-B549-89D66AC45240</td>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\mobile\Containers\Shared\AppGroup\025D9250-8DA4-4E4D-B549-89D66AC45240
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.DiagnosticExtensions.LowMemory</td>
+                                <td>PluginKitPlugin</td>
+                                <td>4DF1B478-920C-4E06-AC0E-8E064C76C3E4</td>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\mobile\Containers\Data\PluginKitPlugin\4DF1B478-920C-4E06-AC0E-8E064C76C3E4
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <!-- End your project here-->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/bootstrap.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/mdb.min.js"></script>
+    <!-- Your custom scripts -->
+    <!-- MDBootstrap Datatables  -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/addons/datatables.min.js"></script>
+    <script>
+
+        $( document ).ready( function () {
+            $( 'table.pagenate' ).DataTable( {
+                //"scrollY": "60vh",
+                //"scrollX": "10%",
+                //"scrollCollapse": true,
+                "aLengthMenu": [[15, 50, 100, -1], [15, 50, 100, "All"]],
+            } );
+            $( '.dataTables_length' ).addClass( 'bs-select' );
+            $( '#mySpinner' ).remove();
+            //$('#infiniteLoading').remove();
+        } );
+
+        feather.replace()
+        var element = document.getElementById( "sidebar_id" );
+        var searchParams = new URLSearchParams( window.location.search );
+        if ( searchParams.has( 'navpos' ) ) {
+            var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+            if ( !isNaN( nav_pos ) )
+                element.scrollTop = nav_pos;
+        }
+
+        var elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+        document.addEventListener( "DOMContentLoaded", function () {
+            var element = document.getElementById( "sidebar_id" );
+            element.addEventListener( "scroll", function () {
+                elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+            } );
+        } );
+        $( 'a.nav-link' ).click( function ( e ) {
+            e.preventDefault();
+            location.href = $( this ).attr( 'href' ) + "?navpos=" + elemScrollTop;
+        } );
+    </script>
+</body>
+
+</html>

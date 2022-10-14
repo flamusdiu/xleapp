@@ -1,0 +1,257 @@
+Processing started. Please wait. This may take a few minutes...
+--------------------------------------------------------------------------------------
+
+xLEAPP vv0.2.1: xLEAPP Logs, Events, and Properties Parser
+Objective: Triage iOS Full System Extractions.
+
+By: Alexis Brignoni | @AlexisBrignoni | https://abrignoni.com
+By: Yogesh Khatri | @SwiftForensics | https://swiftforensics.com
+
+Artifacts to parse: 2 in 2 categories
+File/Path Selected: None
+Output: E:\Files\repos\xleapp-project\xleapp\data
+
+--------------------------------------------------------------------------------------
+
+2022-10-14 12:48 - xleapp.logfile - INFO - Building files listing...
+2022-10-14 12:49 - xleapp.logfile - INFO - File listing complete - 351187 files
+2022-10-14 12:49 - xleapp.logfile - INFO - Processing 56 artifacts...
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Core [LastBuild] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Core [LastBuild] artifact finished in 2.92s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+IOS Build [ItunesBackupInfo] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - IOS Build [ItunesBackupInfo] artifact finished in 2.23s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Accounts [AccountConfiguration] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Accounts [AccountConfiguration] artifact finished in 3.51s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Accounts [Accounts] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Accounts [Accounts] artifact finished in 3.55s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Address Book [AddressBook] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Address Book [AddressBook] artifact finished in 3.34s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Alarms [Alarms] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Alarms [Alarms] artifact finished in 2.76s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+App Conduit [AppConduit] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - App Conduit [AppConduit] artifact finished in 4.80s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Apple Podcasts [ApplePodcastsEpisodes] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Apple Podcasts [ApplePodcastsEpisodes] artifact finished in 3.09s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Apple Podcasts [ApplePodcastsShows] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Apple Podcasts [ApplePodcastsShows] artifact finished in 3.40s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Apple Wallet [AppleWalletCards] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Apple Wallet [AppleWalletCards] artifact finished in 3.53s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Apple Wallet [AppleWalletPasses] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Apple Wallet [AppleWalletPasses] artifact finished in 7.84s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Apple Wallet [AppleWalletTransactions] artifact processing...
+2022-10-14 12:49 - xleapp.logfile - INFO - Apple Wallet [AppleWalletTransactions] artifact finished in 3.10s
+2022-10-14 12:49 - xleapp.logfile - INFO - 
+Bluetooth [BluetoothOtherLe] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Bluetooth [BluetoothOtherLe] artifact finished in 3.03s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Bluetooth [BluetoothPaired] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Bluetooth [BluetoothPaired] artifact finished in 3.15s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Bluetooth [BluetoothPairedLe] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Bluetooth [BluetoothPairedLe] artifact finished in 3.46s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Calendar [CalendarIdentity] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Calendar [CalendarIdentity] artifact finished in 3.01s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Calendar [CalendarItems] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Calendar [CalendarItems] artifact finished in 3.27s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Calendar [CalendarList] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Calendar [CalendarList] artifact finished in 3.21s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Call History [CallHistory] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Call History [CallHistory] artifact finished in 4.38s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Cash App [CashApp] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Cash App [CashApp] artifact finished in 3.56s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Celluar Wireless [CellularWirless] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Celluar Wireless [CellularWirless] artifact finished in 5.05s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+CloudKit [CloudKitSharing] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - CloudKit [CloudKitSharing] artifact finished in 2.90s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+CloudKit [CloudKitParticipants] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - CloudKit [CloudKitParticipants] artifact finished in 2.41s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Connected to [ConnectedDevices] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO -     -> Data being interpreted for FRPD is of type: <class 'bytes'>
+2022-10-14 12:50 - xleapp.logfile - INFO -     -> Found magic bytes in iTunes Prefs FRPD... Finding Usernames and Desktop names now
+2022-10-14 12:50 - xleapp.logfile - INFO - Connected to [ConnectedDevices] artifact finished in 2.50s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+DHCP [DhcpHotspotClients] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - DHCP [DhcpHotspotClients] artifact finished in 3.59s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+DHCP [DhcpReceivedList] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - DHCP [DhcpReceivedList] artifact finished in 3.82s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Discord [DiscordAccounts] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Discord [DiscordAccounts] artifact finished in 3.72s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Discord [DiscordManifest] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Discord [DiscordManifest] artifact finished in 3.84s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Discord [DiscordMessages] artifact processing...
+2022-10-14 12:50 - xleapp.logfile - INFO - Discord [DiscordMessages] artifact finished in 3.72s
+2022-10-14 12:50 - xleapp.logfile - INFO - 
+Facebook Messenger [FacebookMessengerCalls] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Facebook Messenger [FacebookMessengerCalls] artifact finished in 4.14s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Facebook Messenger [FacebookMessengerChats] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Facebook Messenger [FacebookMessengerChats] artifact finished in 4.17s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Facebook Messenger [FacebookMessengerContacts] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Facebook Messenger [FacebookMessengerContacts] artifact finished in 3.74s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Facebook Messenger [FacebookMessengerConversationGroups] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Facebook Messenger [FacebookMessengerConversationGroups] artifact finished in 3.75s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Facebook Messenger [FacebookMessengerSecretConversations] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Facebook Messenger [FacebookMessengerSecretConversations] artifact finished in 3.59s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Files App [FilesAppIcloudClientItems] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Files App [FilesAppIcloudClientItems] artifact finished in 2.64s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Files App [FilesAppIcloudServerItems] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Files App [FilesAppIcloudServerItems] artifact finished in 2.63s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Files App [FilesAppICloudSyncNames] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Files App [FilesAppICloudSyncNames] artifact finished in 2.38s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+IOS Build [DeviceActivator] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - IOS Build [DeviceActivator] artifact finished in 2.58s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Installed Apps [AppGroupListing] artifact processing...
+2022-10-14 12:51 - xleapp.logfile - INFO - Installed Apps [AppGroupListing] artifact finished in 9.34s
+2022-10-14 12:51 - xleapp.logfile - INFO - 
+Installed Apps [ApplicationSnapshots] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Installed Apps [ApplicationSnapshots] artifact finished in 44.29s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Installed Apps [ApplicationState] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Installed Apps [ApplicationState] artifact finished in 3.59s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Installed Apps [AppItunesMeta] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Installed Apps [AppItunesMeta] artifact finished in 6.17s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [AppleMapsApplication] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - WARNING -     -> Invalid file
+2022-10-14 12:52 - xleapp.logfile - WARNING -     -> Failed to processed!
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [AppleMapsApplication] artifact finished in 0.00s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [AppleMapsGroup] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO -     -> No data in Apple Maps Groups!
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [AppleMapsGroup] artifact finished in 4.54s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [AppleMapsSearchHistory] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [AppleMapsSearchHistory] artifact finished in 4.03s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [GeodApplication] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [GeodApplication] artifact finished in 2.87s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [GeodMapTiles] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [GeodMapTiles] artifact finished in 2.71s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [GeodPDPlaceCache] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [GeodPDPlaceCache] artifact finished in 2.73s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [GoogleMapsCacheRoutes] artifact processing...
+2022-10-14 12:52 - xleapp.logfile - INFO - Locations [GoogleMapsCacheRoutes] artifact finished in 4.30s
+2022-10-14 12:52 - xleapp.logfile - INFO - 
+Locations [AppleWifiKnownNetworks] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - Locations [AppleWifiKnownNetworks] artifact finished in 11.31s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Locations [AppleWifiScannedPrivateNetworks] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> No private networks scanned in plist file.
+2022-10-14 12:53 - xleapp.logfile - INFO - Locations [AppleWifiScannedPrivateNetworks] artifact finished in 11.25s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Voice-Recordings [VoiceRecording] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - Voice-Recordings [VoiceRecording] artifact finished in 4.17s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Wifi Connections [IcloudWifi] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - Wifi Connections [IcloudWifi] artifact finished in 2.90s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+iCloud Returns [IcloudMetadata] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - iCloud Returns [IcloudMetadata] artifact finished in 2.95s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+iCloud Returns [IcloudPhotoMetadata] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - iCloud Returns [IcloudPhotoMetadata] artifact finished in 2.75s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+iOS Screens [IconScreen] artifact processing...
+2022-10-14 12:53 - xleapp.logfile - INFO - iOS Screens [IconScreen] artifact finished in 3.18s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Completed processing artifacts in 259.98s
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Generating index file...
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Index file generated!
+2022-10-14 12:53 - xleapp.logfile - INFO - 
+Generating artifact report files...
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Installed Apps [AppItunesMeta]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [AppleMapsSearchHistory]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [AppleWifiScannedPrivateNetworks]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Installed Apps [ApplicationSnapshots]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Facebook Messenger [FacebookMessengerContacts]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Facebook Messenger [FacebookMessengerConversationGroups]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Facebook Messenger [FacebookMessengerSecretConversations]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Files App [FilesAppIcloudClientItems]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Files App [FilesAppIcloudServerItems]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [GoogleMapsCacheRoutes]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> iCloud Returns [IcloudPhotoMetadata]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Accounts [Accounts]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Address Book [AddressBook]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Alarms [Alarms]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> App Conduit [AppConduit]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Installed Apps [AppGroupListing]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [AppleMapsApplication]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [AppleMapsGroup]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Apple Podcasts [ApplePodcastsEpisodes]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Apple Podcasts [ApplePodcastsShows]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Apple Wallet [AppleWalletCards]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Apple Wallet [AppleWalletPasses]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Apple Wallet [AppleWalletTransactions]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [AppleWifiKnownNetworks]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Installed Apps [ApplicationState]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Bluetooth [BluetoothOtherLe]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Bluetooth [BluetoothPaired]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Bluetooth [BluetoothPairedLe]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Calendar [CalendarIdentity]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Calendar [CalendarItems]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Calendar [CalendarList]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Call History [CallHistory]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Cash App [CashApp]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> CloudKit [CloudKitSharing]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> CloudKit [CloudKitParticipants]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Connected to [ConnectedDevices]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> DHCP [DhcpHotspotClients]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> DHCP [DhcpReceivedList]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Discord [DiscordAccounts]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Discord [DiscordManifest]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Discord [DiscordMessages]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Facebook Messenger [FacebookMessengerCalls]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Facebook Messenger [FacebookMessengerChats]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Files App [FilesAppICloudSyncNames]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [GeodApplication]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [GeodMapTiles]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Locations [GeodPDPlaceCache]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> iCloud Returns [IcloudMetadata]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Wifi Connections [IcloudWifi]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> iOS Screens [IconScreen]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Voice-Recordings [VoiceRecording]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Accounts [AccountConfiguration]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Celluar Wireless [CellularWirless]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> IOS Build [DeviceActivator]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> Core [LastBuild]
+2022-10-14 12:53 - xleapp.logfile - INFO -     -> IOS Build [ItunesBackupInfo]
+2022-10-14 12:53 - xleapp.logfile - INFO - Report files generated!
+2022-10-14 12:53 - xleapp.logfile - INFO - Report location: E:\Files\repos\xleapp-project\xleapp\data

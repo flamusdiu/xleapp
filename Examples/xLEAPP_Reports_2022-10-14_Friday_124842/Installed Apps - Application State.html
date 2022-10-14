@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>xLEAPP - Application State</title>
+    <!-- Dark mode -->
+    <link rel="stylesheet" href="_static/dark-mode.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/bootstrap.min.css">
+    <!-- Material Design Bootstrap - TOGGLE THIS FOR ALTERNATE DESIGN!-->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/mdb.min.css">
+    <!-- Your custom styles (optional) -->
+    <link rel="stylesheet" href="_static/dashboard.css">
+    <link rel="stylesheet" href="_static/chats.css">
+    <!-- MDBootstrap Datatables  -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/addons/datatables.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <!--script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script-->
+    <script src="_static/feather.min.js"></script>
+</head>
+
+<body>
+    <!-- Start your project here-->
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="index.html">xLEAPP v0.2.1</a>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+            <label class="custom-control-label mr-2" for="darkSwitch" style="color:white">Dark Switch</label>
+        </div>
+        <script src="_static/dark-mode-switch.js"></script>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky" id="sidebar_id">
+                    <ul class="nav flex-column">
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Saved reports
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link " href="index.html"><span data-feather="home"></span>Report Home</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Accounts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Account Configuration.html"><span
+                                    data-feather="user"></span>Account Configuration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Accounts.html"><span
+                                    data-feather="user"></span>Accounts</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Address Book
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Address Book - Address Book.html"><span
+                                    data-feather="book-open"></span>Address Book</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Alarms
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Alarms - Alarms.html"><span
+                                    data-feather="alert-triangle"></span>Alarms</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            App Conduit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="App Conduit - App Conduit.html"><span
+                                    data-feather="alert-triangle"></span>App Conduit</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Podcasts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Episodes.html"><span
+                                    data-feather="alert-triangle"></span>Episodes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Shows.html"><span
+                                    data-feather="alert-triangle"></span>Shows</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Wallet
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Cards.html"><span
+                                    data-feather="alert-triangle"></span>Cards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Passes.html"><span
+                                    data-feather="alert-triangle"></span>Passes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Tranactions.html"><span
+                                    data-feather="alert-triangle"></span>Tranactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Bluetooth
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Other LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Other LE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired LE</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Calendar
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Identity.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Identity</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Items.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar List.html"><span
+                                    data-feather="alert-triangle"></span>Calendar List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Call History
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Call History - Call History.html"><span
+                                    data-feather="phone-call"></span>Call History</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Cash App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Cash App - Transactions.html"><span
+                                    data-feather="alert-triangle"></span>Transactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Celluar Wireless
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Celluar Wireless - Celluar Wireless.html"><span
+                                    data-feather="bar-chart"></span>Celluar Wireless</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            CloudKit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - CloudKit Note Sharing.html"><span
+                                    data-feather="alert-triangle"></span>CloudKit Note Sharing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - Participants.html"><span
+                                    data-feather="alert-triangle"></span>Participants</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Connected to
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Connected to - Connected Devices.html"><span
+                                    data-feather="alert-triangle"></span>Connected Devices</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Core
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Core - Build Information.html"><span
+                                    data-feather="git-commit"></span>Build Information</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            DHCP
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Hotspot Clients.html"><span
+                                    data-feather="settings"></span>Hotspot Clients</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Recevied List.html"><span
+                                    data-feather="alert-triangle"></span>Recevied List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Discord
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Accounts.html"><span
+                                    data-feather="message-square"></span>Discord Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Manifest.html"><span
+                                    data-feather="alert-triangle"></span>Discord Manifest</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Messages.html"><span
+                                    data-feather="message-square"></span>Discord Messages</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Facebook Messenger
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Calls.html"><span
+                                    data-feather="facebook"></span>Calls</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Chats.html"><span
+                                    data-feather="alert-triangle"></span>Chats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Contacts.html"><span
+                                    data-feather="facebook"></span>Contacts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Conversation Groups.html"><span
+                                    data-feather="facebook"></span>Conversation Groups</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Secret Conversations.html"><span
+                                    data-feather="facebook"></span>Secret Conversations</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Files App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Client Items.html"><span
+                                    data-feather="file-text"></span>iCloud Client Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Server Items.html"><span
+                                    data-feather="file-text"></span>iCloud Server Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Sync Names.html"><span
+                                    data-feather="file-text"></span>iCloud Sync Names</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iCloud Returns
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud - File Metadata.html"><span
+                                    data-feather="alert-triangle"></span>iCloud - File Metadata</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud Photos Metadata.html"><span
+                                    data-feather="cloud"></span>iCloud Photos Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Installed Apps
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - App Group Listing.html"><span
+                                    data-feather="package"></span>App Group Listing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - App Snapshots (screenshots).html"><span
+                                    data-feather="alert-triangle"></span>App Snapshots (screenshots)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Installed Apps - Application State.html"><span
+                                    data-feather="alert-triangle"></span>Application State</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - Itunes & Bundle Metadata.html"><span
+                                    data-feather="alert-triangle"></span>Itunes & Bundle Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            IOS Build
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iOS Device Activator Data.html"><span
+                                    data-feather="alert-triangle"></span>iOS Device Activator Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iTunes Backup.html"><span
+                                    data-feather="alert-triangle"></span>iTunes Backup</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iOS Screens
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iOS Screens - Apps per screen.html"><span
+                                    data-feather="alert-triangle"></span>Apps per screen</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Locations
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Group.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Group</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Search History.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Search History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Application.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Application</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Map Tiles.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Map Tiles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD PD Place Cache.html"><span
+                                    data-feather="alert-triangle"></span>GeoD PD Place Cache</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Google Maps Cache Routes.html"><span
+                                    data-feather="map-pin"></span>Google Maps Cache Routes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Known Networks.html"><span
+                                    data-feather="wifi"></span>Wifi Known Networks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Networks Scanned (private).html"><span
+                                    data-feather="wifi"></span>Wifi Networks Scanned (private)</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Voice-Recordings
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Voice-Recordings - Voice Recordings.html"><span
+                                    data-feather="mic"></span>Voice Recordings</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Wifi Connections
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Wifi Connections - iCloud Wifi Networks.html"><span
+                                    data-feather="alert-triangle"></span>iCloud Wifi Networks</a>
+                        </li>
+                        <script>
+                            feather.replace();
+                            var element = document.getElementById( "sidebar_id" );
+                            var searchParams = new URLSearchParams( window.location.search );
+                            if ( searchParams.has( 'navpos' ) ) {
+                                var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+                                if ( !isNaN( nav_pos ) )
+                                    element.scrollTop = nav_pos;
+                            }
+                        </script>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div
+                    class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="display-5"></h1>
+                    <h6 class="animated fadeIn mb-3">Application State DB</h6>
+                </div>
+                <p class="lead">Application State located at:
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm nopagenate" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Paths</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\mobile\Library\FrontBoard\applicationState.db
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                </p>
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm pagenate" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Bundle ID</th>
+                                <th class="th-sm">Bundle Path</th>
+                                <th class="th-sm">Sandbox Path</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>com.apple.MobileSMS</td>
+                                <td>/Applications/MobileSMS.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/F9BBF2C8-C86D-4D97-AC5B-C5A39588BDF3
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Diagnostics</td>
+                                <td>/Applications/Diagnostics.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/1A96D7CB-ABBC-4348-A8F4-D12412FF7A2A
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Health</td>
+                                <td>/Applications/Health.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/92683F97-804C-4669-9D4B-2C8E4E1B9948
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.datadetectors.DDActionsService</td>
+                                <td>/Applications/DDActionsService.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/192F00D0-AFA4-4052-B4AE-7D043DE5AB34
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.TVRemoteUIService</td>
+                                <td>/Applications/Apple TV Remote.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/AD004F6F-BF1A-40D6-84AB-1CFDA74BE806
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Preferences</td>
+                                <td>/Applications/Preferences.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/142EF15D-F4D2-4737-909C-60AA005A4743
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.CarPlaySettings</td>
+                                <td>/Applications/CarPlaySettings.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/DDE83D8C-CFC8-4756-A366-8D383DA747A5
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Home.HomeUIService</td>
+                                <td>/Applications/HomeUIService.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Magnifier</td>
+                                <td>/Applications/Magnifier.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/D1F2E746-EDF0-422D-8AD9-631F4FD06254
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.BarcodeScanner</td>
+                                <td>/Applications/BarcodeScanner.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/5F98E3C6-F9D5-4A7C-98CA-5C9C9BA04216
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Passbook</td>
+                                <td>/Applications/Passbook.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/E58E5270-EEB1-4969-B2AA-0D1CF11B77D7
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.siri</td>
+                                <td>/Applications/Siri.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/B0B0F739-4567-4DB0-AB24-7A755D80964D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.AppStore</td>
+                                <td>/Applications/AppStore.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/32BDEBF7-0383-4D53-A927-7BE6BE516B50
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.social.SLYahooAuth</td>
+                                <td>/Applications/SLYahooAuth.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.PhotosViewService</td>
+                                <td>/Applications/PhotosViewService.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.ScreenTimeUnlock</td>
+                                <td>/Applications/ScreenTimeUnlock.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/AC6DE668-0BA4-4258-BA3E-174601601052
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobiletimer</td>
+                                <td>/Applications/MobileTimer.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.iad.iAdOptOut</td>
+                                <td>/Applications/iAdOptOut.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/64073B4C-3230-4A68-A209-BDAAFB107D8D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobilephone</td>
+                                <td>/Applications/MobilePhone.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/79B6E76A-FEB5-4A32-92F6-444FAEE57A5E
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.findmy</td>
+                                <td>/Applications/FindMy.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/EC390B36-E786-48F4-9838-504B0C6E7A24
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobilesafari</td>
+                                <td>/Applications/MobileSafari.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/842C9702-4CA9-4A73-A315-62A1F4FD7537
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.WebSheet</td>
+                                <td>/Applications/WebSheet.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/42317B81-C8C8-4216-823E-BFD79D1DF4AE
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.StoreDemoViewService</td>
+                                <td>/Applications/StoreDemoViewService.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/9A0AA1AC-39BF-4044-8978-ED8C5F18B59D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.carkit.DNDBuddy</td>
+                                <td>/Applications/DNDBuddy.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/46FB1577-D30B-48A0-B5D4-E3FB1698505D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.appleseed.FeedbackAssistant</td>
+                                <td>/Applications/Feedback Assistant iOS.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/D4DBC818-B38D-48A9-B989-21FF45FA13BA
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.ScreenSharingViewService</td>
+                                <td>/Applications/ScreenSharingViewService.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/389783E9-AAEF-4DE1-8455-33F97F702157
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobileslideshow</td>
+                                <td>/Applications/MobileSlideShow.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.BusinessChatViewService</td>
+                                <td>/Applications/BusinessChatViewService.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/E100DFC3-BEB1-4BEF-A94D-D0922092DF8D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.camera</td>
+                                <td>/Applications/Camera.app</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.webapp</td>
+                                <td>/Applications/Web.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/7C5B6F71-5077-44FD-A886-BC01544084FB
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.weather</td>
+                                <td>/private/var/containers/Bundle/Application/0BD664B8-43E7-4E9C-85D8-317595B5AF59/Weather.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/53E9E34B-C045-461E-8B25-5398F7656FE2
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.news</td>
+                                <td>/private/var/containers/Bundle/Application/C78DC860-F168-42C9-BC61-4DD973CA6175/News.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/C29AF887-F171-4722-8487-449071D14EAE
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobilemail</td>
+                                <td>/private/var/containers/Bundle/Application/D1C6AB3D-92B5-4AC1-93E6-FF7C534A94F5/MobileMail.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/1A31CE72-5345-4BD5-9A74-D137FF9FEC70
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.compass</td>
+                                <td>/private/var/containers/Bundle/Application/E2EA14D9-F583-486A-8A9F-61855BAFFA03/Compass.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/97F4100D-C426-45D8-946D-457E20C15ECF
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.podcasts</td>
+                                <td>/private/var/containers/Bundle/Application/F9881BE9-6011-400E-B727-BA47D10B7C47/Podcasts.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/0F51CB71-2E7B-4B9B-BB63-CEBE2D398AE8
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Music</td>
+                                <td>/private/var/containers/Bundle/Application/71379B6D-424C-4A1A-8F25-E4FC623A6A19/Music.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/4AB3E649-0D19-4DAA-91DC-7AED82FD53BB
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.reminders</td>
+                                <td>/private/var/containers/Bundle/Application/39878405-4B1F-4ACA-A5C5-16A901CD112E/Reminders.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/F05E56F9-5B67-438B-8BEC-40F50A489958
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.MobileStore</td>
+                                <td>/private/var/containers/Bundle/Application/A474F8A4-C3DF-4DFF-A574-BEC54355BB6C/MobileStore.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/2CDB6962-FCC2-4CB5-94FB-13011FA3BBFE
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.stocks</td>
+                                <td>/private/var/containers/Bundle/Application/DA56EF93-5F73-4EC3-9A6F-7AFE833AE899/Stocks.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/E8EEC657-1F7F-49B8-8FA4-9D8AAC285F9F
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.measure</td>
+                                <td>/private/var/containers/Bundle/Application/CB3B0AAD-78F2-4DF6-B927-DCC69A16B7C4/Measure.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/C8A665A7-C9CB-4E3E-A99F-E473D6ED82A1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Home</td>
+                                <td>/private/var/containers/Bundle/Application/7058F87D-4AA1-47B0-94CB-10F659C515B4/Home.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/D20FE0D1-23D8-4A0B-9237-9C1F19251228
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobilecal</td>
+                                <td>/private/var/containers/Bundle/Application/F3F3F9DD-6F4E-498F-A3E0-9A29151FEF09/MobileCal.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/6B548701-E16A-46D6-83EB-7AE8F409ABA5
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.mobilenotes</td>
+                                <td>/private/var/containers/Bundle/Application/602B7731-5C25-4733-8B35-56E7D13BDE3B/MobileNotes.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/D82FA526-D7CC-401F-9279-6927892748C3
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.MobileAddressBook</td>
+                                <td>/private/var/containers/Bundle/Application/631D475F-57B5-4979-911C-6BAC96687284/Contacts.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/614CA2AB-1F1D-4161-AAE6-FA6C9C426790
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.VoiceMemos</td>
+                                <td>/private/var/containers/Bundle/Application/84886DFF-1028-42BD-874E-C6DFF5678B07/VoiceMemos.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/6AFCB2C0-0314-449C-88DD-BBF3AC5114D4
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.facetime</td>
+                                <td>/private/var/containers/Bundle/Application/BC0C5159-F997-47AF-97A7-262A6F4D5D32/FaceTime.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/CE2D26E7-4A98-4A22-A317-DF8D9E863DC5
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Bridge</td>
+                                <td>/private/var/containers/Bundle/Application/284272DF-D125-4298-B964-E5E94B74A9DC/Bridge.app
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.calculator</td>
+                                <td>/private/var/containers/Bundle/Application/291D32F6-B2AE-4057-985E-AB1A09E5E571/Calculator.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/4D4E15F1-51D5-43BC-9C5A-DADB9A05659C
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.DocumentsApp</td>
+                                <td>/private/var/containers/Bundle/Application/04DA2653-4349-45BA-8F3C-760556CFAD02/Files.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/EBA110DB-3B11-4F1E-8483-3439050CCB38
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Maps</td>
+                                <td>/private/var/containers/Bundle/Application/53A0C146-FAC4-4917-BA70-689E34650FBC/Maps.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/02293AD7-F15E-4214-8780-4D56D30E1C01
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.Fitness</td>
+                                <td>/private/var/containers/Bundle/Application/A712FDC2-EF0B-4E49-A402-8C662E0C253D/Fitness.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/F5A5FA87-0162-497B-B93D-D58836AFDA23
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.hammerandchisel.discord</td>
+                                <td>/private/var/containers/Bundle/Application/6E656019-2E54-4E6B-8A88-1DA049035D17/Discord.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/237E0C71-5961-459B-B8AC-831364AB4679
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.mentionmobile.cyberdust</td>
+                                <td>/private/var/containers/Bundle/Application/07FFD43B-C536-499A-876E-CE78DB853061/Dust.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/B5FD26B0-5F02-4A83-97D7-0F6E4EDF395E
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.facebook.Messenger</td>
+                                <td>/private/var/containers/Bundle/Application/304DCF89-B3C1-450B-9937-0924BD7BD83D/Messenger.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/0424AE1D-39A0-44CC-B503-53A09CF58DC6
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>org.mozilla.ios.Focus</td>
+                                <td>/private/var/containers/Bundle/Application/0F406F07-1C32-43B7-A850-D9DBDCAD51DE/Firefox
+                                    Focus.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/0681D350-2664-479D-8403-8860446D9628
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>imgurmobile</td>
+                                <td>/private/var/containers/Bundle/Application/4F040B4A-14BB-437E-A2C6-A7D657C5CA99/Imgur.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/DCDF64FA-76DE-4149-9665-D6D6A8C4B646
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>co.babypenguin.imo</td>
+                                <td>/private/var/containers/Bundle/Application/00DF1C62-AA0F-4391-91F6-321C9A1A41A0/app.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/30CC1B22-FC02-4F71-A2DF-C78A6D50098C
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.burbn.instagram</td>
+                                <td>/private/var/containers/Bundle/Application/3D9F82FD-5C6F-4831-A8D5-BD579046C1BB/Instagram.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/71B2EBD8-B6DF-4118-908C-7B2976A3019E
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.kik.chat</td>
+                                <td>/private/var/containers/Bundle/Application/5EFC2604-2DC5-4453-96EB-5DD4270A2291/Kik.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/0B93E4DC-3E6E-443E-81C3-61292FDA6091
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jp.naver.line</td>
+                                <td>/private/var/containers/Bundle/Application/D37A3168-020B-400D-B7BA-8FA5E4477A0D/LINE.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/A72F7C0B-35B5-4D4E-8890-578364E340CC
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.mewe</td>
+                                <td>/private/var/containers/Bundle/Application/D976ECB4-92AF-4533-A49D-25538E356061/Consumer.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/5611BB53-9A74-4EEA-B7A3-72290FEAF095
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.reddit.Reddit</td>
+                                <td>/private/var/containers/Bundle/Application/2FB4624E-51E0-42C0-B545-031B44A84ADD/Reddit.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/454F2341-011D-45FD-AED9-FEA01B82658D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>org.whispersystems.signal</td>
+                                <td>/private/var/containers/Bundle/Application/8DC878BF-3624-43F1-A50D-89E97994AA84/Signal.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/88EF9B3E-5730-4932-BA02-C2C816258149
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.silentcircle.SilentPhone</td>
+                                <td>/private/var/containers/Bundle/Application/CC8C04F0-EEC3-421B-9874-46951394028B/Silent
+                                    Phone.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/F19EF0B7-0F48-4D63-B29B-25904474473D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.skout.SKOUT</td>
+                                <td>/private/var/containers/Bundle/Application/AB456996-F5CD-4CE7-A30B-7267900688EC/SKOUT_SDK4.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/30A884F2-32EA-45FC-ACD5-7639FE9CACDA
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.skype.skype</td>
+                                <td>/private/var/containers/Bundle/Application/54416B62-B282-4051-9B83-B24DC66201BF/Skype4Life.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/EE95AD99-1DC5-40D8-B418-6739B116126B
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.spotify.client</td>
+                                <td>/private/var/containers/Bundle/Application/26FCAF9C-B935-4D03-B256-298464E3DCD3/Spotify.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/FEBD546E-7C81-4D7D-AF49-3618E80FE507
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ph.telegra.Telegraph</td>
+                                <td>/private/var/containers/Bundle/Application/4FEA0DA1-4D92-4E59-98A4-59EB147ED2E3/Telegram.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/6C653DCC-A39C-484E-8457-2C3CAAFF9AD7
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.tinginteractive.usms</td>
+                                <td>/private/var/containers/Bundle/Application/2EACD179-CACD-49C2-95B2-2DB9F5F332D6/TextNow.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/2C0EA118-A71B-4CFD-AF2E-7FE132AC59DF
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.burbn.threads</td>
+                                <td>/private/var/containers/Bundle/Application/06703F45-064C-4031-A617-EEBB4B82C036/Threads.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/7CC43357-2BAA-4DF0-8472-8CE77567E9D9
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.zhiliaoapp.musically</td>
+                                <td>/private/var/containers/Bundle/Application/29BD3A04-3060-45A4-B733-0CD338F8ABE8/TikTok.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/1A366D76-74D8-46EC-91C0-B1F8378D8828
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.miketigas.OnionBrowser</td>
+                                <td>/private/var/containers/Bundle/Application/A6273A98-9261-470B-A345-59EB87D6D126/OnionBrowser.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/ED22EA14-CE08-41F8-B115-8524B8480AB6
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.atebits.Tweetie2</td>
+                                <td>/private/var/containers/Bundle/Application/70591354-18BC-448C-8F7D-1A10928DAD05/Twitter.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/96B63EF8-7808-4FEB-9A4D-78CC9EF7ADF2
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>net.kortina.labs.Venmo</td>
+                                <td>/private/var/containers/Bundle/Application/94684CDA-35B1-416E-A91C-9E82155E67F4/Venmo.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/C2E351B4-35D5-461E-AC96-3D20CB4ED5CB
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.viber</td>
+                                <td>/private/var/containers/Bundle/Application/4054BA7C-C5AA-438B-B95C-94D85EFBC356/Viber.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/DC625767-83E6-4F83-BA86-278E8847D9B4
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>net.whatsapp.WhatsApp</td>
+                                <td>/private/var/containers/Bundle/Application/6CAA2831-F04B-45BE-AE33-F55285E0FCA5/WhatsApp.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/45831D5F-1CB8-4F41-A20D-C3451D0E6459
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.mywickr.wickr</td>
+                                <td>/private/var/containers/Bundle/Application/08552D76-A024-447A-863A-5E77D3F7965D/WickrEnterprise.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/1EAF4BAF-840A-42F6-83B8-077AE7D05AAE
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.wearezeta.zclient.ios</td>
+                                <td>/private/var/containers/Bundle/Application/19C77A91-D4D9-488C-AC0F-F613693D4F41/Wire.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/8CD7A602-47E1-4D05-846F-1BCD8C90F799
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.philips.lighting.hue2</td>
+                                <td>/private/var/containers/Bundle/Application/F0A2C0F0-C95C-425F-B883-F53C4A7BBEB8/Hue.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/EFF2FAE8-FE0A-4AE9-B571-C8D7BA0C2C3A
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.belkin.plugin</td>
+                                <td>/private/var/containers/Bundle/Application/76A331D9-9A26-4DDD-9FDF-EAEF497EADC0/WeMo_Universal.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/659C2309-A3EF-4EC9-8CEF-B281D80F0D7B
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.signify.hue.blue</td>
+                                <td>/private/var/containers/Bundle/Application/31620E79-226F-4136-B6E4-6CB3ED18E8FB/Runner.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/575389B0-AF53-4365-8DEA-A099AE56814B
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ch.protonmail.protonmail</td>
+                                <td>/private/var/containers/Bundle/Application/D6603BA4-E9BB-454A-9CF0-3D0FC3178680/ProtonMail.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/2E5D09C9-1142-4332-86FC-E71DC449C32B
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>de.tutao.tutanota</td>
+                                <td>/private/var/containers/Bundle/Application/4888292C-15FE-4271-8BB6-F5C4E93598B2/tutanota.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/9E58B63F-CE39-4F71-8455-65F27F90992F
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.adhoclabs.burner</td>
+                                <td>/private/var/containers/Bundle/Application/A7F07F71-B3E3-4A41-88D7-1CDFB23B60D9/Burner.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/6DD40ADC-30FE-452B-B002-A15CAAF04795
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.fitbit.FitbitMobile</td>
+                                <td>/private/var/containers/Bundle/Application/5C0DBB02-475B-438F-BA34-78FC52F536A3/FitbitMobile.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/5EDB4A63-F50B-4449-8244-2A74FB935FB3
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.redshiftdev.Fitbit-Health-Sync</td>
+                                <td>/private/var/containers/Bundle/Application/6AAB3246-8B52-42B8-9864-3F421B8D4941/Fitbit
+                                    Health Sync.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/953D35D9-6D38-46CD-A4EE-6B52D6B21B65
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.herzick.houseparty</td>
+                                <td>/private/var/containers/Bundle/Application/0944046B-B60A-4FDD-80FA-F0A85045CB4E/Houseparty.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/C882335F-93FE-4DAA-8713-2835B2F20D5D
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>us.zoom.videomeetings</td>
+                                <td>/private/var/containers/Bundle/Application/036E8380-8011-4109-9315-8919F5C3E39C/Zoom.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/BDC16149-B1E5-4022-B6A3-4CE5CB816478
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.apple.dt.XcodePreviews</td>
+                                <td>/Applications/Xcode Previews.app</td>
+                                <td>/private/var/mobile/Containers/Data/Application/08A34093-9AE6-4436-A932-C95D3BC41014
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.enchantedcloud.photovault</td>
+                                <td>/private/var/containers/Bundle/Application/C746C5D2-1095-4428-B43E-34312EF056D9/PhotoVault.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/C4CC2E81-A70D-41C6-A3C9-03F7A02530A0
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.keepsafe.KeepSafe</td>
+                                <td>/private/var/containers/Bundle/Application/E0D5524B-5EED-4674-B5A9-0E948D3B91BE/KeepSafe.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/F3D162D8-1CD4-42A8-8E09-26C9D30F72AF
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>com.coverme.covermeAdhoc</td>
+                                <td>/private/var/containers/Bundle/Application/FDF88796-472F-4BD7-A76A-19FDBC2DDE42/CoverMe.app
+                                </td>
+                                <td>/private/var/mobile/Containers/Data/Application/EBC7BCCC-60AA-4E52-9F98-60257A5C6570
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>kjc.loader</td>
+                                <td>/private/var/binpack/Applications/loader.app</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="th-sm">Bundle ID</th>
+                                <th class="th-sm">Bundle Path</th>
+                                <th class="th-sm">Sandbox Path</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <!-- End your project here-->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/bootstrap.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/mdb.min.js"></script>
+    <!-- Your custom scripts -->
+    <!-- MDBootstrap Datatables  -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/addons/datatables.min.js"></script>
+    <script>
+
+        $( document ).ready( function () {
+            $( 'table.pagenate' ).DataTable( {
+                //"scrollY": "60vh",
+                //"scrollX": "10%",
+                //"scrollCollapse": true,
+                "aLengthMenu": [[15, 50, 100, -1], [15, 50, 100, "All"]],
+            } );
+            $( '.dataTables_length' ).addClass( 'bs-select' );
+            $( '#mySpinner' ).remove();
+            //$('#infiniteLoading').remove();
+        } );
+
+        feather.replace()
+        var element = document.getElementById( "sidebar_id" );
+        var searchParams = new URLSearchParams( window.location.search );
+        if ( searchParams.has( 'navpos' ) ) {
+            var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+            if ( !isNaN( nav_pos ) )
+                element.scrollTop = nav_pos;
+        }
+
+        var elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+        document.addEventListener( "DOMContentLoaded", function () {
+            var element = document.getElementById( "sidebar_id" );
+            element.addEventListener( "scroll", function () {
+                elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+            } );
+        } );
+        $( 'a.nav-link' ).click( function ( e ) {
+            e.preventDefault();
+            location.href = $( this ).attr( 'href' ) + "?navpos=" + elemScrollTop;
+        } );
+    </script>
+</body>
+
+</html>

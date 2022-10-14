@@ -1,0 +1,19 @@
+﻿Timestamp	Account Desc.	Username	Description	Identifier	Bundle ID
+2020-03-22 01:39:51	iTunes Store		Local	iTunesLocal-421A04EA-479A-4E46-B49D-556F7144518D	locationd
+2020-03-22 01:47:42	iTunes Store	thisisdfir@gmail.com		6B35410D-85C2-4DCD-823A-CE1D598597E5	com.apple.purplebuddy
+2020-03-22 01:47:42	Messages	thisisdfir@gmail.com		381B0D37-7962-43E6-BF7D-139B59033D1C	com.apple.identityservicesd
+2020-03-22 01:47:57	iCloud	thisisdfir@gmail.com	iCloud	1589F4EC-8F6C-4F37-929F-C6F121B36A59	com.apple.purplebuddy
+2020-03-22 01:47:55	Find My Friends	thisisdfir@gmail.com		798A0EA2-0B24-4857-B19C-3C048732B77D	com.apple.accounts.accountsd
+2020-03-22 01:47:55	Device Locator	thisisdfir@gmail.com		94F572A1-6ECA-4ECC-B7B3-FF927D48C7E4	com.apple.accounts.accountsd
+2020-03-22 01:47:42	CloudKit	thisisdfir@gmail.com		3B835298-47A1-458F-ADAB-0DEF5B898C2F	com.apple.accounts.accountsd
+2020-03-22 01:47:55	IMAPNotes			8618BBCD-F392-48D3-8D75-4346ADE75FC8	com.apple.accounts.accountsd
+2020-03-22 01:47:55	CalDAV			E9B5703B-F844-4845-AD3D-08DE58806F82	com.apple.accounts.accountsd
+2020-03-22 01:47:55	CardDAV			EE84958A-E52C-425E-9171-70DEB1CB5DEB	com.apple.accounts.accountsd
+2020-03-22 01:47:57	IDMS	thisisdfir@gmail.com		8F4A8F1B-DAD9-40F6-A06E-18B6A73D044F	com.apple.AuthKit
+2020-03-22 01:47:58	Apple ID	thisisdfir@gmail.com		5B9A4BE7-A9AC-4798-A8EE-67EB19537748	com.apple.AuthKit
+2020-03-22 01:49:16	Holiday Calendar		Holiday Calendar	A57F9D65-8AB3-4D80-897A-70F512299C37	dataaccessd
+2020-03-22 01:59:47	Game Center	thisisdfir@gmail.com	thisisdfir@gmail.com	9BBC69AE-9F27-497B-8B94-D8AD8156181E	com.apple.AuthKit
+2020-03-22 05:11:29	CalDAV			03CF4555-027D-4CBB-87FD-462FC610F64D	com.apple.accounts.accountsd
+2020-03-22 05:11:29	IMAPNotes			CEA1DA02-7BCC-4C0B-8CB0-2677865D0E03	com.apple.accounts.accountsd
+2020-03-22 05:11:29	CardDAV			98491756-59C0-4798-9EB6-1714C936158F	com.apple.accounts.accountsd
+2020-03-22 05:11:29	Gmail	thisisdfir@gmail.com	Gmail	4FD35256-CE13-47FE-9840-EBEB5B9FD9C1	com.apple.Preferences

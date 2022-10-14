@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>xLEAPP - Bluetooth Other LE</title>
+    <!-- Dark mode -->
+    <link rel="stylesheet" href="_static/dark-mode.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/bootstrap.min.css">
+    <!-- Material Design Bootstrap - TOGGLE THIS FOR ALTERNATE DESIGN!-->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/mdb.min.css">
+    <!-- Your custom styles (optional) -->
+    <link rel="stylesheet" href="_static/dashboard.css">
+    <link rel="stylesheet" href="_static/chats.css">
+    <!-- MDBootstrap Datatables  -->
+    <link rel="stylesheet" href="_static/MDB-Free_4.13.0/css/addons/datatables.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <!--script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script-->
+    <script src="_static/feather.min.js"></script>
+</head>
+
+<body>
+    <!-- Start your project here-->
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="index.html">xLEAPP v0.2.1</a>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+            <label class="custom-control-label mr-2" for="darkSwitch" style="color:white">Dark Switch</label>
+        </div>
+        <script src="_static/dark-mode-switch.js"></script>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky" id="sidebar_id">
+                    <ul class="nav flex-column">
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Saved reports
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link " href="index.html"><span data-feather="home"></span>Report Home</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Accounts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Account Configuration.html"><span
+                                    data-feather="user"></span>Account Configuration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Accounts - Accounts.html"><span
+                                    data-feather="user"></span>Accounts</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Address Book
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Address Book - Address Book.html"><span
+                                    data-feather="book-open"></span>Address Book</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Alarms
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Alarms - Alarms.html"><span
+                                    data-feather="alert-triangle"></span>Alarms</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            App Conduit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="App Conduit - App Conduit.html"><span
+                                    data-feather="alert-triangle"></span>App Conduit</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Podcasts
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Episodes.html"><span
+                                    data-feather="alert-triangle"></span>Episodes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Podcasts - Shows.html"><span
+                                    data-feather="alert-triangle"></span>Shows</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Apple Wallet
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Cards.html"><span
+                                    data-feather="alert-triangle"></span>Cards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Passes.html"><span
+                                    data-feather="alert-triangle"></span>Passes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Apple Wallet - Tranactions.html"><span
+                                    data-feather="alert-triangle"></span>Tranactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Bluetooth
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Bluetooth - Bluetooth Other LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Other LE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Bluetooth - Bluetooth Paired LE.html"><span
+                                    data-feather="alert-triangle"></span>Bluetooth Paired LE</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Calendar
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Identity.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Identity</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar Items.html"><span
+                                    data-feather="alert-triangle"></span>Calendar Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Calendar - Calendar List.html"><span
+                                    data-feather="alert-triangle"></span>Calendar List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Call History
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Call History - Call History.html"><span
+                                    data-feather="phone-call"></span>Call History</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Cash App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Cash App - Transactions.html"><span
+                                    data-feather="alert-triangle"></span>Transactions</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Celluar Wireless
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Celluar Wireless - Celluar Wireless.html"><span
+                                    data-feather="bar-chart"></span>Celluar Wireless</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            CloudKit
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - CloudKit Note Sharing.html"><span
+                                    data-feather="alert-triangle"></span>CloudKit Note Sharing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CloudKit - Participants.html"><span
+                                    data-feather="alert-triangle"></span>Participants</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Connected to
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Connected to - Connected Devices.html"><span
+                                    data-feather="alert-triangle"></span>Connected Devices</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Core
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Core - Build Information.html"><span
+                                    data-feather="git-commit"></span>Build Information</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            DHCP
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Hotspot Clients.html"><span
+                                    data-feather="settings"></span>Hotspot Clients</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="DHCP - Recevied List.html"><span
+                                    data-feather="alert-triangle"></span>Recevied List</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Discord
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Accounts.html"><span
+                                    data-feather="message-square"></span>Discord Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Manifest.html"><span
+                                    data-feather="alert-triangle"></span>Discord Manifest</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Discord - Discord Messages.html"><span
+                                    data-feather="message-square"></span>Discord Messages</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Facebook Messenger
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Calls.html"><span
+                                    data-feather="facebook"></span>Calls</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Chats.html"><span
+                                    data-feather="alert-triangle"></span>Chats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Contacts.html"><span
+                                    data-feather="facebook"></span>Contacts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Conversation Groups.html"><span
+                                    data-feather="facebook"></span>Conversation Groups</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Facebook Messenger - Secret Conversations.html"><span
+                                    data-feather="facebook"></span>Secret Conversations</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Files App
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Client Items.html"><span
+                                    data-feather="file-text"></span>iCloud Client Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Server Items.html"><span
+                                    data-feather="file-text"></span>iCloud Server Items</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Files App - iCloud Sync Names.html"><span
+                                    data-feather="file-text"></span>iCloud Sync Names</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iCloud Returns
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud - File Metadata.html"><span
+                                    data-feather="alert-triangle"></span>iCloud - File Metadata</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iCloud Returns - iCloud Photos Metadata.html"><span
+                                    data-feather="cloud"></span>iCloud Photos Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Installed Apps
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - App Group Listing.html"><span
+                                    data-feather="package"></span>App Group Listing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - App Snapshots (screenshots).html"><span
+                                    data-feather="alert-triangle"></span>App Snapshots (screenshots)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - Application State.html"><span
+                                    data-feather="alert-triangle"></span>Application State</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Installed Apps - Itunes & Bundle Metadata.html"><span
+                                    data-feather="alert-triangle"></span>Itunes & Bundle Metadata</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            IOS Build
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iOS Device Activator Data.html"><span
+                                    data-feather="alert-triangle"></span>iOS Device Activator Data</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="IOS Build - iTunes Backup.html"><span
+                                    data-feather="alert-triangle"></span>iTunes Backup</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            iOS Screens
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="iOS Screens - Apps per screen.html"><span
+                                    data-feather="alert-triangle"></span>Apps per screen</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Locations
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Group.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Group</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Apple Maps Search History.html"><span
+                                    data-feather="alert-triangle"></span>Apple Maps Search History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Application.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Application</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD Map Tiles.html"><span
+                                    data-feather="alert-triangle"></span>GeoD Map Tiles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - GeoD PD Place Cache.html"><span
+                                    data-feather="alert-triangle"></span>GeoD PD Place Cache</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Google Maps Cache Routes.html"><span
+                                    data-feather="map-pin"></span>Google Maps Cache Routes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Known Networks.html"><span
+                                    data-feather="wifi"></span>Wifi Known Networks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Locations - Wifi Networks Scanned (private).html"><span
+                                    data-feather="wifi"></span>Wifi Networks Scanned (private)</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Voice-Recordings
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Voice-Recordings - Voice Recordings.html"><span
+                                    data-feather="mic"></span>Voice Recordings</a>
+                        </li>
+                        <h6
+                            class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                            Wifi Connections
+                        </h6>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Wifi Connections - iCloud Wifi Networks.html"><span
+                                    data-feather="alert-triangle"></span>iCloud Wifi Networks</a>
+                        </li>
+                        <script>
+                            feather.replace();
+                            var element = document.getElementById( "sidebar_id" );
+                            var searchParams = new URLSearchParams( window.location.search );
+                            if ( searchParams.has( 'navpos' ) ) {
+                                var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+                                if ( !isNaN( nav_pos ) )
+                                    element.scrollTop = nav_pos;
+                            }
+                        </script>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div
+                    class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="display-5"></h1>
+                    <h6 class="animated fadeIn mb-3"></h6>
+                </div>
+                <p class="lead">Bluetooth Other LE located at:
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm nopagenate" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Paths</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>E:\Files\repos\xleapp-project\xleapp\data\iOS 13.4.1
+                                    Extraction\Extraction\Volumes\JOSH\NoTar-13-4-1\private\var\containers\Shared\SystemGroup\9140AD4D-45D5-49D5-8AA8-1CD264CF295D\Library\Database\com.apple.MobileBluetooth.ledevices.other.db
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                </p>
+                <div class='table-responsive'>
+                    <table class="table table-striped table-bordered table-xsm pagenate" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Name</th>
+                                <th class="th-sm">Address</th>
+                                <th class="th-sm">UUID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>[TV] Spanky</td>
+                                <td>Public 64:1C:B0:AE:6C:B3</td>
+                                <td>E1DF27E2-DA99-A6D7-78F8-5CAEFB839F03</td>
+                            </tr>
+                            <tr>
+                                <td>[TV] Samsung 7 Series (75)</td>
+                                <td>Public B8:BC:5B:4C:ED:ED</td>
+                                <td>F15DB295-0B42-878B-EBF4-FFBC7070141F</td>
+                            </tr>
+                            <tr>
+                                <td>[TV] Samsung 7 Series (65)</td>
+                                <td>Public 68:27:37:4E:42:C1</td>
+                                <td>60F970BE-8673-10A1-7935-10FCC71ED448</td>
+                            </tr>
+                            <tr>
+                                <td>[TV] Samsung 6 Series (55)</td>
+                                <td>Public 9C:8C:6E:16:F9:4D</td>
+                                <td>9F2E628D-2627-0479-563C-AF50AEA6CAEC</td>
+                            </tr>
+                            <tr>
+                                <td>This Is’s AirPods Pro</td>
+                                <td>Public 38:EC:0D:E2:49:CF</td>
+                                <td>7A272D6E-9BA9-057F-8105-74AA4CF9A137</td>
+                            </tr>
+                            <tr>
+                                <td>Reverie</td>
+                                <td>Public 00:07:80:03:B3:09</td>
+                                <td>1890D260-CE82-89F7-D4D8-10657FF200B9</td>
+                            </tr>
+                            <tr>
+                                <td>PR BT FD84</td>
+                                <td>Public 00:1F:FF:73:EF:D1</td>
+                                <td>E461ED5D-0435-5DED-D514-B1C3B335CD7E</td>
+                            </tr>
+                            <tr>
+                                <td>LG webOS TV</td>
+                                <td>Public A0:6F:AA:3D:6E:D7</td>
+                                <td>4B401DC3-45B3-0257-10E9-7716F6BD7A3D</td>
+                            </tr>
+                            <tr>
+                                <td>L307LXK</td>
+                                <td>Public 78:9C:85:07:09:DC</td>
+                                <td>8E5DA2D4-CB5A-300D-C5AA-91EAB2727283</td>
+                            </tr>
+                            <tr>
+                                <td>Josh’s AirPods</td>
+                                <td>Public 7C:04:D0:89:89:A0</td>
+                                <td>D50B8EA2-6182-D405-28E7-1297EA093767</td>
+                            </tr>
+                            <tr>
+                                <td>ENVY Photo 6200 series</td>
+                                <td>Public 82:CE:62:71:B6:A1</td>
+                                <td>A8871803-71D6-32A7-86B6-C1E858B8B40C</td>
+                            </tr>
+                            <tr>
+                                <td>Aug</td>
+                                <td>Public 78:9C:85:00:51:F8</td>
+                                <td>2639269A-0D9D-634B-4957-CB879B893C44</td>
+                            </tr>
+                            <tr>
+                                <td>ALAM (23:E2:6C)</td>
+                                <td>Public B8:3A:9D:23:E2:6D</td>
+                                <td>DF0A357E-3D0D-6B33-802A-6D0089FD5767</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random FC:A9:DC:81:CC:6E</td>
+                                <td>141B5DA0-0619-418E-FB77-6C74F59DF7DB</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CA:3A:88:36:38:4A</td>
+                                <td>2E8C6B83-B639-CF09-8C42-101144D347C5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random E7:FC:DD:92:F4:B5</td>
+                                <td>4A7AFDB1-D34C-CA86-739A-474FA0066DEB</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random EA:1E:66:65:28:41</td>
+                                <td>B0EEF2BB-393C-10E1-0E4C-42273FE1C2D8</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random C0:B9:B5:A5:AA:7D</td>
+                                <td>37117945-8C75-28D9-3CB0-43AEC440800E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 28:39:5E:7F:8B:C1</td>
+                                <td>CF7BB7A5-5E78-AD6D-9658-0D4394450DE3</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random E3:21:BC:AE:58:CF</td>
+                                <td>B661941A-41D4-8452-12C3-8C4DF3FE038F</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random D5:68:1A:28:D6:D8</td>
+                                <td>C32F50C0-0747-0843-FF38-BBE2AA30127E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 38:EC:0D:E0:61:D0</td>
+                                <td>179517A6-9841-E2FE-9F51-330A7A912F2D</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 28:F0:76:3E:79:09</td>
+                                <td>5675610D-C8F2-7040-896D-38DBF2184FDA</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public F8:04:2E:88:1F:C5</td>
+                                <td>6095F605-8FFE-FC4F-80EB-068331376816</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 78:D2:94:99:7C:55</td>
+                                <td>2011842A-0669-5593-2C6E-79BBF1DCE4D5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 68:64:4B:3E:C9:43</td>
+                                <td>2C9328C2-AAC6-8A02-8B8F-0AC7FF528D99</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 18:EE:69:2C:B4:9D</td>
+                                <td>6F5A1D5C-EDE2-3EDF-DFD9-8CA0F61BFD5C</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public B0:34:95:4C:24:CE</td>
+                                <td>85083A24-BA9E-7E86-BD35-1FDD0198AE5B</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 68:64:4B:0F:DB:D2</td>
+                                <td>8EFFEB6B-4919-F8E2-DAB4-93912B2212E8</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 78:D2:94:99:7C:19</td>
+                                <td>A94ABF84-C0CA-1884-98D2-FFA144DE3BE7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 04:15:52:E6:46:62</td>
+                                <td>F6A5E1EB-2333-1884-4A60-583264488C0D</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public C8:69:CD:EC:26:9B</td>
+                                <td>FAC2D211-7ED0-CF5E-8ADE-699A8BDBFC83</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D8:E0:E1:F9:C4:A0</td>
+                                <td>5908E3D2-E289-42CB-ACC8-AA0C5756D7EB</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D0:03:4B:E9:82:9A</td>
+                                <td>17DBDF2C-1B76-8BE1-E12E-CCD9237D9426</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random C4:D3:3A:9D:86:D7</td>
+                                <td>1932168E-E4B3-114B-70A8-4B6A1B4DC8C7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 0C:B2:B7:3E:D0:01</td>
+                                <td>2E7811E8-DC33-3D0A-C79F-78D87C48C1F1</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F0:1C:8F:AE:7F:F7</td>
+                                <td>5301CACB-5EBA-9FB3-8BF9-57433E2E1BC2</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public E4:3E:D7:AC:57:88</td>
+                                <td>9F965606-0888-97E1-0BD2-6499336E3F3C</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 88:E9:FE:6A:61:0C</td>
+                                <td>15627251-884D-E686-A356-85AC9D376A5E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random D8:AA:EA:85:95:55</td>
+                                <td>88781DED-7658-AE5E-4501-B344CD937471</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F6:DB:49:31:06:CA</td>
+                                <td>28DE987B-382C-51D5-8D4D-578DA2E68BD1</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CD:9E:6C:D2:91:2C</td>
+                                <td>57B0C72B-792C-E080-535E-CF03AA78F0B9</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random D7:69:19:A3:96:48</td>
+                                <td>E58DA595-874E-A258-2F9B-22177EE0ECEE</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random DB:A4:C4:F1:C9:DC</td>
+                                <td>1241B834-E4E3-550A-F06B-28AF0D96AE30</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F7:7F:ED:26:58:59</td>
+                                <td>1474817D-513C-91CC-DF73-0EF9823F5057</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random E0:41:84:F1:22:70</td>
+                                <td>1B6BD2DF-0371-B609-28E2-72AD890A4013</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random EB:DB:04:1F:E1:4A</td>
+                                <td>7EFA3856-5A93-F8D2-C596-FB34B7BBCCD3</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random DA:73:7C:B1:1D:88</td>
+                                <td>90918D42-5C23-F01B-3013-5EBAC115763E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 14:99:E2:06:58:42</td>
+                                <td>A1E7311C-1E3E-E70A-17CA-F16DDF52A5F3</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public B0:34:95:58:60:6F</td>
+                                <td>D652A533-9842-CC59-3858-517DDC6BB8E0</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random E8:FC:A8:07:85:8C</td>
+                                <td>D9160498-7AC7-476B-FD68-884162AA377B</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F4:FA:DF:3A:11:B0</td>
+                                <td>A734A7BE-E077-389C-BF92-7D0C0E4EE2C2</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 78:9F:70:5D:C8:A5</td>
+                                <td>EE25277C-2761-7681-BC50-9E4E306769CD</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D8:E0:E1:5B:D4:F3</td>
+                                <td>A9BBBB89-64BC-1E49-ABC6-E52D7AC90F46</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 04:69:F8:9F:52:89</td>
+                                <td>19EAEE38-185E-A4A1-A82A-84ACB9612622</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CA:C4:05:34:2C:AF</td>
+                                <td>21DEBD64-E697-0540-6B8E-B5EA9CAFA0F8</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random FC:B4:D1:1F:30:37</td>
+                                <td>383D3BB6-69B7-660D-D780-655C020FEE9E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random DC:55:74:2A:97:19</td>
+                                <td>6241D96F-493F-5D30-70B8-0B21A95E0CB5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random DA:FF:BA:97:A4:C3</td>
+                                <td>B455177B-5A29-FC04-A8CA-FE7A3EE3A2D7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CE:DD:73:22:C4:31</td>
+                                <td>F0A8A86C-B4A1-77F7-6FAD-0FA70E59E3B5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CB:D1:62:58:2E:67</td>
+                                <td>F927EF8B-FE28-FF61-BE1A-BB70C6AD1354</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public B8:BC:5B:1D:7A:83</td>
+                                <td>5026993A-41D5-3B15-BFF9-AD855FF0BCB5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public A4:31:35:13:91:7F</td>
+                                <td>65AE315D-4A26-E6D4-9D68-6F8437919BF5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 5C:F9:38:BD:5C:56</td>
+                                <td>10213496-EF2B-1667-69DF-F9F35039CF27</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CE:3B:98:3A:69:22</td>
+                                <td>224195E8-AAEE-5760-FED2-F3AE324B9271</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random DA:59:52:20:13:ED</td>
+                                <td>31A68C2F-29CF-A4D9-7002-8485F9CC4FBF</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 68:64:4B:27:BD:D4</td>
+                                <td>3D6A9D27-4D45-DDE2-CCBC-D2321E3AD22A</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F3:CD:0A:D6:E5:9F</td>
+                                <td>5235051F-D07D-F275-BAE1-EB7E3C86DE34</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 6C:94:F8:ED:42:F3</td>
+                                <td>64F7E6C1-9BE8-8B67-F925-5975BE39965B</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 9C:20:7B:8D:A4:A7</td>
+                                <td>7C756DE0-2D8D-1683-B4FB-31DE2328408C</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 9C:20:7B:E4:DD:5F</td>
+                                <td>7DB23EA8-0150-737D-BE00-0AD0783154CE</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 18:EE:69:07:94:CB</td>
+                                <td>B280F32C-F920-085A-A253-E8FDD4209A88</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random EA:73:04:0D:3C:2F</td>
+                                <td>B4DBB342-BEF4-977E-02EC-84EB78737858</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 68:64:4B:39:77:52</td>
+                                <td>D300CFB7-B889-9A0F-637A-C71D419B03F5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random CA:AE:F8:F3:86:0A</td>
+                                <td>7CB0EBC0-DD71-08AE-7C7F-C0985651887B</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 70:48:0F:E5:8F:3F</td>
+                                <td>B24CB2A1-BC79-8AB8-87DA-03DFEE02F736</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public FC:F1:36:20:22:76</td>
+                                <td>00ECDB81-308C-AEAD-FDCB-E1E26035DFE7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 28:39:5E:8A:59:A3</td>
+                                <td>4E5BC195-7E81-6D60-F51A-E5E4405567C9</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F7:3C:49:76:3D:7A</td>
+                                <td>3B3003F7-5406-C438-28A6-7B303B319045</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D8:E0:E1:3D:C3:99</td>
+                                <td>48342C93-F470-C4BD-0F41-771C4721AA54</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 24:4B:03:2D:CE:AF</td>
+                                <td>CD3B22F4-71BD-E381-6495-2D8FC3D57B1C</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random FD:A0:F6:AE:8B:50</td>
+                                <td>A3E6C910-CBC2-3834-2381-9425EA349461</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public BC:54:36:C9:51:2F</td>
+                                <td>D7BAB041-93BC-B651-3E24-90B895AF9E67</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random F3:3B:39:01:4E:B1</td>
+                                <td>C37FCB26-6E37-90B8-0FD6-AB9107F955EA</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random FE:34:6E:5A:46:D7</td>
+                                <td>C5A49FBA-37A2-4A7E-65CB-4426BF78022F</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random E4:B4:6B:1F:6A:95</td>
+                                <td>FDF3B399-C44D-2D19-A51D-E76FC723D54F</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 68:27:37:29:72:E6</td>
+                                <td>EF9790F9-956D-3065-C479-9719B17F73B7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 78:9F:70:5B:89:2D</td>
+                                <td>32693874-01BB-03BA-9AC1-EFAD3770B292</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public AC:BC:32:75:4D:1A</td>
+                                <td>1F1C7282-DEB9-E5D7-B209-5177E1B3B61E</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D0:03:4B:EC:36:66</td>
+                                <td>3ACC9997-2929-DEA6-E077-89D5878CF4F7</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D8:E0:E1:31:E0:E7</td>
+                                <td>8697B29F-899B-17DA-4AB1-E49481102826</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Random EE:8C:41:34:7B:4E</td>
+                                <td>9B3728F8-A458-61C4-8EEA-8AC7EDF1D149</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public F0:18:98:86:3F:52</td>
+                                <td>C9C3EBC4-632C-C716-BEC9-CEB370144E9D</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 50:DE:06:6D:02:F0</td>
+                                <td>E5D0E147-763B-F89E-D82B-8353B027F1C4</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public 7C:64:56:D9:A5:C2</td>
+                                <td>E2EB37C9-61D5-E7D1-EC98-DA233A9670C9</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D0:03:4B:04:A7:1D</td>
+                                <td>1E8741B3-D89B-DB06-B93E-9016BB751217</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public D0:03:4B:35:34:64</td>
+                                <td>42004563-1678-4B78-98FD-EBCBED0E1DB5</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Public C8:D0:83:CC:D0:0F</td>
+                                <td>51D12884-7045-82A1-D005-07479CAC4DA3</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="th-sm">Name</th>
+                                <th class="th-sm">Address</th>
+                                <th class="th-sm">UUID</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    <!-- End your project here-->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/bootstrap.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/mdb.min.js"></script>
+    <!-- Your custom scripts -->
+    <!-- MDBootstrap Datatables  -->
+    <script type="text/javascript" src="_static/MDB-Free_4.13.0/js/addons/datatables.min.js"></script>
+    <script>
+
+        $( document ).ready( function () {
+            $( 'table.pagenate' ).DataTable( {
+                //"scrollY": "60vh",
+                //"scrollX": "10%",
+                //"scrollCollapse": true,
+                "aLengthMenu": [[15, 50, 100, -1], [15, 50, 100, "All"]],
+            } );
+            $( '.dataTables_length' ).addClass( 'bs-select' );
+            $( '#mySpinner' ).remove();
+            //$('#infiniteLoading').remove();
+        } );
+
+        feather.replace()
+        var element = document.getElementById( "sidebar_id" );
+        var searchParams = new URLSearchParams( window.location.search );
+        if ( searchParams.has( 'navpos' ) ) {
+            var nav_pos = parseInt( searchParams.get( 'navpos' ) );
+            if ( !isNaN( nav_pos ) )
+                element.scrollTop = nav_pos;
+        }
+
+        var elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+        document.addEventListener( "DOMContentLoaded", function () {
+            var element = document.getElementById( "sidebar_id" );
+            element.addEventListener( "scroll", function () {
+                elemScrollTop = document.getElementById( "sidebar_id" ).scrollTop.toString();
+            } );
+        } );
+        $( 'a.nav-link' ).click( function ( e ) {
+            e.preventDefault();
+            location.href = $( this ).attr( 'href' ) + "?navpos=" + elemScrollTop;
+        } );
+    </script>
+</body>
+
+</html>

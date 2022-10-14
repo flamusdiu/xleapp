@@ -1,0 +1,55 @@
+﻿Key	Value	Source
+kRemoteCUPolicyMirrorChecksum	-17120315
+com.apple.private.alloy.thumper.settings.devices	['752E8F13-7BDE-4974-A011-A03492737221']
+kOperatorRoamingInfo_Subscriber_Mcc	310
+kEnableIMSISwitchConfiguration	{'EnableIMSISwitch': False}
+kPRIFileConfiguration	{'kPRIFileVersion': '0.1.164', 'kPRIFileBundleID': 'com.apple.TMobile_MVNO_US', 'kPRIFileBundleVersion': '41.0', 'kPRIFileName': 'overrides_N69.pri', 'kPRIBundleDir': '/System/Library/Carrier Bundles/iPhone/TMobile_MVNO_US.bundle'}
+imei_svn	24
+kLastActiveRemoteDeviceInfo	{'SWVersion': '6.2.1', 'DeviceName': 'Watch4,3', 'DeviceUUID': '752E8F13-7BDE-4974-A011-A03492737221'}
+kOperatorRoamingInfo_Subscriber_CarrierBundleID	com.apple.TMobile_MVNO_US
+ReportedPhoneNumber	19195794674
+imei	355800076093966
+subscriber_account_ids	[{'second': '8901260971148676693', 'first': '1:kOne'}]
+kRemoteCarrierBundleInfo	{'kDefault': {'PRIName': 'overrides_N141s_N141b.der.pri', 'BundleIdentifier': 'com.apple.Default', 'BundleVersion': '12.0.1', 'PRIVersion': '0.0.1'}, 'kCarrier': {'BundleVersion': '', 'BundleIdentifier': ''}, 'kOperator': {'PRIName': 'overrides_N141s_N141b.der.pri', 'BundleIdentifier': 'com.apple.Verizon_LTE_US', 'PRIVersion': '0.0.10', 'BundleVersion': '12.0', 'CarrierName': 'Verizon'}, 'DeviceUUID': '752E8F13-7BDE-4974-A011-A03492737221'}
+kAllowsMultiplePDNConnectionsToSameAPNConfiguration	{'AllowsMultiplePDNConnectionsToSameAPN': False}
+ne_config_state	False
+activation_gemini_support	1:kFalse
+meid	35580007609396
+kOperatorRoamingInfo_3GPP_NetworkMcc	310
+kPostponementTicketLock	False
+kOperatorRoamingInfo_Subscriber_Mnc	260
+kOperatorRoamingInfo_3GPP_CurrentOperatorBundleId	com.apple.TMobile_US
+imeis	[{'second': '355800076093966', 'first': '1:kOne'}]
+kOperatorRoamingInfo_3GPP_NetworkMnc	260
+imei_svns	[{'second': '24', 'first': '1:kOne'}]
+kCarrierSpaceLastRefreshStatusKey	6000
+com.apple.private.alloy.ct.baseband.p2p.notification.whitelist	{'752E8F13-7BDE-4974-A011-A03492737221': {'bbinfo': b'\x10\x01\x00\x03\x11!\x00\x00\x1a\x18\x07\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'}}
+kNextCarrierBundleUpdateCheck	2020-04-23 00:36:28.790205
+kPostponementTicket	{'ActivityURL': 'https://albert.apple.com/deviceservices/activity', 'ActivationTicket': 'MIICrQIBATALBgkqhkiG9w0BAQsxc58/BBxG/mSfQAThUH8An0sUdbd0NU3M6jd/rnvHAkEKqke5S8yfh2sHNVgAB2CTlp+HbQc1WAAHYJOWn5c9DAAAAADu7u7u7u7u75+XPgQBAAAAn5c/BAEAAACfl0AEAQAAAJ+XQQQBAAAAn5dMBAAAAAAEggEAXhw8fspvTo7s3hiQPTuVGLW5szFMxAUE7sozU2A7BdFhepiWcUk4YbIufeahL8peCE8BmHdqqfjG2YXuQOtPHXLfOsE/5E41G760ipUq9xhJZDHaNKxsYPtzTofdIP+Ow42rTTzjwMNSlvOz+qwDdLNmx9pMB4ZUgJDWCkLMTdJQ1VM9xoILdKJ8jYTOFPw/xWGeYbc5oF5p/VD07+O5FrURP/mIcJtPaoy9TzLuc2epz1gVgFI02kMcw7leYEdbqJU+H9dD+P0nQlMhL3etCztqzZuZtkpvO+LceJlpWYbZBnee6fulwTT31NqZpFD2iW3lFXhpVIm3of3WwmgOLKOCASAwCwYJKoZIhvcNAQEBA4IBDwAwggEKAoIBAQCskU9F2dz8TtWBq2D8AdsqcYS51H66DxZmCHEw6U9p3d8vjaEcBdF5VFwETmWJBcTJo/SiPLezdAmG40RfAsxg4sIok0CPhKsTp1mon0JBqai68SdmN0L+AsEbmNK4AjjMX6GM5t7w5mdXpgZyigRtGQDnV2P7HnOZj69PS9r/D4Q50CJNaLrGJZ1UVBNcKkJNTMD2pxrHnxdSLTj51xVITBU71Tdl7KghSskP8WagOONk6J0IcOCwIaWct9A/+Aso4yk5/PDh1YUhbUiIO+z1TL5TdiHLITgc8NXHagB/yiOEEzOx2pcZVXXjwfSZlKRHj66VlWVHgT+bEHZl0/sdAgMBAAE=', 'PhoneNumberNotificationURL': 'https://albert.apple.com/deviceservices/phoneHome', 'ActivationState': 'Activated'}
+kOperatorRoamingInfo_3GPP_Roaming	True
+kGRIFileConfiguration	{'kGRIBundleDir': '/System/Library/Carrier Bundles/iPhone/Default.bundle', 'kGRIFileName': 'global_setting_A.gri', 'kGRIFileBundleVersion': '41.0', 'kGRIFileVersion': '6.2.2', 'kGRIFileBundleID': 'com.apple.Default'}
+kOperatorRoamingInfo_3GPP_RAT	7
+ReportedSubscriberIdentity	8901260971148676693
+com.apple.private.alloy.ct.commcenter.p2w.settings.whitelist	{'752E8F13-7BDE-4974-A011-A03492737221': {}}
+SIMPhoneNumber	+19195794674
+PersonalitySlots	['8901260971148676693']
+RoamingMigrationDone	True
+unique-sim-label-store	{'0DC88727-B856-4F9C-B802-D838D799CA01': {'text': '', 'ts': 1584826745}}
+PersonalWallet	{'8901260971148676693': {'RegistrationController': {'lastKnownIMSFeatureState': 2}, 'Capabilities': {'SimCallAndDataCurrentlySupported': True, 'NetworkSupportsVoPS': True, 'SimCallAndDataSupported': True}, 'info': {'mdn': '+19195794674', 'ts': 1587052382, 'eap_aka': True, 'type': 'sim', 'cb_ver': '41.0', 'label-id': '0DC88727-B856-4F9C-B802-D838D799CA01'}, 'CarrierEntitlements': {'lastGoodImsi': '310260974867669', 'kEntitlementsSelfRegistrationUpdateImsi': '310260974867669', 'kEntitlementsSelfRegistrationUpdateImei': '355800076093966', 'phone-number-prefetched': True}, 'PhoneServices': {'VoLTENetworkSeen': True}}}
+PhoneNumber	19195794674
+EnhancedLQMDataTransferTimeRegistration	False
+com.apple.carrier_1	310260_GID1-4276
+EnhancedLQMDataStallRegistration	False
+EnhancedLQMLinkStateRegistration	True
+EnhancedLQMLinkQualityFingerPrintRegistration	True
+LastKnownServingMnc	260
+PhoneNumberChangeReport	True
+LastKnownICCID	8901260971148676693
+EnhancedLQMLinkPowerCostRegistration	False
+NetworkPhoneNumberICCID	8901260971148676693
+LastKnownServingMcc	310
+NetworkPhoneNumber	+19195794674
+CarrierBundleName	310260_GID1-4276
+LASDNextUpdate	2020-04-17 20:52:15.779458
+EnhancedLQMTrafficClassRegistration	True
+PhoneServices	{'Version': 1}
