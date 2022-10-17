@@ -6,16 +6,16 @@ com.apple.datadetectors.DDActionsService	/Applications/DDActionsService.app	/pri
 com.apple.TVRemoteUIService	/Applications/Apple TV Remote.app	/private/var/mobile/Containers/Data/Application/AD004F6F-BF1A-40D6-84AB-1CFDA74BE806
 com.apple.Preferences	/Applications/Preferences.app	/private/var/mobile/Containers/Data/Application/142EF15D-F4D2-4737-909C-60AA005A4743
 com.apple.CarPlaySettings	/Applications/CarPlaySettings.app	/private/var/mobile/Containers/Data/Application/DDE83D8C-CFC8-4756-A366-8D383DA747A5
-com.apple.Home.HomeUIService	/Applications/HomeUIService.app	
+com.apple.Home.HomeUIService	/Applications/HomeUIService.app
 com.apple.Magnifier	/Applications/Magnifier.app	/private/var/mobile/Containers/Data/Application/D1F2E746-EDF0-422D-8AD9-631F4FD06254
 com.apple.BarcodeScanner	/Applications/BarcodeScanner.app	/private/var/mobile/Containers/Data/Application/5F98E3C6-F9D5-4A7C-98CA-5C9C9BA04216
 com.apple.Passbook	/Applications/Passbook.app	/private/var/mobile/Containers/Data/Application/E58E5270-EEB1-4969-B2AA-0D1CF11B77D7
 com.apple.siri	/Applications/Siri.app	/private/var/mobile/Containers/Data/Application/B0B0F739-4567-4DB0-AB24-7A755D80964D
 com.apple.AppStore	/Applications/AppStore.app	/private/var/mobile/Containers/Data/Application/32BDEBF7-0383-4D53-A927-7BE6BE516B50
-com.apple.social.SLYahooAuth	/Applications/SLYahooAuth.app	
-com.apple.PhotosViewService	/Applications/PhotosViewService.app	
+com.apple.social.SLYahooAuth	/Applications/SLYahooAuth.app
+com.apple.PhotosViewService	/Applications/PhotosViewService.app
 com.apple.ScreenTimeUnlock	/Applications/ScreenTimeUnlock.app	/private/var/mobile/Containers/Data/Application/AC6DE668-0BA4-4258-BA3E-174601601052
-com.apple.mobiletimer	/Applications/MobileTimer.app	
+com.apple.mobiletimer	/Applications/MobileTimer.app
 com.apple.iad.iAdOptOut	/Applications/iAdOptOut.app	/private/var/mobile/Containers/Data/Application/64073B4C-3230-4A68-A209-BDAAFB107D8D
 com.apple.mobilephone	/Applications/MobilePhone.app	/private/var/mobile/Containers/Data/Application/79B6E76A-FEB5-4A32-92F6-444FAEE57A5E
 com.apple.findmy	/Applications/FindMy.app	/private/var/mobile/Containers/Data/Application/EC390B36-E786-48F4-9838-504B0C6E7A24
@@ -25,9 +25,9 @@ com.apple.StoreDemoViewService	/Applications/StoreDemoViewService.app	/private/v
 com.apple.carkit.DNDBuddy	/Applications/DNDBuddy.app	/private/var/mobile/Containers/Data/Application/46FB1577-D30B-48A0-B5D4-E3FB1698505D
 com.apple.appleseed.FeedbackAssistant	/Applications/Feedback Assistant iOS.app	/private/var/mobile/Containers/Data/Application/D4DBC818-B38D-48A9-B989-21FF45FA13BA
 com.apple.ScreenSharingViewService	/Applications/ScreenSharingViewService.app	/private/var/mobile/Containers/Data/Application/389783E9-AAEF-4DE1-8455-33F97F702157
-com.apple.mobileslideshow	/Applications/MobileSlideShow.app	
+com.apple.mobileslideshow	/Applications/MobileSlideShow.app
 com.apple.BusinessChatViewService	/Applications/BusinessChatViewService.app	/private/var/mobile/Containers/Data/Application/E100DFC3-BEB1-4BEF-A94D-D0922092DF8D
-com.apple.camera	/Applications/Camera.app	
+com.apple.camera	/Applications/Camera.app
 com.apple.webapp	/Applications/Web.app	/private/var/mobile/Containers/Data/Application/7C5B6F71-5077-44FD-A886-BC01544084FB
 com.apple.weather	/private/var/containers/Bundle/Application/0BD664B8-43E7-4E9C-85D8-317595B5AF59/Weather.app	/private/var/mobile/Containers/Data/Application/53E9E34B-C045-461E-8B25-5398F7656FE2
 com.apple.news	/private/var/containers/Bundle/Application/C78DC860-F168-42C9-BC61-4DD973CA6175/News.app	/private/var/mobile/Containers/Data/Application/C29AF887-F171-4722-8487-449071D14EAE
@@ -45,7 +45,7 @@ com.apple.mobilenotes	/private/var/containers/Bundle/Application/602B7731-5C25-4
 com.apple.MobileAddressBook	/private/var/containers/Bundle/Application/631D475F-57B5-4979-911C-6BAC96687284/Contacts.app	/private/var/mobile/Containers/Data/Application/614CA2AB-1F1D-4161-AAE6-FA6C9C426790
 com.apple.VoiceMemos	/private/var/containers/Bundle/Application/84886DFF-1028-42BD-874E-C6DFF5678B07/VoiceMemos.app	/private/var/mobile/Containers/Data/Application/6AFCB2C0-0314-449C-88DD-BBF3AC5114D4
 com.apple.facetime	/private/var/containers/Bundle/Application/BC0C5159-F997-47AF-97A7-262A6F4D5D32/FaceTime.app	/private/var/mobile/Containers/Data/Application/CE2D26E7-4A98-4A22-A317-DF8D9E863DC5
-com.apple.Bridge	/private/var/containers/Bundle/Application/284272DF-D125-4298-B964-E5E94B74A9DC/Bridge.app	
+com.apple.Bridge	/private/var/containers/Bundle/Application/284272DF-D125-4298-B964-E5E94B74A9DC/Bridge.app
 com.apple.calculator	/private/var/containers/Bundle/Application/291D32F6-B2AE-4057-985E-AB1A09E5E571/Calculator.app	/private/var/mobile/Containers/Data/Application/4D4E15F1-51D5-43BC-9C5A-DADB9A05659C
 com.apple.DocumentsApp	/private/var/containers/Bundle/Application/04DA2653-4349-45BA-8F3C-760556CFAD02/Files.app	/private/var/mobile/Containers/Data/Application/EBA110DB-3B11-4F1E-8483-3439050CCB38
 com.apple.Maps	/private/var/containers/Bundle/Application/53A0C146-FAC4-4917-BA70-689E34650FBC/Maps.app	/private/var/mobile/Containers/Data/Application/02293AD7-F15E-4214-8780-4D56D30E1C01
@@ -91,4 +91,4 @@ com.apple.dt.XcodePreviews	/Applications/Xcode Previews.app	/private/var/mobile/
 com.enchantedcloud.photovault	/private/var/containers/Bundle/Application/C746C5D2-1095-4428-B43E-34312EF056D9/PhotoVault.app	/private/var/mobile/Containers/Data/Application/C4CC2E81-A70D-41C6-A3C9-03F7A02530A0
 com.keepsafe.KeepSafe	/private/var/containers/Bundle/Application/E0D5524B-5EED-4674-B5A9-0E948D3B91BE/KeepSafe.app	/private/var/mobile/Containers/Data/Application/F3D162D8-1CD4-42A8-8E09-26C9D30F72AF
 com.coverme.covermeAdhoc	/private/var/containers/Bundle/Application/FDF88796-472F-4BD7-A76A-19FDBC2DDE42/CoverMe.app	/private/var/mobile/Containers/Data/Application/EBC7BCCC-60AA-4E52-9F98-60257A5C6570
-kjc.loader	/private/var/binpack/Applications/loader.app	
+kjc.loader	/private/var/binpack/Applications/loader.app
