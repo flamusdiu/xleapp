@@ -22,7 +22,7 @@ repos:
         exclude: (tox.ini|.*.bat)
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.1.0
+    rev: v3.2.2
     hooks:
       - id: pyupgrade
         stages: [commit]
@@ -52,7 +52,7 @@ repos:
         stages: [commit]
 
   - repo: https://github.com/flakeheaven/flakeheaven
-    rev: 3.0.0
+    rev: 3.2.1
     hooks:
       - id: flakeheaven
         stages: [commit]
