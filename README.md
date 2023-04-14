@@ -71,6 +71,45 @@ Here is a list of plugins that need to be completed. Plugin package suffixed wit
   $ pipx install xleapp
   $ pipx inject xleapp xleapp-<plugin>
   ```
+  
+### OS X
+ 
+ Tested on OS X with M1 chip. 
+ 
+ With Python 3.11 and venv.
+ 
+```bash
+# create venv
+python3 -m venv xleapp-venv
+source xleapp-venv/bin/activate
+
+# install tkinter
+brew install python-tk
+#pip install tk
+# tk source distribution
+#curl https://files.pythonhosted.org/packages/#a0/81/742b342fd642e672fbedecde725ba44db44e800dc4c936216c3c6729885a/#tk-0.1.0.tar.gz > tk.tar.gz
+#tar -xzvf tk.tar.gz
+#pip install -U ./tk-0.1.0/
+
+pip install click
+pip install Flask Jinja2 babel python-dateutil flask-moment flask-wtf flask_sqlalchemy
+
+# xleapp 0.2.1 depends on python-magic-bin<0.5.0 and >=0.4.14
+brew install libmagic # dependency for python-magic
+# python-magic wheel for Mac
+pip install git+https://github.com/julian-r/python-magic.git
+
+pip install xleapp==0.2.1
+
+pip install Cython
+pip install astc-decomp
+pip install xleapp-ios
+
+# test
+xleapp -h
+# or run cli.py
+python xleapp/src/xleapp/cli.py
+```
 
 ## Installation from Github and Development Information
 
