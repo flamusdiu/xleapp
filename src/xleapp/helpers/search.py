@@ -201,7 +201,7 @@ class FileHandles(collections.UserDict):
                         cursor.execute("PRAGMA page_count").fetchone()
                         db.row_factory = sqlite3.Row
                         file_handle = Handle(found_file=db, path=path)
-                    except (sqlite3.DatabaseError):
+                    except sqlite3.DatabaseError:
                         if extended_path:
                             fp = open(extended_path, "rb")
                         else:
@@ -402,7 +402,6 @@ class FileSeekerTar(FileSeekerBase):
     def search(self, file_pattern: str) -> t.Iterator[pathlib.Path]:
         for member in self.build_files_list():
             if fnmatch.fnmatch(member.name, file_pattern):
-
                 full_sanitize_name = utils.sanitize_file_path(str(member.name))
                 if utils.is_platform_windows():
                     full_path = pathlib.Path(

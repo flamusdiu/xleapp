@@ -176,7 +176,6 @@ class TimelineDBManager(DBManager):
 
 class TsvManager(DBManager):
     def __init__(self, report_folder: pathlib.Path) -> None:
-
         db_folder: str = "_TSV Exports"
 
         super().__init__(db_folder=report_folder / db_folder)
@@ -196,7 +195,6 @@ class TsvManager(DBManager):
         self.connection.close()
 
     def save(self, name, data_headers, data_list) -> None:
-
         with self as file:
             tsv_writer = csv.writer(file, delimiter="\t")
             tsv_writer.writerow(data_headers)

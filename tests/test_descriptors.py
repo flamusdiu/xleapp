@@ -28,7 +28,6 @@ def regex_validator():
 
 @pytest.fixture
 def regex(request, regex_validator):
-
     search = regex_validator
     if isinstance(request.param, str):
         regex_params = [request.param]
@@ -60,7 +59,6 @@ class TestValidatorABC:
                     raise TypeError(f"Expected {value!r} to be a int!.")
 
         class DummyClass:
-
             value = DummyValidator()
 
         return DummyClass
@@ -72,7 +70,6 @@ class TestValidatorABC:
 
     @pytest.mark.parametrize("my_int, expected", [(None, 10), (42, 42)])
     def test_validator_default_value(self, test_validator, my_int, expected):
-
         test_obj = test_validator()
         test_obj.value = my_int
         assert test_obj.value == expected
@@ -163,7 +160,6 @@ class TestSearchRegexDescriptor:
             assert isinstance(search, Regex)
 
     def test_return_value(self, regex, num):
-
         for regex_search in regex.regex:
             attrs = regex.lookup[regex_search.regex]
             if len(attrs) == 0:
@@ -174,13 +170,11 @@ class TestSearchRegexDescriptor:
             assert regex_search.return_on_first_hit == attrs[1]
 
     def test_convert_to_string(self, regex, num):
-
         for regex_search in regex.regex:
             assert str(regex_search) == regex_search.regex
 
 
 def test_search_descriptor_invalid_argument(regex_validator):
-
     with pytest.raises(
         TypeError,
         match=re.escape("Expected 42 to be a str or tuple!"),
