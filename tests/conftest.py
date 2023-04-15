@@ -113,7 +113,6 @@ def ios_image(test_data, request, pytestconfig):
 @pytest.fixture
 def test_artifact():
     class TestArtifact(Artifact, category="Test", label="Test Artifact"):
-
         __test__ = False
         device_type = "test"
 

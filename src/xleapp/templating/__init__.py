@@ -17,7 +17,6 @@ if t.TYPE_CHECKING:
 
 
 def generate_index(app: "Application") -> None:
-
     nav = generate_nav(app.report_folder, app.artifacts)
 
     index_page = Index(

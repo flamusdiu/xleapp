@@ -47,7 +47,6 @@ class ArtifactError(Exception):
 
 
 class Artifacts:
-
     __slots__ = ("_store", "process_queue", "_processing_device_type")
 
     def __init__(self) -> None:
