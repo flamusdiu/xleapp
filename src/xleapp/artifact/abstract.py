@@ -91,7 +91,6 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
     def __init_subclass__(cls, *, category, label):
         super().__init_subclass__()
         if not inspect.isabstract(cls):
-
             if label in app.__ARTIFACT_PLUGINS__:
                 raise ValueError(f"Name {label!r} already registered!")
 
