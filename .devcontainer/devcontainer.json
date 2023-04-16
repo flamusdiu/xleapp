@@ -1,0 +1,63 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "xleapp Python 3",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "xleapp-dev",
+	"workspaceFolder": "/workspace/xleapp",
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.vscode-pylance",
+				"lextudio.restructuredtext",
+				"bungcip.better-toml",
+				"DavidAnson.vscode-markdownlint",
+				"eamodio.gitlens",
+				"GitHub.vscode-pull-request-github",
+				"kevinglasson.cornflakes-linter",
+				"magicstack.MagicPython",
+				"ms-vscode.makefile-tools",
+				"njpwerner.autodocstring",
+				"samuelcolvin.jinjahtml",
+				"shd101wyy.markdown-preview-enhanced",
+				"streetsidesoftware.code-spell-checker",
+				"the-compiler.python-tox",
+				"trond-snekvik.simple-rst",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"wholroyd.jinja",
+				"yzhang.markdown-all-in-one"
+			]
+		},
+		"settings": {
+			"python.linting.enabled": true,
+			"python.linting.pylintEnabled": true,
+			"python.formatting.provider": "black",
+			"python.formatting.blackPath": "black",
+			"python.linting.banditPath": "bandit",
+			"python.linting.flake8Path": "flakeheaven",
+			"python.linting.mypyPath": "mypy",
+			"python.linting.pycodestylePath": "pycodestyle",
+			"python.linting.pydocstylePath": "pydocstyle"
+		}
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"installOhMyZsh": true,
+			"upgradePackages": true,
+			"username": "vscode",
+			"uid": "1000",
+			"gid": "1000"
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "latest"
+		}
+	},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	"postCreateCommand": "/usr/bin/zsh ./.devcontainer/post-create.sh > ~/post-create.log",
+	"remoteUser": "vscode"
+}
