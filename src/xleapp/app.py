@@ -106,14 +106,14 @@ class Application:
     default_configs: dict[str, t.Any]
     device: Device = Device()
     extraction_type: str
-    input_path: pathlib.Path = None
+    input_path: pathlib.Path
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
     input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
-    report_folder: pathlib.Path = None
+    report_folder: pathlib.Path
     seeker: FileSeekerBase
     version: str
     dbservice: db.DBService
@@ -134,7 +134,7 @@ class Application:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
     def __call__(
-        self, output_folder: pathlib.Path, input_path: pathlib.path
+        self, output_folder: pathlib.Path, input_path: pathlib.Path
     ) -> Application:
         self.dbservice = db.DBService(self.report_folder)
 

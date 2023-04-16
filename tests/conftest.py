@@ -159,6 +159,7 @@ def test_artifact():
 
 @pytest.fixture
 def fake_filesystem(fs, test_data):
+def fake_filesystem(fs, test_data):
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
     """
