@@ -28,14 +28,18 @@
 				"trond-snekvik.simple-rst",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"wholroyd.jinja",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"ms-python.black-formatter"
 			]
 		},
 		"settings": {
 			"python.linting.enabled": true,
 			"python.linting.pylintEnabled": true,
-			"python.formatting.provider": "/usr/local/py-utils/bin/black",
-			"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+			"python.formatting.provider": "none",
+			"[python]": {
+				"editor.defaultFormatter": "ms-python.black-formatter"
+			},
+			"black-formatter.importStrategy": "fromEnvironment",
 			"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
 			"python.linting.flake8Path": "/usr/local/py-utils/bin/flakeheaven",
 			"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",

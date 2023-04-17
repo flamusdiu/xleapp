@@ -61,7 +61,6 @@ repos:
           - flake8-bandit==3.0.0
           - flake8-isort
           - flake8-builtins
-          - flake8-commas
           - flake8-comprehensions
           - flake8-docstrings
           - flake8-eradicate
