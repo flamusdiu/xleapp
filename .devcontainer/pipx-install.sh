@@ -1,6 +1,6 @@
 #!/bin/sh
 
-packages="poetry flakeheaven pre-commit tox isort"
+packages="poetry flakeheaven pre-commit tox isort pytest"
 
 flakehaven_inject="flakeheaven flake8==4.0.1 flake8-bandit==3.0.0 flake8-bugbear==22.7.1 flake8-commas
 flake8-comprehensions flake8-docstrings flake8-isort flake8-mutable flake8-quotes flake8-variables-names
@@ -24,4 +24,4 @@ install "${packages}"
 inject flakeheaven "${flakehaven_inject}"
 inject pytest "${pytest_inject}"
 
-pip install --user tqdm requests
+pip install --user tqdm requests pytest

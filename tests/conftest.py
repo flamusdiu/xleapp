@@ -77,7 +77,7 @@ def ios_image(test_data, request, pytestconfig):
     fn.touch(exist_ok=True)
 
     if fn.stat().st_size == 0:
-        req = requests.get(ios_13_4_1_zip, stream=True)
+        req = requests.get(ios_13_4_1_zip, stream=True, timeout=10)
         total_size = int(req.headers.get("content-length"))
         initial_pos = 0
 
@@ -158,7 +158,6 @@ def test_artifact():
 
 
 @pytest.fixture
-def fake_filesystem(fs, test_data):
 def fake_filesystem(fs, test_data):
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
