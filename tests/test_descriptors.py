@@ -3,7 +3,6 @@ import re
 import pytest
 import xleapp.artifact.descriptors as descriptors
 
-from xleapp.app import OutputFolder
 from xleapp.artifact.descriptors import FoundFiles, Icon, ReportHeaders
 from xleapp.artifact.regex import Regex
 from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator
@@ -66,7 +65,7 @@ class TestValidatorABC:
     def test_validator_creation(self, test_validator):
         from xleapp.helpers.descriptors import Validator
 
-        assert test_validator, isinstance(Validator)
+        assert isinstance(test_validator, Validator)
 
     @pytest.mark.parametrize("my_int, expected", [(None, 10), (42, 42)])
     def test_validator_default_value(self, test_validator, my_int, expected):
@@ -95,7 +94,6 @@ class TestValidatorABC:
                 42,
                 "Expected 42 to be one of: string, Path, sqlite3.Connection or IOBase.",
             ),
-            (OutputFolder, 42, "Expected 42 to be one of: str, Path!"),
         ],
     )
     def test_validator_types(self, validator, my_args, message):
@@ -111,7 +109,7 @@ class TestValidatorABC:
         "validator, my_args, message",
         [
             (
-                OutputFolder,
+                PathValidator,
                 r"C:\My_Output_Folder_Does_Exist",
                 "'C:\\\\My_Output_Folder_Does_Exist' must already exists!",
             )

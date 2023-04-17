@@ -1,0 +1,12 @@
+version: '3'
+services:
+  xleapp-dev:
+    user: 1000:1000
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      # Mounts the project folder to '/workspace'. While this file is in .devcontainer,
+      # mounts are relative to the first file in the list, which is a level up.
+      - .:/workspace/xleapp:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"

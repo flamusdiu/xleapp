@@ -21,4 +21,4 @@ def test_generate_program_header(app, capsys):
     assert "C:\\4n6_output" in out
     assert "C:\\4n6_output\\report" in out
     # TODO: Fix test. Failing when pushing to Github but passes locally.
-    # assert "Artifacts to parse: 1 in 1 categories" in out
+    assert "Artifacts to parse: 1 in 1 categories" in out

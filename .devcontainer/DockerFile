@@ -1,0 +1,10 @@
+FROM mcr.microsoft.com/devcontainers/python:3.9
+
+USER vscode
+
+ENV PIPX_HOME=/usr/local/py-utils
+ENV PATH=/home/vscode/.local/bin:${PATH}
+RUN python3 -m pip install pip --upgrade --user \
+    && python3 -m pip install pipx wheel --upgrade --user
+COPY .devcontainer/pipx-install.sh pipx-install.sh
+RUN ./pipx-install.sh
