@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: blacken-docs
         stages: [commit]
-        additional_dependencies: [black==22.6.0]
+        additional_dependencies: [black==23.3.0]
         language_version: python3
 
   - repo: https://github.com/pycqa/isort

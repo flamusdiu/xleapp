@@ -6,3 +6,5 @@ sed -i -e "s/plugins=(git)/plugins=(git poetry)/" $HOME/.zshrc
 
 # Configure poetry
 poetry install
+
+pre-commit install

@@ -12,6 +12,7 @@
 			"extensions": [
 				"ms-python.vscode-pylance",
 				"lextudio.restructuredtext",
+				"ms-azuretools.vscode-docker",
 				"bungcip.better-toml",
 				"DavidAnson.vscode-markdownlint",
 				"eamodio.gitlens",
@@ -33,13 +34,14 @@
 		"settings": {
 			"python.linting.enabled": true,
 			"python.linting.pylintEnabled": true,
-			"python.formatting.provider": "black",
-			"python.formatting.blackPath": "black",
-			"python.linting.banditPath": "bandit",
-			"python.linting.flake8Path": "flakeheaven",
-			"python.linting.mypyPath": "mypy",
-			"python.linting.pycodestylePath": "pycodestyle",
-			"python.linting.pydocstylePath": "pydocstyle"
+			"python.formatting.provider": "/usr/local/py-utils/bin/black",
+			"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+			"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+			"python.linting.flake8Path": "/usr/local/py-utils/bin/flakeheaven",
+			"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+			"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+			"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+			"terminal.integrated.defaultProfile.linux": "zsh"
 		}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -59,5 +61,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	"postCreateCommand": "/usr/bin/zsh ./.devcontainer/post-create.sh > ~/post-create.log",
+	"postStartCommand": "/usr/bin/zsh -l",
 	"remoteUser": "vscode"
 }
