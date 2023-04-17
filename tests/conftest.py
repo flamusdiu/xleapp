@@ -228,7 +228,7 @@ def fake_timeline_db_manager(mocker):
 
 @pytest.fixture
 def fake_search_providers(mocker):
-    class provider:
+    class Provider:
         validate = True
         priority = 10
         file_handles = object()
@@ -237,7 +237,7 @@ def fake_search_providers(mocker):
             return iter([])
 
     class SearchProvider:
-        data = {"FS": provider()}
+        data = {"FS": Provider()}
 
         def __call__(self, extraction_type, *, input_path, **kwargs):
             return self.data["FS"]

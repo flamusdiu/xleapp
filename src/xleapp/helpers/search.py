@@ -368,8 +368,8 @@ class FileSeekerDir(FileSeekerBase):
             for folder in sub_folders:
                 folders.add(f"{root}\\{folder}")
 
-            for f in fls:
-                files.add(f"{root}\\{f}")
+            for found_file in fls:
+                files.add(f"{root}\\{found_file}")
 
         return folders | files
 

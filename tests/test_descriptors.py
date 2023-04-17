@@ -3,8 +3,8 @@ import re
 import pytest
 import xleapp.artifact.descriptors as descriptors
 
-from xleapp.artifacts.descriptors import FoundFiles, Icon, ReportHeaders
-from xleapp.artifacts.regex import Regex
+from xleapp.artifact.descriptors import FoundFiles, Icon, ReportHeaders
+from xleapp.artifact.regex import Regex
 from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator
 
 
@@ -65,7 +65,7 @@ class TestValidatorABC:
     def test_validator_creation(self, test_validator):
         from xleapp.helpers.descriptors import Validator
 
-        assert test_validator, isinstance(Validator)
+        assert isinstance(test_validator, Validator)
 
     @pytest.mark.parametrize("my_int, expected", [(None, 10), (42, 42)])
     def test_validator_default_value(self, test_validator, my_int, expected):
@@ -109,7 +109,7 @@ class TestValidatorABC:
         "validator, my_args, message",
         [
             (
-                OutputFolder,
+                PathValidator,
                 r"C:\My_Output_Folder_Does_Exist",
                 "'C:\\\\My_Output_Folder_Does_Exist' must already exists!",
             )
@@ -222,35 +222,6 @@ class TestDescriptorRecursiveBoolReturn:
             result = descriptor._check_list_of_tuples(test_strings)
             assert result == results
             assert self.bool_list == validation
-
-
-class TestInputPathValidation:
-    def test_str_input(self):
-        from pathlib import Path
-
-        ph = str(Path.cwd())
-
-        class DummyClass:
-            value = InputPathValidation()
-
-        ph = Path.cwd()
-        dummy_class = DummyClass()
-        dummy_class.value = ph
-
-        assert dummy_class.value == ("dir", ph.resolve())
-
-
-def test_handle_validator_path():
-    from pathlib import Path
-
-    class DummyClass:
-        value = HandleValidator()
-
-    ph = Path.cwd()
-    dummy_class = DummyClass()
-    dummy_class.value = ph
-
-    assert dummy_class.value is None
 
 
 class TestInputPathValidation:
