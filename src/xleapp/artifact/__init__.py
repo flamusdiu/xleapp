@@ -73,7 +73,13 @@ def generate_artifact_table(artifacts) -> None:
             search_regex: set[str] = {str(r) for r in artifact.regex}
             search_regex_list = "\n".join(search_regex)
             output_table.add_row(
-                [device, category, short_name, full_name, wrapper.fill(search_regex_list)]
+                [
+                    device,
+                    category,
+                    short_name,
+                    full_name,
+                    wrapper.fill(search_regex_list),
+                ],
             )
         paths.write(
             output_table.get_string(

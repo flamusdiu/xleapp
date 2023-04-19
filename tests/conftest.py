@@ -77,7 +77,7 @@ def ios_image(test_data, request, pytestconfig):
     fn.touch(exist_ok=True)
 
     if fn.stat().st_size == 0:
-        req = requests.get(ios_13_4_1_zip, stream=True)
+        req = requests.get(ios_13_4_1_zip, stream=True, timeout=10)
         total_size = int(req.headers.get("content-length"))
         initial_pos = 0
 
@@ -113,7 +113,6 @@ def ios_image(test_data, request, pytestconfig):
 @pytest.fixture
 def test_artifact():
     class TestArtifact(Artifact, category="Test", label="Test Artifact"):
-
         __test__ = False
         device_type = "test"
 
@@ -229,7 +228,7 @@ def fake_timeline_db_manager(mocker):
 
 @pytest.fixture
 def fake_search_providers(mocker):
-    class provider:
+    class Provider:
         validate = True
         priority = 10
         file_handles = object()
@@ -238,7 +237,7 @@ def fake_search_providers(mocker):
             return iter([])
 
     class SearchProvider:
-        data = {"FS": provider()}
+        data = {"FS": Provider()}
 
         def __call__(self, extraction_type, *, input_path, **kwargs):
             return self.data["FS"]

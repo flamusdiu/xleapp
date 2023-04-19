@@ -47,11 +47,10 @@ class ArtifactError(Exception):
 
 
 class Artifacts:
-
     __slots__ = ("_store", "process_queue", "_processing_device_type")
 
     def __init__(self) -> None:
-        self._store: list = list()
+        self._store: list = []
         self.process_queue: queue.PriorityQueue = queue.PriorityQueue()
         self._processing_device_type = None
 

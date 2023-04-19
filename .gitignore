@@ -120,3 +120,6 @@ plugins/
 
 # ignore test data
 data/
+
+# ignore flakehaven cache
+.flakeheaven_cache/

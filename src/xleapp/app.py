@@ -43,13 +43,13 @@ class Device(BaseUserDict):
 
     def __repr__(self) -> str:
         device_info = ", ".join(
-            [f"{k.replace(' ', '_')}={v!r}" for k, v in self.data.items()]
+            [f"{k.replace(' ', '_')}={v!r}" for k, v in self.data.items()],
         )
         return f"<Device ({device_info})>"
 
     def __str__(self) -> str:
         device_info = "; ".join(
-            [f"{k.replace(' ', '_')}: {v!r}" for k, v in self.data.items()]
+            [f"{k.replace(' ', '_')}: {v!r}" for k, v in self.data.items()],
         )
         return f"The processed device has the following attributes: {device_info}"
 
@@ -106,14 +106,14 @@ class Application:
     default_configs: dict[str, t.Any]
     device: Device = Device()
     extraction_type: str
-    input_path: pathlib.Path = None
+    input_path: pathlib.Path
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
     input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
-    report_folder: pathlib.Path = None
+    report_folder: pathlib.Path
     seeker: FileSeekerBase
     version: str
     dbservice: db.DBService
@@ -134,7 +134,9 @@ class Application:
         return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
 
     def __call__(
-        self, output_folder: pathlib.Path, input_path: pathlib.path
+        self,
+        output_folder: pathlib.Path,
+        input_path: pathlib.Path,
     ) -> Application:
         self.dbservice = db.DBService(self.report_folder)
 
@@ -171,7 +173,8 @@ class Application:
         for _, extension in found.items():
             for plugin in extension.__PLUGINS__:
                 xleapp_plugin: plugins.Plugin = getattr(
-                    plugin, f"{plugin.__name__.rpartition('.')[-1].capitalize()}Plugin"
+                    plugin,
+                    f"{plugin.__name__.rpartition('.')[-1].capitalize()}Plugin",
                 )
                 xleapp_plugin()
 
@@ -183,7 +186,7 @@ class Application:
         if not output_path:
             raise ValueError(
                 "Output path cannot be 'None'. You must set 'output_path' before "
-                "trying to create the output folder."
+                "trying to create the output folder.",
             )
 
         self.output_path = output_path
