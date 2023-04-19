@@ -85,14 +85,9 @@ source xleapp-venv/bin/activate
 
 # install tkinter
 brew install python-tk
-#pip install tk
-# tk source distribution
-#curl https://files.pythonhosted.org/packages/#a0/81/742b342fd642e672fbedecde725ba44db44e800dc4c936216c3c6729885a/#tk-0.1.0.tar.gz > tk.tar.gz
-#tar -xzvf tk.tar.gz
-#pip install -U ./tk-0.1.0/
 
 pip install click
-pip install Flask Jinja2 babel python-dateutil flask-moment flask-wtf flask_sqlalchemy
+pip install Flask jinja2==3.0.3 babel python-dateutil flask-moment flask-wtf flask_sqlalchemy
 
 # xleapp 0.2.1 depends on python-magic-bin<0.5.0 and >=0.4.14
 brew install libmagic # dependency for python-magic
@@ -107,8 +102,6 @@ pip install xleapp-ios
 
 # test
 xleapp -h
-# or run cli.py
-python xleapp/src/xleapp/cli.py
 ```
 
 ## Installation from Github and Development Information
