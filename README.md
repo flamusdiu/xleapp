@@ -71,13 +71,13 @@ Here is a list of plugins that need to be completed. Plugin package suffixed wit
   $ pipx install xleapp
   $ pipx inject xleapp xleapp-<plugin>
   ```
-  
+
 ### OS X
- 
- Tested on OS X with M1 chip. 
- 
+
+ Tested on OS X with M1 chip.
+
  With Python 3.11 and venv.
- 
+
 ```bash
 # create venv
 python3 -m venv xleapp-venv
