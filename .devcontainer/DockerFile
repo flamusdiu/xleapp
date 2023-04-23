@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/devcontainers/python:3.9
 
 USER vscode
 
+ENV DEV_CONTAINER_ROOT=/workspace/xleapp
 ENV PIPX_HOME=/usr/local/py-utils
 ENV PATH=/home/vscode/.local/bin:${PATH}
 RUN python3 -m pip install pip --upgrade --user \
