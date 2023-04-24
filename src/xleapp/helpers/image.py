@@ -1,17 +1,11 @@
 import os
 import pathlib
 import shutil
-import typing as t
 
 import xleapp.globals as g
 
-from PIL import (  # type: ignore  # https://github.com/python-pillow/Pillow/issues/2625
-    Image,
-)
-
-
-if t.TYPE_CHECKING:
-    from xleapp.helpers.search import FileSeekerBase
+from PIL import Image
+from xleapp.helpers.search import FileSeekerBase
 
 
 def generate_thumbnail(

@@ -23,12 +23,15 @@ import typing as t
 
 from dataclasses import dataclass, field
 
-import xleapp.app as app
-import xleapp.artifact as artifact
 import xleapp.globals as g
 
+from xleapp import app, artifact
+
 from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
-from .regex import Regex
+
+
+if t.TYPE_CHECKING:
+    from .regex import Regex
 
 
 @dataclass
@@ -63,7 +66,7 @@ class AbstractArtifactDefaults:
         init=False,
         repr=False,
         compare=False,
-        default_factory=lambda: [],
+        default_factory=list,
     )
     found: FoundFiles = field(init=False, default=FoundFiles(), compare=False)
     long_running_process: bool = field(init=False, default=False, compare=False)

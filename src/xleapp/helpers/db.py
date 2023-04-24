@@ -33,8 +33,10 @@ def open_sqlite_db_readonly(path: t.Union[pathlib.Path, str]) -> sqlite3.Connect
         # This will fail if not a database file
         cursor.execute("PRAGMA page_count").fetchone()
         db.row_factory = sqlite3.Row
-    except sqlite3.DatabaseError:
-        raise sqlite3.DatabaseError(f"File {path!r} failed to open as a database!")
+    except sqlite3.DatabaseError as err:
+        raise sqlite3.DatabaseError(
+            f"File {path!r} failed to open as a database!"
+        ) from err
 
     return db
 

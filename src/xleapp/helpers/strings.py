@@ -5,12 +5,26 @@ import typing as t
 from pathlib import Path
 
 
+# Covers the printable ASCII table
+BYTE_SPACE = 0x20
+BYTE_DEL = 0x7F
+
+# Replacement characters
+ASCII_NULL = chr(0)
+ASCII_PERIOD = "."
+
+SMALLEST_STRING_TO_RETURN = 4
+
+
 def raw(data: t.ByteString) -> str:
     """Returns string of printable characters. Replacing non-printable characters
-    with '.', or CHR(46)
+    with '.'
     ``"""
     return "".join(
-        [chr(byte) if byte >= 0x20 and byte < 0x7F else chr(46) for byte in data],
+        [
+            chr(byte) if byte >= BYTE_SPACE and byte < BYTE_DEL else ASCII_PERIOD
+            for byte in data
+        ],
     )
 
 
@@ -19,9 +33,15 @@ def print_str(data: t.ByteString) -> filter:
     `string` function.
     """
     cleansed = "".join(
-        [chr(byte) if byte >= 0x20 and byte < 0x7F else chr(0) for byte in data],
+        [
+            chr(byte) if byte >= BYTE_SPACE and byte < BYTE_DEL else ASCII_NULL
+            for byte in data
+        ],
     )
-    return filter(lambda string: len(string) >= 4, cleansed.split(chr(0)))
+    return filter(
+        lambda string: len(string) >= SMALLEST_STRING_TO_RETURN,
+        cleansed.split(ASCII_NULL),
+    )
 
 
 def split_camel_case(value: str) -> list[str]:

@@ -17,7 +17,6 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
 
 # Default Read The Docs themes
-import sphinx_rtd_theme
 
 
 # -- Project information -----------------------------------------------------

@@ -11,20 +11,15 @@ import typing as t
 
 import jinja2
 import jinja2.ext
-import PySimpleGUI as PySG
-import xleapp.artifact as artifact
 import xleapp.artifact.service as artifact_service
-import xleapp.plugins as plugins
-import xleapp.report as report
-import xleapp.report.db as db
-import xleapp.templating as templating
 
+from xleapp import artifact, plugins, report, templating
 from xleapp._version import __project__, __version__
-from xleapp.gui.utils import ProcessThread
 from xleapp.helpers.descriptors import Validator
 from xleapp.helpers.search import FileSeekerBase, search_providers
 from xleapp.helpers.strings import split_camel_case
 from xleapp.helpers.utils import is_list
+from xleapp.report import db
 from xleapp.templating.ext import IncludeLogFileExtension
 
 
@@ -33,6 +28,10 @@ __ARTIFACT_PLUGINS__ = artifact_service.Artifacts()
 logger_log = logging.getLogger("xleapp.logfile")
 
 if t.TYPE_CHECKING:
+    import PySimpleGUI as PySG
+
+    from xleapp.gui.utils import ProcessThread
+
     BaseUserDict = collections.UserDict[str, t.Any]
 else:
     BaseUserDict = collections.UserDict
@@ -109,7 +108,6 @@ class Application:
     input_path: pathlib.Path
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
-    input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str

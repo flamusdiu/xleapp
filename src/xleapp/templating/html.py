@@ -3,18 +3,20 @@ from __future__ import annotations
 import abc
 import functools
 import logging
-import pathlib
 import typing as t
 
 from dataclasses import dataclass, field
 
-import jinja2
 import xleapp.globals as g
 
 from xleapp.helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
+    import pathlib
+
+    import jinja2
+
     from xleapp.report import Icon
 
 logger_log = logging.getLogger("xleapp.logfile")

@@ -67,5 +67,3 @@ class Plugin(abc.ABC):
 
 class PluginMissingError(RuntimeError):
     """Raised when no modules are installed!"""
-
-    pass

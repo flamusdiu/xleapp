@@ -7,13 +7,13 @@ import typing as t
 
 from plistlib import InvalidFileException
 
-import PySimpleGUI as PySG
-
 from xleapp.helpers.decorators import timed
 from xleapp.helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
+    import PySimpleGUI as PySG
+
     from xleapp import Artifact
     from xleapp.gui import ProcessThread
     from xleapp.plugins import Plugin
@@ -42,8 +42,6 @@ def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
 
 class ArtifactError(Exception):
     """Basic exception for Artifacts"""
-
-    pass
 
 
 class Artifacts:
@@ -98,7 +96,7 @@ class Artifacts:
 
         for artifact in self:
             if artifact.core and artifact.device_type == device_type:
-                artifact.select
+                artifact.select = True
 
     def create_queue(self):
         for artifact in self:

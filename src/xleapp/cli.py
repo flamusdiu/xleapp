@@ -3,12 +3,10 @@ import time
 
 import click
 import xleapp._version as version
-import xleapp.app as app
 import xleapp.globals as g
-import xleapp.helpers.decorators as decorators
-import xleapp.helpers.utils as utils
-import xleapp.log as log
-import xleapp.templating as templating
+
+from xleapp import app, log, templating
+from xleapp.helpers import decorators, utils
 
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -106,7 +104,7 @@ def gui(application: app.Application):
     Args:
         application (app.Application):
     """
-    import xleapp.gui as gui
+    from xleapp import gui
 
     gui.main(application)
 

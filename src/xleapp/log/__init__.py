@@ -14,15 +14,17 @@ from xleapp.helpers.utils import generate_program_header
 
 StrPath = t.Union[str, os.PathLike[str]]
 
+MIN_ERROR_LEVEL = 20
+
 
 class ProcessFileFilter(logging.Filter):
     def filter(self, record):
-        return record.name == "xleapp.process" and record.levelno >= 20
+        return record.name == "xleapp.process" and record.levelno >= MIN_ERROR_LEVEL
 
 
 class InfoLogFileFilter(logging.Filter):
     def filter(self, record):
-        return record.name == "xleapp.logfile" and record.levelno >= 20
+        return record.name == "xleapp.logfile" and record.levelno >= MIN_ERROR_LEVEL
 
 
 class DebugFileFilter(logging.Filter):

@@ -5,10 +5,10 @@ import contextlib
 import threading
 import typing as t
 
-import PySimpleGUI as PySG
-
 
 if t.TYPE_CHECKING:
+    import PySimpleGUI as PySG
+
     from xleapp.app import Application
 
 

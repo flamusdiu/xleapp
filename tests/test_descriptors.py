@@ -1,8 +1,8 @@
 import re
 
 import pytest
-import xleapp.artifact.descriptors as descriptors
 
+from xleapp.artifact import descriptors
 from xleapp.artifact.descriptors import FoundFiles, Icon, ReportHeaders
 from xleapp.artifact.regex import Regex
 from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator

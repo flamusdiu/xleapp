@@ -13,8 +13,8 @@ import typing as t
 from dataclasses import dataclass
 
 import simplekml
-import xleapp.helpers.descriptors as descriptors
-import xleapp.helpers.utils as utils
+
+from xleapp.helpers import descriptors, utils
 
 
 class DatabaseError(Exception):
@@ -44,9 +44,8 @@ class DBFile(descriptors.Validator):
     def validator(self, value) -> pathlib.Path | None:
         if not isinstance(value, (pathlib.Path, str)):
             raise TypeError(f"Expected {value!r} to be pathlib.Path or str!")
-        else:
-            if utils.is_platform_windows():
-                return pathlib.Path(f"\\\\?\\{value.resolve()}")
+        elif utils.is_platform_windows():
+            return pathlib.Path(f"\\\\?\\{value.resolve()}")
 
 
 class DBManager(contextlib.AbstractContextManager):
@@ -224,5 +223,5 @@ class DBService:
                 db(name).save(name=name, data_list=data_list, data_headers=data_headers)
             else:
                 db.save(name=name, data_list=data_list, data_headers=data_headers)
-        except KeyError:
-            raise DatabaseError(f"Database type {db_type!r} does not exists!")
+        except KeyError as err:
+            raise DatabaseError(f"Database type {db_type!r} does not exists!") from err

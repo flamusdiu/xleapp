@@ -118,8 +118,6 @@ def filter_dict(dictionary: dict, filter_string: str):
 class PluginMissingError(RuntimeError):
     """Raised when no modules are installed!"""
 
-    pass
-
 
 def unix_epoch_to_readable_date(unix_epoch_time: int):
     unix_time = float(unix_epoch_time + 978307200)

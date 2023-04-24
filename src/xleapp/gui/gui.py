@@ -9,9 +9,8 @@ import webbrowser
 from pathlib import Path
 
 import PySimpleGUI as PySG
-import xleapp.log as log
-import xleapp.templating as templating
 
+from xleapp import log, templating
 from xleapp.helpers.strings import wrap_text
 from xleapp.helpers.utils import validate_input
 

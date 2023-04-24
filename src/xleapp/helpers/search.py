@@ -15,19 +15,21 @@ import typing as t
 from zipfile import ZipFile
 
 import magic
-import xleapp.artifact.regex as regex
-import xleapp.helpers.descriptors as descriptors
-import xleapp.helpers.strings as strings
-import xleapp.helpers.utils as utils
+
+from xleapp.helpers import descriptors, strings, utils
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
 
 if t.TYPE_CHECKING:
+    from xleapp.artifact import regex
+
     BaseUserDict = collections.UserDict[str, t.Any]
 else:
     BaseUserDict = collections.UserDict
+
+MAX_NUMBER_OF_FILES_HANDLES_TO_OPEN = 10
 
 
 class PathValidator(descriptors.Validator):
@@ -182,7 +184,7 @@ class FileHandles(collections.UserDict):
             probably have less then 5 files they will read/use.
             """
 
-            if len(files) > 10 or file_names_only:
+            if len(files) > MAX_NUMBER_OF_FILES_HANDLES_TO_OPEN or file_names_only:
                 file_handle = Handle(found_file=item, path=path)
             else:
                 if path.drive.startswith("\\\\?\\"):
@@ -207,8 +209,8 @@ class FileHandles(collections.UserDict):
                         else:
                             fp = open(path, "rb")
                         file_handle = Handle(found_file=fp, path=path)
-                    except FileNotFoundError:
-                        raise FileNotFoundError(f"File {path!r} was not found!")
+                    except FileNotFoundError as err:
+                        raise FileNotFoundError(f"File {path!r} was not found!") from err
             if file_handle:
                 logger_process.info(f"    {file_handle.path}")
                 self[regex].add(file_handle)
@@ -225,8 +227,8 @@ class FileHandles(collections.UserDict):
                 if isinstance(artifact_file, io.IOBase):
                     artifact_file.seek(0)
             return files
-        except KeyError:
-            raise KeyError(f"Regex {regex} has no files opened!")
+        except KeyError as err:
+            raise KeyError(f"Regex {regex} has no files opened!") from err
 
     def __delitem__(self, regex: regex.Regex) -> None:
         files = self.__dict__.pop(regex, None)
@@ -457,14 +459,13 @@ class FileSeekerZip(FileSeekerBase):
         path_list: list[str] = []
         for member in self.build_files_list():
             if fnmatch.fnmatch(member, file_pattern):
-                try:
-                    extracted_path = (
-                        # already replaces illegal chars with _ when exporting
-                        self.input_file.extract(member, path=self.temp_folder)
-                    )
-                    path_list.append(extracted_path)
-                except Exception:
-                    member = member.lstrip("/")
+                member = member.lstrip("/")
+                extracted_path = (
+                    # already replaces illegal chars with _ when exporting
+                    self.input_file.extract(member, path=self.temp_folder)
+                )
+                path_list.append(extracted_path)
+
         return iter(path_list)
 
     def build_files_list(self, folder=None):

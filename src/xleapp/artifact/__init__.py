@@ -9,7 +9,8 @@ from pathlib import Path
 from textwrap import TextWrapper
 
 import prettytable
-import xleapp.helpers.utils as utils
+
+from xleapp.helpers import utils
 
 from .abstract import AbstractBase as AbstractBase
 from .abstract import Artifact as Artifact
@@ -24,8 +25,6 @@ logger_log = logging.getLogger("xleapp.logfile")
 
 class ArtifactError(Exception):
     """Basic exception for Artifacts"""
-
-    pass
 
 
 def generate_artifact_path_list(artifacts) -> None:
@@ -108,7 +107,7 @@ def copyfile(input_file: Path | bytes, output_file: Path) -> Path:
     if isinstance(input_file, bytes):
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_bytes(input_file)
-        logger_log.debug(f"File {output_file.name} saved to " f"{output_file}")
+        logger_log.debug(f"File {output_file.name} saved to {output_file}")
     else:
         if input_file.is_file():
             output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -119,5 +118,5 @@ def copyfile(input_file: Path | bytes, output_file: Path) -> Path:
             input_file = Path(f"\\\\?\\{input_file.resolve()}")
 
         shutil.copy2(input_file, output_file)
-        logger_log.debug(f"File {input_file.name} copied to " f"{output_file}")
+        logger_log.debug(f"File {input_file.name} copied to {output_file}")
     return output_file

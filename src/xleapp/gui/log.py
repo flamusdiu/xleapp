@@ -1,6 +1,6 @@
 import logging
 
-import xleapp.gui as gui
+from xleapp import gui
 
 
 buffer: str = ""

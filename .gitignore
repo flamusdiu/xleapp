@@ -123,3 +123,4 @@ data/
 
 # ignore flakehaven cache
 .flakeheaven_cache/
+.ruff_cache/

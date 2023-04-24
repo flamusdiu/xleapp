@@ -1,6 +1,9 @@
-import xleapp.artifact.regex as regex
-import xleapp.helpers.descriptors as descriptors
-import xleapp.report as report
+from xleapp import report
+from xleapp.artifact import regex
+from xleapp.helpers import descriptors
+
+
+MAX_NUMBER_OF_OPTIONS_FOR_SEARCH_REGEX = 3
 
 
 class FoundFiles(descriptors.Validator):
@@ -21,8 +24,10 @@ class Icon(descriptors.Validator):
     def validator(self, value):
         try:
             report.WebIcon(value)
-        except ValueError:
-            raise TypeError(f"Expected {str(value)} to be {repr(report.WebIcon)}!")
+        except ValueError as err:
+            raise TypeError(
+                f"Expected {str(value)} to be {repr(report.WebIcon)}!"
+            ) from err
 
 
 class ReportHeaders(descriptors.Validator):
@@ -88,7 +93,13 @@ class SearchRegex(descriptors.Validator):
     default_value: set = set()
 
     def validator(self, value) -> None:
-        if not (isinstance(value, str) or (isinstance(value, tuple) and len(value) < 4)):
+        if not (
+            isinstance(value, str)
+            or (
+                isinstance(value, tuple)
+                and len(value) <= MAX_NUMBER_OF_OPTIONS_FOR_SEARCH_REGEX
+            )
+        ):
             raise TypeError(
                 f"Expected {value!r} to be a str or tuple!",
             )
