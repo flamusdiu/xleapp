@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import operator
 import shutil
-import typing as t
 
 from pathlib import Path
 from textwrap import TextWrapper
