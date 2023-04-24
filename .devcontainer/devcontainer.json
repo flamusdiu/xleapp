@@ -10,6 +10,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"lextudio.restructuredtext",
 				"ms-azuretools.vscode-docker",
@@ -33,11 +34,13 @@
 			]
 		},
 		"settings": {
+			"workbench.iconTheme": "vscode-icons",
 			"python.linting.enabled": true,
 			"python.linting.pylintEnabled": true,
-			"python.formatting.provider": "none",
+			"python.formatting.provider": "black",
 			"[python]": {
-				"editor.defaultFormatter": "ms-python.black-formatter"
+				"editor.defaultFormatter": "ms-python.black-formatter",
+				"editor.formatOnType": true
 			},
 			"black-formatter.importStrategy": "fromEnvironment",
 			"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
@@ -45,7 +48,8 @@
 			"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
 			"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 			"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-			"terminal.integrated.defaultProfile.linux": "zsh"
+			"terminal.integrated.defaultProfile.linux": "zsh",
+			"cornflakes.linter.executablePath": "/usr/local/py-utils/bin/flakeheaven"
 		}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
