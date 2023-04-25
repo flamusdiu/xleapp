@@ -1,8 +1,8 @@
 import re
 
 import pytest
-import xleapp.artifact.descriptors as descriptors
 
+from xleapp.artifact import descriptors
 from xleapp.artifact.descriptors import FoundFiles, Icon, ReportHeaders
 from xleapp.artifact.regex import Regex
 from xleapp.helpers.search import HandleValidator, InputPathValidation, PathValidator
@@ -55,7 +55,7 @@ class TestValidatorABC:
 
             def validator(self, value) -> None:
                 if not isinstance(value, int):
-                    raise TypeError(f"Expected {value!r} to be a int!.")
+                    raise TypeError(f"Expected {repr(value)} to be a int!.")
 
         class DummyClass:
             value = DummyValidator()

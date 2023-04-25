@@ -15,19 +15,21 @@ import typing as t
 from zipfile import ZipFile
 
 import magic
-import xleapp.artifact.regex as regex
-import xleapp.helpers.descriptors as descriptors
-import xleapp.helpers.strings as strings
-import xleapp.helpers.utils as utils
+
+from xleapp.helpers import descriptors, strings, utils
 
 
 logger_log = logging.getLogger("xleapp.logfile")
 logger_process = logging.getLogger("xleapp.process")
 
 if t.TYPE_CHECKING:
+    from xleapp.artifact import regex
+
     BaseUserDict = collections.UserDict[str, t.Any]
 else:
     BaseUserDict = collections.UserDict
+
+MAX_NUMBER_OF_FILES_HANDLES_TO_OPEN = 10
 
 
 class PathValidator(descriptors.Validator):
@@ -46,7 +48,7 @@ class PathValidator(descriptors.Validator):
             :obj:`Path`.
         """
         if not isinstance(value, (pathlib.Path, os.PathLike, str)):
-            raise TypeError(f"Expected {value!r} to be a Path or Pathlike object")
+            raise TypeError(f"Expected {repr(value)} to be a Path or Pathlike object")
         return pathlib.Path(value).resolve()
 
 
@@ -70,7 +72,7 @@ class HandleValidator(descriptors.Validator):
             return "None"
         elif not isinstance(value, (sqlite3.Connection, io.IOBase)):
             raise TypeError(
-                f"Expected {value!r} to be one of: string, Path, sqlite3.Connection"
+                f"Expected {repr(value)} to be one of: string, Path, sqlite3.Connection"
                 " or IOBase.",
             )
 
@@ -122,10 +124,10 @@ class Handle:
         return self.file_handle or self.path
 
     def __repr__(self) -> str:
-        return f"<Handle file_handle={self.file_handle!r}, path={self.path!r}>"
+        return f"<Handle file_handle={repr(self.file_handle)}, path={repr(self.path)}>"
 
     def __str__(self) -> str:
-        return f"Handle {self.file_handle!r} of {self.path!r}"
+        return f"Handle {repr(self.file_handle)} of {repr(self.path)}"
 
 
 class FileHandles(collections.UserDict):
@@ -165,6 +167,7 @@ class FileHandles(collections.UserDict):
         """
         if self.logged[regex.regex] == 0:
             logger_process.info(f"\nFiles for {regex.regex} located at:")
+
         for item in files:
             file_handle: Handle
             path: pathlib.Path = None
@@ -182,33 +185,35 @@ class FileHandles(collections.UserDict):
             probably have less then 5 files they will read/use.
             """
 
-            if len(files) > 10 or file_names_only:
+            if (
+                len(files) > MAX_NUMBER_OF_FILES_HANDLES_TO_OPEN
+                or file_names_only
+                or path.is_dir()
+            ):
                 file_handle = Handle(found_file=item, path=path)
-            else:
-                if path.drive.startswith("\\\\?\\"):
-                    extended_path = pathlib.Path(path)
 
-                if path.is_dir():
-                    file_handle = Handle(found_file=item, path=path)
+            if path.drive.startswith("\\\\?\\"):
+                extended_path = pathlib.Path(path)
+
+            try:
+                db = sqlite3.connect(
+                    f"file:{path}?mode=ro",
+                    uri=True,
+                )
+                cursor = db.cursor()
+                # This will fail if not a database file
+                cursor.execute("PRAGMA page_count").fetchone()
+                db.row_factory = sqlite3.Row
+                file_handle = Handle(found_file=db, path=path)
+            except sqlite3.DatabaseError:
+                if extended_path:
+                    fp = open(extended_path, "rb")
                 else:
-                    try:
-                        db = sqlite3.connect(
-                            f"file:{path}?mode=ro",
-                            uri=True,
-                        )
-                        cursor = db.cursor()
-                        # This will fail if not a database file
-                        cursor.execute("PRAGMA page_count").fetchone()
-                        db.row_factory = sqlite3.Row
-                        file_handle = Handle(found_file=db, path=path)
-                    except sqlite3.DatabaseError:
-                        if extended_path:
-                            fp = open(extended_path, "rb")
-                        else:
-                            fp = open(path, "rb")
-                        file_handle = Handle(found_file=fp, path=path)
-                    except FileNotFoundError:
-                        raise FileNotFoundError(f"File {path!r} was not found!")
+                    fp = open(path, "rb")
+                file_handle = Handle(found_file=fp, path=path)
+            except FileNotFoundError as err:
+                raise FileNotFoundError(f"File {repr(path)} was not found!") from err
+
             if file_handle:
                 logger_process.info(f"    {file_handle.path}")
                 self[regex].add(file_handle)
@@ -225,8 +230,8 @@ class FileHandles(collections.UserDict):
                 if isinstance(artifact_file, io.IOBase):
                     artifact_file.seek(0)
             return files
-        except KeyError:
-            raise KeyError(f"Regex {regex} has no files opened!")
+        except KeyError as err:
+            raise KeyError(f"Regex {regex} has no files opened!") from err
 
     def __delitem__(self, regex: regex.Regex) -> None:
         files = self.__dict__.pop(regex, None)
@@ -260,16 +265,16 @@ class FileSeekerBase(abc.ABC):
 
     def __repr__(self) -> str:
         return (
-            f"<{type(self).__name__} input_path={self.input_path!r} "
-            f"priority={self.priority!r}>"
+            f"<{type(self).__name__} input_path={repr(self.input_path)} "
+            f"priority={repr(self.priority)}>"
         )
 
     def __str__(self) -> str:
         name_lst = strings.split_camel_case(type(self).__name__)
         name = name_lst.pop()
         return (
-            f"File Seeker ({name}) has the input path of {self.input_path!r} with "
-            f"a priority {self.priority!r}"
+            f"File Seeker ({name}) has the input path of {repr(self.input_path)} with "
+            f"a priority {repr(self.priority)}"
         )
 
     @abc.abstractmethod
@@ -312,7 +317,7 @@ class FileSeekerBase(abc.ABC):
     @property
     @abc.abstractmethod
     def priority(self) -> int:
-        raise NotImplementedError(f"Need to set a priority for {self!r}")
+        raise NotImplementedError(f"Need to set a priority for {repr(self)}")
 
     @property
     def all_files(self) -> set:
@@ -457,14 +462,13 @@ class FileSeekerZip(FileSeekerBase):
         path_list: list[str] = []
         for member in self.build_files_list():
             if fnmatch.fnmatch(member, file_pattern):
-                try:
-                    extracted_path = (
-                        # already replaces illegal chars with _ when exporting
-                        self.input_file.extract(member, path=self.temp_folder)
-                    )
-                    path_list.append(extracted_path)
-                except Exception:
-                    member = member.lstrip("/")
+                member_strip = member.lstrip("/")
+                extracted_path = (
+                    # already replaces illegal chars with _ when exporting
+                    self.input_file.extract(member_strip, path=self.temp_folder)
+                )
+                path_list.append(extracted_path)
+
         return iter(path_list)
 
     def build_files_list(self, folder=None):

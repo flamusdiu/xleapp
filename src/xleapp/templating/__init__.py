@@ -25,7 +25,7 @@ def generate_index(app: "Application") -> None:
         extraction_type=app.extraction_type,
         processing_time=app.processing_time,
         navigation=nav,
-    )  # type: ignore
+    )
 
     index_file = app.report_folder / "index.html"
     index_file.write_text(index_page.html())

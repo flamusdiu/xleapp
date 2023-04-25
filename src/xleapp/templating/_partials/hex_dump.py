@@ -4,7 +4,8 @@ import math
 from dataclasses import dataclass
 
 import xleapp.helpers.strings as is_strings
-import xleapp.templating as templating
+
+from xleapp import templating
 
 
 @dataclass

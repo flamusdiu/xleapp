@@ -11,15 +11,16 @@
 		"vscode": {
 			"extensions": [
 				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"lextudio.restructuredtext",
-				"ms-azuretools.vscode-docker",
 				"bungcip.better-toml",
 				"DavidAnson.vscode-markdownlint",
-				"eamodio.gitlens",
 				"GitHub.vscode-pull-request-github",
 				"kevinglasson.cornflakes-linter",
+				"KevinRose.vsc-python-indent",
+				"lextudio.restructuredtext",
 				"magicstack.MagicPython",
+				"ms-azuretools.vscode-docker",
+				"ms-python.black-formatter",
+				"ms-python.isort",
 				"ms-vscode.makefile-tools",
 				"njpwerner.autodocstring",
 				"samuelcolvin.jinjahtml",
@@ -29,8 +30,7 @@
 				"trond-snekvik.simple-rst",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"wholroyd.jinja",
-				"yzhang.markdown-all-in-one",
-				"ms-python.black-formatter"
+				"yzhang.markdown-all-in-one"
 			]
 		},
 		"settings": {
@@ -49,7 +49,7 @@
 			"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 			"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 			"terminal.integrated.defaultProfile.linux": "zsh",
-			"cornflakes.linter.executablePath": "/usr/local/py-utils/bin/flakeheaven"
+			"cornflakes.executablePath": "/usr/local/py-utils/bin/flakeheaven"
 		}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.

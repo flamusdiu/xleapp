@@ -1,6 +1,9 @@
-import xleapp.artifact.regex as regex
-import xleapp.helpers.descriptors as descriptors
-import xleapp.report as report
+from xleapp import report
+from xleapp.artifact import regex
+from xleapp.helpers import descriptors
+
+
+MAX_NUMBER_OF_OPTIONS_FOR_SEARCH_REGEX = 3
 
 
 class FoundFiles(descriptors.Validator):
@@ -10,7 +13,7 @@ class FoundFiles(descriptors.Validator):
 
     def validator(self, value):
         if not isinstance(value, set):
-            raise TypeError(f"Expected {value!r} to be a set!")
+            raise TypeError(f"Expected {repr(value)} to be a set!")
 
 
 class Icon(descriptors.Validator):
@@ -21,8 +24,10 @@ class Icon(descriptors.Validator):
     def validator(self, value):
         try:
             report.WebIcon(value)
-        except ValueError:
-            raise TypeError(f"Expected {str(value)} to be {repr(report.WebIcon)}!")
+        except ValueError as err:
+            raise TypeError(
+                f"Expected {str(value)} to be {repr(report.WebIcon)}!"
+            ) from err
 
 
 class ReportHeaders(descriptors.Validator):
@@ -33,7 +38,7 @@ class ReportHeaders(descriptors.Validator):
     def validator(self, value) -> None:
         if not ReportHeaders._check_list_of_tuples(value, bool_list=[]):
             raise TypeError(
-                f"Expected {value!r} to be a list of tuples or tuple!",
+                f"Expected {repr(value)} to be a list of tuples or tuple!",
             )
 
     @staticmethod
@@ -88,9 +93,15 @@ class SearchRegex(descriptors.Validator):
     default_value: set = set()
 
     def validator(self, value) -> None:
-        if not (isinstance(value, str) or (isinstance(value, tuple) and len(value) < 4)):
+        if not (
+            isinstance(value, str)
+            or (
+                isinstance(value, tuple)
+                and len(value) <= MAX_NUMBER_OF_OPTIONS_FOR_SEARCH_REGEX
+            )
+        ):
             raise TypeError(
-                f"Expected {value!r} to be a str or tuple!",
+                f"Expected {repr(value)} to be a str or tuple!",
             )
 
     def __set__(self, obj, value) -> None:

@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 
-import xleapp.templating as templating
-import xleapp.templating.html as html
-
+from xleapp import templating
 from xleapp._authors import __authors__, __contributors__
+from xleapp.templating import html
 
 
 @dataclass

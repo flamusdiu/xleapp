@@ -298,7 +298,7 @@ icons = [
     ]
 ]
 
-WebIcon = Enum(  # type: ignore  # https://github.com/python/typeshed/issues/2305
+WebIcon = Enum(
     "WebIcon",
     icons,
     module=__name__,

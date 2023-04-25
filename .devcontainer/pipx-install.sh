@@ -1,13 +1,9 @@
 #!/bin/sh
 
-packages="poetry flakeheaven pre-commit tox isort pytest sphinx"
+packages="poetry pre-commit tox isort sphinx ruff"
 
-flakehaven_inject="flakeheaven flake8==4.0.1 flake8-bandit==3.0.0 flake8-bugbear==22.7.1
-flake8-comprehensions flake8-docstrings flake8-isort flake8-mutable flake8-quotes flake8-variables-names
-flake8-builtins darglint flake8-eradicate pep8-naming==0.13.0 types-PyYAML types-Jinja2"
-
-pytest_inject="pyfakefs pytest-cache pytest-cov pytest-dependency pytest-mocko"
-
+types_inject="types-PyYAML types-Jinja2 types-pillow"
+pytest_inject="pyfakefs pytest-cache pytest-cov pytest-dependency pytest-mock tqdm requests"
 sphinx_inject="sphinx-rtd-theme sphinxcontrib-images sphinxcontrib-mermaid sphinxcontrib-napoleon"
 
 install() {
@@ -23,8 +19,8 @@ done
 }
 
 install "${packages}"
-inject flakeheaven "${flakehaven_inject}"
+inject ruff "${types_inject}"
 inject pytest "${pytest_inject}"
 inject sphinx "${sphinx_inject}"
 
-pip install --user tqdm requests sphinx-rtd-theme
+pip install --user sphinx-rtd-theme docutils

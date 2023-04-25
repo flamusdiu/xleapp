@@ -11,6 +11,9 @@ from pathlib import Path
 from xleapp import __authors__
 
 
+LENGTH_OF_TIMESTAMP = 16
+
+
 class ParseError(Exception):
     pass
 
@@ -118,8 +121,6 @@ def filter_dict(dictionary: dict, filter_string: str):
 class PluginMissingError(RuntimeError):
     """Raised when no modules are installed!"""
 
-    pass
-
 
 def unix_epoch_to_readable_date(unix_epoch_time: int):
     unix_time = float(unix_epoch_time + 978307200)
@@ -170,7 +171,7 @@ def filter_json(json: t.Any, fields: tuple[str | tuple[str]]) -> dict:
 
 def time_factor_conversion(time_in_utc: str) -> str:
     # time_in_utc has to be a string
-    if len(time_in_utc) == 16:
+    if len(time_in_utc) == LENGTH_OF_TIMESTAMP:
         time_factor = 1000000
     else:
         time_factor = 1000

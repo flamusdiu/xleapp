@@ -1,84 +1,162 @@
-fail_fast: true
+minimum_pre_commit_version: 2.15.0
+exclude: ^LICENSES/|\.(html|csv|svg)$
+default_stages: [
+    commit,
+    merge-commit,
+    push,
+    prepare-commit-msg,
+    commit-msg,
+    post-checkout,
+    post-commit,
+    post-merge,
+    post-rewrite
+]
+ci:
+  autofix_prs: false
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: trailing-whitespace
-        stages: [commit]
-      - id: end-of-file-fixer
-        stages: [commit]
-      - id: check-toml
-        stages: [commit]
-      - id: fix-encoding-pragma
-        stages: [commit]
-        args: [--remove]
-      - id: debug-statements
-        language_version: python3
-      - id: no-commit-to-branch
-        stages: [commit]
-      - id: mixed-line-ending
-        stages: [commit]
-        args: ["--fix=lf"]
-        exclude: (tox.ini|.*.bat)
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: debug-statements
+  - id: end-of-file-fixer
+    exclude: \.txt$
+    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+             post-checkout, post-commit, post-merge, post-rewrite]
+  - id: trailing-whitespace
+    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+             post-checkout, post-commit, post-merge, post-rewrite]
+  - id: mixed-line-ending
+    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+             post-checkout, post-commit, post-merge, post-rewrite]
+    args: ["--fix=lf"]
+    exclude: (tox.ini|.*.bat)
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-      - id: pyupgrade
-        stages: [commit]
-        args: [--py3-plus]
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.3.1
+  hooks:
+    - id: pyupgrade
+      stages: [commit]
+      args: [--py3-plus]
 
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.13.0
-    hooks:
-      - id: blacken-docs
-        stages: [commit]
-        additional_dependencies: [black==23.3.0]
-        language_version: python3
+- repo: https://github.com/asottile/blacken-docs
+  rev: 1.13.0
+  hooks:
+    - id: blacken-docs
+      stages: [commit]
+      additional_dependencies: [black==23.3.0]
+      language_version: python3
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile black"]
-        exclude: .*\.pyi
-        stages: [commit]
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+      name: isort (python)
+      args: ["--profile black"]
+      exclude: .*\.pyi
 
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
-        stages: [commit]
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.259
+  hooks:
+  -   id: ruff
+      args: [--exit-non-zero-on-fix]
 
-  - repo: https://github.com/flakeheaven/flakeheaven
-    rev: 3.3.0
-    hooks:
-      - id: flakeheaven
-        stages: [commit]
-        additional_dependencies:
-          - flake8-bugbear==22.7.1
-          - flake8-bandit==3.0.0
-          - flake8-isort
-          - flake8-builtins
-          - flake8-comprehensions
-          - flake8-docstrings
-          - flake8-eradicate
-          - flake8-mutable
-          - flake8-quotes
-          - flake8-variables-names
-          - darglint
-          - pep8-naming==0.13.0
-
-        exclude: ^docs/
-        language_version: python3
-
-  - repo: local
-    hooks:
-      - id: pytest
-        name: Check pytest unit tests pass
-        entry: pytest tests/
-        pass_filenames: false
-        language: system
-        types: [python]
-        stages: [push]
+- repo: local
+  hooks:
+  - id: pyright
+    # note: assumes python env is setup and activated
+    name: pyright
+    entry: pyright
+    language: node
+    pass_filenames: false
+    types: [python]
+    stages: [manual]
+    additional_dependencies: &pyright_dependencies
+    - pyright@1.1.292
+  - id: pyright_reportGeneralTypeIssues
+    # note: assumes python env is setup and activated
+    name: pyright reportGeneralTypeIssues
+    entry: pyright --skipunannotated -p pyright_reportGeneralTypeIssues.json --level warning
+    language: node
+    pass_filenames: false
+    types: [python]
+    stages: [manual]
+    additional_dependencies: *pyright_dependencies
+    # NOTE: we make `black` a local hook because if it's installed from
+    # PyPI (rather than from source) then it'll run twice as fast thanks to mypyc
+  - id: black
+    name: black
+    description: "Black: The uncompromising Python code formatter"
+    entry: black
+    language: python
+    require_serial: true
+    types_or: [python, pyi]
+    additional_dependencies: [black==23.3.0]
+  - id: unwanted-patterns
+    name: Unwanted patterns
+    language: pygrep
+    entry: |
+        (?x)
+        # outdated annotation syntax, missing error codes
+        \#\ type:\ (?!ignore)
+        |\#\ type:\s?ignore(?!\[)
+        # foo._class__ instead of type(foo)
+        |\.__class__
+        # imports from collections.abc instead of `from collections import abc`
+        |from\ collections\.abc\ import
+        # Incorrect code-block / IPython directives
+        |\.\.\ code-block\ ::
+        |\.\.\ ipython\ ::
+        # directive should not have a space before ::
+        |\.\.\ \w+\ ::
+        # Check for deprecated messages without sphinx directive
+        |(DEPRECATED|DEPRECATE|Deprecated)(:|,|\.)
+        # {foo!r} instead of {repr(foo)}
+        |!r}
+        # exec
+        |[^a-zA-Z0-9_]exec\(
+    types_or: [python, cython, rst]
+    exclude: ^docs/source/development/code_style\.rst  # contains examples of patterns to avoid
+  - id: unwanted-patterns-in-tests
+    name: Unwanted patterns in tests
+    language: pygrep
+    entry: |
+        (?x)
+        # pytest.xfail instead of pytest.mark.xfail
+        pytest\.xfail
+        # No direct imports from conftest
+        |conftest\ import
+        |import\ conftest
+        # unittest.mock (use pytest builtin monkeypatch fixture instead)
+        |(unittest(\.| import )mock|mock\.Mock\(\)|mock\.patch)
+        # pytest raises without context
+        |\s\ pytest.raises
+        # pytest.warns (use tm.assert_produces_warning instead)
+        |pytest\.warns
+    files: ^xleapp/tests/
+    types_or: [python, cython, rst]
+  - id: no-return-exception
+    name: Use raise instead of return for exceptions
+    language: pygrep
+    entry: 'return [A-Za-z]+(Error|Exit|Interrupt|Exception|Iteration)'
+    files: ^xleapp/
+    types: [python]
+    exclude: ^xleapp/tests/
+  - id: future-annotations
+    name: import annotations from __future__
+    entry: 'from __future__ import annotations'
+    language: pygrep
+    args: [--negate]
+    files: ^xleapp/
+    types: [python]
+    exclude: |
+        (?x)
+        /(__init__\.py)|(api\.py)|(_version\.py)|(testing\.py)|(conftest\.py)$
+        |/tests/
+        |/_testing/
+  - id: pytest
+    name: Check pytest unit tests pass
+    entry: pytest tests/
+    pass_filenames: false
+    language: system
+    types: [python]
+    stages: [push]

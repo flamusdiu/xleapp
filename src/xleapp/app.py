@@ -11,20 +11,15 @@ import typing as t
 
 import jinja2
 import jinja2.ext
-import PySimpleGUI as PySG
-import xleapp.artifact as artifact
 import xleapp.artifact.service as artifact_service
-import xleapp.plugins as plugins
-import xleapp.report as report
-import xleapp.report.db as db
-import xleapp.templating as templating
 
+from xleapp import artifact, plugins, report, templating
 from xleapp._version import __project__, __version__
-from xleapp.gui.utils import ProcessThread
 from xleapp.helpers.descriptors import Validator
 from xleapp.helpers.search import FileSeekerBase, search_providers
 from xleapp.helpers.strings import split_camel_case
 from xleapp.helpers.utils import is_list
+from xleapp.report import db
 from xleapp.templating.ext import IncludeLogFileExtension
 
 
@@ -33,6 +28,10 @@ __ARTIFACT_PLUGINS__ = artifact_service.Artifacts()
 logger_log = logging.getLogger("xleapp.logfile")
 
 if t.TYPE_CHECKING:
+    import PySimpleGUI as PySG
+
+    from xleapp.gui.utils import ProcessThread
+
     BaseUserDict = collections.UserDict[str, t.Any]
 else:
     BaseUserDict = collections.UserDict
@@ -43,13 +42,13 @@ class Device(BaseUserDict):
 
     def __repr__(self) -> str:
         device_info = ", ".join(
-            [f"{k.replace(' ', '_')}={v!r}" for k, v in self.data.items()],
+            [f"{k.replace(' ', '_')}={repr(v)}" for k, v in self.data.items()],
         )
         return f"<Device ({device_info})>"
 
     def __str__(self) -> str:
         device_info = "; ".join(
-            [f"{k.replace(' ', '_')}: {v!r}" for k, v in self.data.items()],
+            [f"{k.replace(' ', '_')}: {repr(v)}" for k, v in self.data.items()],
         )
         return f"The processed device has the following attributes: {device_info}"
 
@@ -71,9 +70,9 @@ class OutputFolder(Validator):
 
     def validator(self, value: t.Union[str, pathlib.Path]) -> None:
         if not isinstance(value, (str, pathlib.Path)):
-            raise TypeError(f"Expected {value!r} to be one of: str, Path!")
+            raise TypeError(f"Expected {repr(value)} to be one of: str, Path!")
         if not pathlib.Path(value).exists():
-            raise FileNotFoundError(f"{value!r} must already exists!")
+            raise FileNotFoundError(f"{repr(value)} must already exists!")
 
 
 class Application:
@@ -109,7 +108,6 @@ class Application:
     input_path: pathlib.Path
     jinja_environment = jinja2.Environment
     log_folder: pathlib.Path
-    input_path: pathlib.Path
     output_path = OutputFolder()
     processing_time: float
     project: str
@@ -128,10 +126,10 @@ class Application:
         self.version = __version__
 
     def __repr__(self) -> str:
-        return f"<Application (project={self.project!r}, version={self.version!r}, device_type={self.device['Type']!r}, default_configs={self.default_configs!r})>"
+        return f"<Application (project={repr(self.project)}, version={repr(self.version)}, device_type={repr(self.device['Type'])}, default_configs={repr(self.default_configs)})>"
 
     def __str__(self) -> str:
-        return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
+        return f"{repr(self.project)} running {repr(self.version)}. Parsing {repr(self.device['Type'])}. Using default configurations: {repr(self.default_configs)}"
 
     def __call__(
         self,
@@ -262,7 +260,7 @@ class Application:
                     navigation=nav,
                 )
 
-                if html_report(selected_artifact).report:  # type: ignore
+                if html_report(selected_artifact).report:
                     logger_log.info(f"{msg_artifact}")
             else:
                 logger_log.warn(

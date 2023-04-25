@@ -3,18 +3,20 @@ from __future__ import annotations
 import abc
 import functools
 import logging
-import pathlib
 import typing as t
 
 from dataclasses import dataclass, field
 
-import jinja2
 import xleapp.globals as g
 
 from xleapp.helpers.types import DecoratedFunc
 
 
 if t.TYPE_CHECKING:
+    import pathlib
+
+    import jinja2
+
     from xleapp.report import Icon
 
 logger_log = logging.getLogger("xleapp.logfile")
@@ -50,18 +52,18 @@ class Template:
         self._template = f"{template}.jinja"
 
     def __repr__(self) -> str:
-        return f"<Template (template={self._template!r})>"
+        return f"<Template (template={repr(self._template)})>"
 
     def __str__(self) -> str:
-        return f"Template {self._template!r} being used for HTML page."
+        return f"Template {repr(self._template)} being used for HTML page."
 
     def __call__(self, func: DecoratedFunc) -> DecoratedFunc:
         @functools.wraps(func)
         def template_wrapper(cls: HtmlPage) -> t.Any:
             if not isinstance(cls, HtmlPage):
                 TypeError(
-                    f"{cls.__name__!r} not {HtmlPage.__name__!r} class for"
-                    f" using {__name__!r} as a decorator!",
+                    f"{repr(cls.__name__)} not {repr(HtmlPage.__name__)} class for"
+                    f" using {repr(__name__)} as a decorator!",
                 )
             template_j = g.app.jinja_env.get_template(self._template)
             cls.template = template_j

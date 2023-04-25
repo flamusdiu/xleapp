@@ -23,12 +23,15 @@ import typing as t
 
 from dataclasses import dataclass, field
 
-import xleapp.app as app
-import xleapp.artifact as artifact
 import xleapp.globals as g
 
+from xleapp import app, artifact
+
 from .descriptors import FoundFiles, Icon, ReportHeaders, SearchRegex
-from .regex import Regex
+
+
+if t.TYPE_CHECKING:
+    from .regex import Regex
 
 
 @dataclass
@@ -48,6 +51,7 @@ class AbstractBase:
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
+# TODO: https://github.com/python/mypy/issues/4717
 @dataclass
 class AbstractArtifactDefaults:
     """Class to set defaults to any properties for the
@@ -63,7 +67,7 @@ class AbstractArtifactDefaults:
         init=False,
         repr=False,
         compare=False,
-        default_factory=lambda: [],
+        default_factory=list,
     )
     found: FoundFiles = field(init=False, default=FoundFiles(), compare=False)
     long_running_process: bool = field(init=False, default=False, compare=False)
@@ -77,7 +81,7 @@ class AbstractArtifactDefaults:
     web_icon: Icon = field(init=False, default=Icon(), compare=False)
 
 
-@dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
+@dataclass
 class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
     """Abstract class for creating Artifacts"""
 
@@ -92,7 +96,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         super().__init_subclass__()
         if not inspect.isabstract(cls):
             if label in app.__ARTIFACT_PLUGINS__:
-                raise ValueError(f"Name {label!r} already registered!")
+                raise ValueError(f"Name {repr(label)} already registered!")
 
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label
