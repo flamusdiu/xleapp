@@ -55,7 +55,7 @@ class TestValidatorABC:
 
             def validator(self, value) -> None:
                 if not isinstance(value, int):
-                    raise TypeError(f"Expected {value!r} to be a int!.")
+                    raise TypeError(f"Expected {repr(value)} to be a int!.")
 
         class DummyClass:
             value = DummyValidator()

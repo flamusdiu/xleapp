@@ -42,13 +42,13 @@ class Device(BaseUserDict):
 
     def __repr__(self) -> str:
         device_info = ", ".join(
-            [f"{k.replace(' ', '_')}={v!r}" for k, v in self.data.items()],
+            [f"{k.replace(' ', '_')}={repr(v)}" for k, v in self.data.items()],
         )
         return f"<Device ({device_info})>"
 
     def __str__(self) -> str:
         device_info = "; ".join(
-            [f"{k.replace(' ', '_')}: {v!r}" for k, v in self.data.items()],
+            [f"{k.replace(' ', '_')}: {repr(v)}" for k, v in self.data.items()],
         )
         return f"The processed device has the following attributes: {device_info}"
 
@@ -70,9 +70,9 @@ class OutputFolder(Validator):
 
     def validator(self, value: t.Union[str, pathlib.Path]) -> None:
         if not isinstance(value, (str, pathlib.Path)):
-            raise TypeError(f"Expected {value!r} to be one of: str, Path!")
+            raise TypeError(f"Expected {repr(value)} to be one of: str, Path!")
         if not pathlib.Path(value).exists():
-            raise FileNotFoundError(f"{value!r} must already exists!")
+            raise FileNotFoundError(f"{repr(value)} must already exists!")
 
 
 class Application:
@@ -126,10 +126,10 @@ class Application:
         self.version = __version__
 
     def __repr__(self) -> str:
-        return f"<Application (project={self.project!r}, version={self.version!r}, device_type={self.device['Type']!r}, default_configs={self.default_configs!r})>"
+        return f"<Application (project={repr(self.project)}, version={repr(self.version)}, device_type={repr(self.device['Type'])}, default_configs={repr(self.default_configs)})>"
 
     def __str__(self) -> str:
-        return f"{self.project!r} running {self.version!r}. Parsing {self.device['Type']!r}. Using default configurations: {self.default_configs!r}"
+        return f"{repr(self.project)} running {repr(self.version)}. Parsing {repr(self.device['Type'])}. Using default configurations: {repr(self.default_configs)}"
 
     def __call__(
         self,
@@ -260,7 +260,7 @@ class Application:
                     navigation=nav,
                 )
 
-                if html_report(selected_artifact).report:  # type: ignore
+                if html_report(selected_artifact).report:
                     logger_log.info(f"{msg_artifact}")
             else:
                 logger_log.warn(

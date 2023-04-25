@@ -32,7 +32,7 @@ click = "^8.1.3"
 Jinja2 = "^3.1.2"
 pillow = "^9.5.0"
 prettytable = "^3.3.0"
-PySimpleGUI = "^4.60.1"
+PySimpleGUI = "^4.60.4"
 python = ">=3.9,<3.11"
 python-magic = "^0.4.27"
 PyYAML = "^6.0"
@@ -40,28 +40,25 @@ simplekml = "^1.3.6"
 wrapt = "^1.14.1"
 
 atomicwrites = {version = "^1.4.1", optional = true}
-black = {version = ">=22.6,<24.0", optional = true}
+black = {version = "^23.3.0", optional = true}
 darglint = {version = "^1.8.1", optional = true}
-flake8 = {version = "^4.0.1", optional = true}
-flakeheaven = {version = ">=2,<4", optional = true}
-mypy = {version = ">=0.961,<1.3", optional = true}
-pep8-naming = {version = "^0.13.0", optional = true}
-pre-commit = {version = ">=2.20,<4.0", optional = true}
-pyfakefs = {version = ">=4.6.3,<6.0.0", optional = true}
-pyinstaller = {version = "^5.1", optional = true}
-pytest = {version = ">=6.0.2,<8.0.0", optional = true}
+mypy = {version = "^1.2.0", optional = true}
+pre-commit = {version = "^3.2.2", optional = true}
+pyfakefs = {version = "^5.2.2", optional = true}
+pyinstaller = {version = "^5.10.1", optional = true}
+pytest = {version = "^7.3.1", optional = true}
 pytest-cache = {version = "^1.0", optional = true}
-pytest-cov = {version = ">=2.10.1,<5.0.0", optional = true}
+pytest-cov = {version = "^4.0.0", optional = true}
 pytest-dependency = {version = "^0.5.1", optional = true}
-pytest-mock = {version = "^3.8.2", optional = true}
-recommonmark = {version = "^0.7.1", optional = true}
-requests = {version = "^2.28.1", optional = true}
-sphinx = {version = "^6.1.3", optional = true}
-sphinx-rtd-theme = {version = "^1.0.0", optional = true}
+pytest-mock = {version = "^3.10.0", optional = true}
+recommonmark ={version =  "^0.7.1", optional = true}
+requests = {version = "^2.28.2", optional = true}
+sphinx = {version = "^6.2.0", optional = true}
+sphinx-rtd-theme = {version = "^1.2.0", optional = true}
 sphinxcontrib-images = {version = "^0.9.4", optional = true}
-sphinxcontrib-mermaid = {version = ">=0.7.1,<0.9.0", optional = true}
+sphinxcontrib-mermaid = {version = "^0.8.1", optional = true}
 sphinxcontrib-napoleon = {version = "^0.7", optional = true}
-tox = {version = ">=3.23,<5.0", optional = true}
+tox = {version = "^4.5.0", optional = true}
 tqdm = {version = "^4.64.0", optional = true}
 types-Jinja2 = {version = "^2.11.9", optional = true}
 types-pillow = {version = "^9.5.0.1", optional = true}
@@ -131,8 +128,7 @@ ignore = [
 "**/__init__.py" = ["F401", "E501"]
 "**/gui/gui.py" = ["C901"]
 "**/types.py" = ["F401"]
-"tests/**" = ["S101", "D107"]
-"docs/**" = []
+"tests/**" = ["S101", "D107", "PLR0913"]
 
 [tool.pylint.messages_control]
 max-line-length = 90

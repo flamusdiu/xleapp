@@ -82,7 +82,7 @@ class Artifacts:
         return (
             "Artifacts service contains the following artifacts: "
             f"{'; '.join(artifact_lst)}. Process queue contains "
-            f"{len(self.process_queue)!r} artifacts to be processed!"
+            f"{repr(len(self.process_queue))} artifacts to be processed!"
         )
 
     @property

@@ -13,7 +13,7 @@ class FoundFiles(descriptors.Validator):
 
     def validator(self, value):
         if not isinstance(value, set):
-            raise TypeError(f"Expected {value!r} to be a set!")
+            raise TypeError(f"Expected {repr(value)} to be a set!")
 
 
 class Icon(descriptors.Validator):
@@ -38,7 +38,7 @@ class ReportHeaders(descriptors.Validator):
     def validator(self, value) -> None:
         if not ReportHeaders._check_list_of_tuples(value, bool_list=[]):
             raise TypeError(
-                f"Expected {value!r} to be a list of tuples or tuple!",
+                f"Expected {repr(value)} to be a list of tuples or tuple!",
             )
 
     @staticmethod
@@ -101,7 +101,7 @@ class SearchRegex(descriptors.Validator):
             )
         ):
             raise TypeError(
-                f"Expected {value!r} to be a str or tuple!",
+                f"Expected {repr(value)} to be a str or tuple!",
             )
 
     def __set__(self, obj, value) -> None:

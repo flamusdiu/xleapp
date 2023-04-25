@@ -51,6 +51,7 @@ class AbstractBase:
     _log: logging.Logger = field(init=False, repr=False, compare=False)
 
 
+# TODO: https://github.com/python/mypy/issues/4717
 @dataclass
 class AbstractArtifactDefaults:
     """Class to set defaults to any properties for the
@@ -80,7 +81,7 @@ class AbstractArtifactDefaults:
     web_icon: Icon = field(init=False, default=Icon(), compare=False)
 
 
-@dataclass  # type: ignore  # https://github.com/python/mypy/issues/5374
+@dataclass
 class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
     """Abstract class for creating Artifacts"""
 
@@ -95,7 +96,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         super().__init_subclass__()
         if not inspect.isabstract(cls):
             if label in app.__ARTIFACT_PLUGINS__:
-                raise ValueError(f"Name {label!r} already registered!")
+                raise ValueError(f"Name {repr(label)} already registered!")
 
             cls.device_type = cls.__module__.split(".")[1]
             cls.name = label

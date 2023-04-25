@@ -35,7 +35,7 @@ def open_sqlite_db_readonly(path: t.Union[pathlib.Path, str]) -> sqlite3.Connect
         db.row_factory = sqlite3.Row
     except sqlite3.DatabaseError as err:
         raise sqlite3.DatabaseError(
-            f"File {path!r} failed to open as a database!"
+            f"File {repr(path)} failed to open as a database!"
         ) from err
 
     return db
