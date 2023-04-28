@@ -1,12 +1,11 @@
 import re
 import typing as t
 import webbrowser
-
 from enum import Enum
 
 import PySimpleGUI as PySG
-
 from PySimpleGUI import LISTBOX_SELECT_MODE_MULTIPLE, LISTBOX_SELECT_MODE_SINGLE
+
 from xleapp.helpers import utils
 
 
@@ -76,7 +75,7 @@ def layout_right_column() -> PySG.Column:
         [PySG.Fr(
             layout=[
                 [PySG.LBox(generate_device_list(), size=(20, 3), enable_events=True,
-                 key='-DEVICETYPE-', select_mode=LISTBOX_SELECT_MODE_SINGLE)],
+                 key="-DEVICETYPE-", select_mode=LISTBOX_SELECT_MODE_SINGLE)],
             ], title="Device Type", font=Font.FRAME)],
         [PySG.Fr(
             layout=[
@@ -257,7 +256,7 @@ def url(url: str, title: str) -> PySG.Text:
         tooltip=url,
         enable_events=True,
         font=Font.URL.value,
-        key=f'-URL: {url}-',
+        key=f"-URL: {url}-",
         border_width=0,
     )
 
@@ -268,14 +267,14 @@ def error_popup_no_modules() -> None:
     dialog = PySG.Window(
         "Error!",
         [
-            [PySG.Text('There are no plugins installed! Please see:',
+            [PySG.Text("There are no plugins installed! Please see:",
                        font=Font.NORMAL,
                        border_width=0),
              url(
                 url="https://github.com/flamusdiu/xleapp#readme",
                 title="xLEAPP Readme"),
              ],
-            [PySG.Button('Error!', key="-ERROR-", button_color="Red", font=Font.NORMAL)],
+            [PySG.Button("Error!", key="-ERROR-", button_color="Red", font=Font.NORMAL)],
         ], modal=True, disable_minimize=True, disable_close=True,
     )
 

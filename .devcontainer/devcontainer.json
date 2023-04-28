@@ -12,9 +12,9 @@
 			"extensions": [
 				"ms-python.python",
 				"bungcip.better-toml",
+				"charliermarsh.ruff",
 				"DavidAnson.vscode-markdownlint",
 				"GitHub.vscode-pull-request-github",
-				"kevinglasson.cornflakes-linter",
 				"KevinRose.vsc-python-indent",
 				"lextudio.restructuredtext",
 				"magicstack.MagicPython",
@@ -40,16 +40,20 @@
 			"python.formatting.provider": "black",
 			"[python]": {
 				"editor.defaultFormatter": "ms-python.black-formatter",
-				"editor.formatOnType": true
+				"editor.formatOnType": true,
+				"editor.codeActionsOnSave": {
+					"source.fixAll": true
+				}
 			},
 			"black-formatter.importStrategy": "fromEnvironment",
 			"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-			"python.linting.flake8Path": "/usr/local/py-utils/bin/flakeheaven",
 			"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
 			"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 			"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 			"terminal.integrated.defaultProfile.linux": "zsh",
-			"cornflakes.executablePath": "/usr/local/py-utils/bin/flakeheaven"
+			"ruff.path": [
+  			    "/usr/local/py-utils/bin/ruff"
+    		]
 		}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
