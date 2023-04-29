@@ -136,14 +136,9 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
         Example:
             This can be used with `with` blocks::
 
-            >>> with Artifact.context("*/my_regex*", file_names_only=True) as artifact:
+            >>> with Artifact.context() as artifact:
                     artifact.name = 'New Name'
                     artifact.process()
-
-        Args:
-            regex(str): regular expression to search files
-            file_names_only(bool): return only file names
-            return_on_first_hit(bool): return on first hit
 
         Yields:
             Artifact: Updated object
@@ -184,6 +179,7 @@ class Artifact(abc.ABC, AbstractArtifactDefaults, AbstractBase):
     @property
     def cls_name(self) -> str:
         """Returns class Name of object
+
         Returns:
             str: class name
         """

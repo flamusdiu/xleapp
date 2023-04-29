@@ -41,7 +41,11 @@ class ProcessThread(abc.ABC, threading.Thread):
 
     @property
     def stopped(self) -> bool:
-        """Checks if the thread should be stopped."""
+        """Checks if the thread should be stopped.
+
+        Returns:
+            bool: returns if event is stopped.
+        """
         return self._stop_event.is_set()
 
     def join(self, timeout=None):

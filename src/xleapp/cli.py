@@ -102,7 +102,7 @@ def gui(application: app.Application):
     """Runs the GUI interface
 
     Args:
-        application (app.Application):
+        application (app.Application): XLEAPP application object
     """
     from xleapp import gui
 

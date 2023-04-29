@@ -50,7 +50,10 @@ class Plugin(abc.ABC):
 
         Args:
             name: name of the seeker
-            file_seeker: a :obj:`FileSeekerBase` to search for files
+            file_seekers: a :obj:`FileSeekerBase` to search for files
+
+        Raises:
+            TypeError: If not FileSeeker
         """
         name = name.upper()
         if isinstance(file_seekers, t.Sequence):
