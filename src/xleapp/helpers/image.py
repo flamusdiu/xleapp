@@ -16,7 +16,16 @@ def generate_thumbnail(
 ) -> str:
     """
     searching for thumbnails, copy it to report folder and return tag  to
-    insert in html
+    insert in htmli
+
+    Args:
+        image_directory (Path): path to the image
+        image_filename (str): file name of the image
+        seeker (FileSeekerBase): :obj:`FileSeekerBase` to find the image
+        report_folder (Path): location to save the file
+
+    Returns:
+        str: string of the html tag for the thumbnail
     """
     thumb = f"{g.app.default_configs.get('thumbnail_root')}/{image_directory}/{image_filename}"
     thumb_list = seeker.search(f"{thumb}/**.JPG", return_on_first_hit=True)

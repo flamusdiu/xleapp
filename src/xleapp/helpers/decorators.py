@@ -7,7 +7,14 @@ from .types import DecoratedFunc
 
 # timer function
 def timed(func: DecoratedFunc) -> DecoratedFunc:
-    """Print the runtime of the decorated function"""
+    """Print the runtime of the decorated function
+
+    Args:
+        func: :obj:`function` that will timed
+
+    Returns:
+        DecoratedFunc: the wrapped function to be timed
+    """
 
     @functools.wraps(func)
     def timed_wrapper(*args, **kwargs):

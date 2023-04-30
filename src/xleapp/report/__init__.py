@@ -12,8 +12,8 @@ from .web_icons import WebIcon as WebIcon
 def copy_static_files(report_folder: pathlib.Path) -> None:
     """Copies static files to report folder.
 
-    Returns:
-        None
+    Args:
+        report_folder (Path): path to the report location
     """
     mod = importlib.util.find_spec(__name__)
     if mod and mod.origin:

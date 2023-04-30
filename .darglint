@@ -1,7 +1,4 @@
 [darglint]
-# NOTE: All `darglint` styles except for `sphinx` hit ridiculously low
-# NOTE: performance on some of the in-project Python modules.
-# Refs:
-# * https://github.com/terrencepreilly/darglint/issues/186
 docstring_style = google
-strictness = full
+strictness = short
+ignore_regex=^_(.*)

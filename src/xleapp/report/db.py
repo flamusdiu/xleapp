@@ -81,19 +81,16 @@ class DBManager(contextlib.AbstractContextManager):
     def save(self, name: str, data_list, data_headers) -> None:
         """Saves files to database
 
-        Returns:
-            None
+        Args:
+            name (str): name of the database
+            data_list: list of data to save to file
+            data_headers: list of columns headers
+
         """
-        raise NotImplementedError(f"{repr(self)} requires a `save()` function!")
 
     @abc.abstractmethod
     def create(self) -> None:
-        """Creates database file
-
-        Returns:
-            None
-        """
-        raise NotImplementedError(f"{repr(self)} requires a `create()` function!")
+        """Creates database file"""
 
 
 class KmlDBManager(DBManager):
@@ -166,12 +163,12 @@ class TimelineDBManager(DBManager):
             db.connection.execute("""PRAGMA journal_mode = WAL""")
 
             for row in data_list:
-                modifiedlist = list(
+                modified_list = list(
                     map(lambda x, y: x.upper() + ": " + str(y), data_headers, row),
                 )
                 db.connection.executemany(
                     "INSERT INTO data VALUES(?,?,?)",
-                    [(str(row[0]), name.upper(), str(modifiedlist))],
+                    [(str(row[0]), name.upper(), str(modified_list))],
                 )
 
 
