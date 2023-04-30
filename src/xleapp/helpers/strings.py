@@ -18,8 +18,14 @@ SMALLEST_STRING_TO_RETURN = 4
 
 def raw(data: t.ByteString) -> str:
     """Returns string of printable characters. Replacing non-printable characters
-    with '.'
-    ``"""
+       with '.'
+
+    Args:
+        data (ByteString): string of characters to be filters
+
+    Returns:
+        a filtered string
+    """
     return "".join(
         [
             chr(byte) if byte >= BYTE_SPACE and byte < BYTE_DEL else ASCII_PERIOD
@@ -30,7 +36,13 @@ def raw(data: t.ByteString) -> str:
 
 def print_str(data: t.ByteString) -> filter:
     """Returns string of printable characters. Works similar to the Linux
-    `string` function.
+       `string` function.
+
+    Args:
+        data (ByteString): string of characters to be filters
+
+    Returns:
+        a filtered string
     """
     cleansed = "".join(
         [

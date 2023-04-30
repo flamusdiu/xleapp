@@ -112,7 +112,6 @@ class Search:
         return search_wrapper
 
     def __get__(self, obj, objtype):
-        """Support instance methods."""
         return functools.partial(self.__call__, obj)
 
     def __repr__(self) -> str:

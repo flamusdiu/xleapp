@@ -19,29 +19,53 @@ class ParseError(Exception):
 
 
 def is_platform_windows() -> bool:
-    """Returns True if running on Windows"""
+    """Returns True if running on Windows
+
+    Returns:
+        boolean of `true` if running on Windows
+    """
     return os.name == "nt"
 
 
-def sanitize_file_path(filename: str, replacement_char: str = "_") -> str:
+def sanitize_file_path(filepath: str, replacement_char: str = "_") -> str:
     """
     Removes illegal characters (for windows) from the string passed.
     Does not replace \\ or /
+
+    Args:
+        filepath (str): string of the file path
+        replacement_char (str): Default is "_". Character to use for replacement
+
+    Returns:
+        returns file path with substituted characters
     """
-    return re.sub(r'[*?:"<>|\'\r\n]', replacement_char, filename)
+    return re.sub(r'[*?:"<>|\'\r\n]', replacement_char, filepath)
 
 
 def sanitize_file_name(filename: str, replacement_char: str = "_") -> str:
-    """
-    Removes illegal characters (for windows) from the string passed.
+    """Removes illegal characters (for windows) from the string passed.
+
+    Args:
+        filename (str): string of the file path
+        replacement_char (str): Default is "_". Character to use for replacement
+
+    Returns:
+        returns file path with substituted characters
     """
     return re.sub(r'[\\/*?:"<>|\'\r\n]', replacement_char, filename)
 
 
 def get_next_unused_name(path: str) -> str:
     """Checks if path exists, if it does, finds an unused name by appending -xx
-    where xx=00-99. Return value is new path.
-    If it is a file like abc.txt, then abc-01.txt will be the next
+       where xx=00-99. Return value is new path.
+
+       If it is a file like abc.txt, then abc-01.txt will be the next
+
+    Args:
+        path (str): location to search for files to check
+
+    Returns:
+        string of the next unused file name
     """
     folder, basename = os.path.split(path)
     ext = None
@@ -60,8 +84,14 @@ def get_next_unused_name(path: str) -> str:
 
 
 def validate_input(input_path: str, output_path: str) -> None:
-    """
-    Returns tuple (success, extraction_type)
+    """Returns tuple (success, extraction_type)
+
+    Args:
+        input_path (str): string of the file to parse
+        output_path (str): string of the location to save the report and support files
+
+    Raises:
+        ParseError: If input or output paths do not exists
     """
 
     if input_path is None:

@@ -17,6 +17,9 @@ def open_sqlite_db_readonly(path: t.Union[pathlib.Path, str]) -> sqlite3.Connect
 
     Returns:
         Sqlite3.Connection to database as readonly.
+
+    Raises:
+        DatabaseError: If file did not open as database
     """
     if isinstance(path, str):
         path = pathlib.Path(path)
@@ -98,6 +101,9 @@ def does_table_exist(db: sqlite3.Connection, table_name: str) -> bool:
 
 def dict_from_row(row: sqlite3.Row) -> dict[str, t.Any]:
     """Takes a :obj:`sqlite3.Row` object and returns a dict
+
+    Args:
+        row: an :obj:`sqlite.Row` object
 
     Returns:
         a dict based on the row data

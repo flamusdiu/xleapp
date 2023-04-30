@@ -46,19 +46,17 @@ repos:
       additional_dependencies: [black==23.3.0]
       language_version: python3
 
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-    - id: isort
-      name: isort (python)
-      args: ["--profile black"]
-      exclude: .*\.pyi
-
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.0.259
   hooks:
   -   id: ruff
       args: [--exit-non-zero-on-fix]
+
+- repo: https://github.com/terrencepreilly/darglint.git
+  rev: v1.8.1
+  hooks:
+  - id: darglint
+    exclude: ^(src/xleapp/plugins|tests/)
 
 - repo: local
   hooks:
@@ -132,27 +130,15 @@ repos:
         |\s\ pytest.raises
         # pytest.warns (use tm.assert_produces_warning instead)
         |pytest\.warns
-    files: ^xleapp/tests/
+    files: ^tests/
     types_or: [python, cython, rst]
   - id: no-return-exception
     name: Use raise instead of return for exceptions
     language: pygrep
     entry: 'return [A-Za-z]+(Error|Exit|Interrupt|Exception|Iteration)'
-    files: ^xleapp/
+    files: ^src/
     types: [python]
-    exclude: ^xleapp/tests/
-  - id: future-annotations
-    name: import annotations from __future__
-    entry: 'from __future__ import annotations'
-    language: pygrep
-    args: [--negate]
-    files: ^xleapp/
-    types: [python]
-    exclude: |
-        (?x)
-        /(__init__\.py)|(api\.py)|(_version\.py)|(testing\.py)|(conftest\.py)$
-        |/tests/
-        |/_testing/
+    exclude: ^tests/
   - id: pytest
     name: Check pytest unit tests pass
     entry: pytest tests/

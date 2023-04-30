@@ -58,7 +58,7 @@ def test_data(request):
 
 @pytest.mark.download
 @pytest.fixture(scope="session", autouse=True)
-def ios_image(test_data, request, pytestconfig):
+def ios_image(test_data: str, request, pytestconfig):
     """Downloads and saves ios Image. Most test will use this file system image.
     This is extracted a head of time due to the overhead of trying to extract
     during testing.

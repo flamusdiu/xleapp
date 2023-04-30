@@ -100,7 +100,7 @@ def copyfile(input_file: Path | bytes, output_file: Path) -> Path:
         output_file: output file name
 
     Returns:
-        output_file: Path object of the file save location and name.
+        Path: Path object of the file save location and name.
     """
 
     if isinstance(input_file, bytes):

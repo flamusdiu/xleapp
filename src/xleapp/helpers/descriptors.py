@@ -43,4 +43,7 @@ class Validator(abc.ABC):
         """Function ran to validate a value.
 
         Validators may return non boolean values.
+
+        Args:
+            value: value attempting to be set
         """

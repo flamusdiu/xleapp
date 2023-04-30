@@ -309,9 +309,6 @@ class FileSeekerBase(abc.ABC):
 
         Args:
             folder: folder to get files from if required
-
-        Returns:
-            A list of files
         """
 
     @property
@@ -348,11 +345,7 @@ class FileSeekerBase(abc.ABC):
     @functools.cached_property
     @abc.abstractmethod
     def validate(self) -> bool:
-        """Validates input for this seeker
-
-        Returns:
-            Returns True if validated or False if fails.
-        """
+        """Validates input for this seeker"""
 
 
 class FileSeekerDir(FileSeekerBase):
