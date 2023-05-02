@@ -38,12 +38,17 @@
 			"python.linting.enabled": true,
 			"python.linting.pylintEnabled": true,
 			"python.formatting.provider": "black",
+			"[git-commit]": {"editor.rulers": [50]},
 			"[python]": {
 				"editor.defaultFormatter": "ms-python.black-formatter",
 				"editor.formatOnType": true,
 				"editor.codeActionsOnSave": {
 					"source.fixAll": true
-				}
+				},
+				"editor.rulers": [90, 120]
+			},
+			"workbench.colorCustomizations": {
+ 			   "editorRuler.foreground": "#ff4081"
 			},
 			"black-formatter.importStrategy": "fromEnvironment",
 			"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",

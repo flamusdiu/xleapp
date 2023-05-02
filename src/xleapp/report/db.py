@@ -119,7 +119,7 @@ class KmlDBManager(DBManager):
             db.connection.commit()
 
             for row in data_list:
-                modified_dict = dict(zip(data_headers, row))
+                modified_dict = dict(zip(data_headers, row, strict=True))
                 times = modified_dict["Timestamp"]
                 lon = modified_dict["Longitude"]
                 lat = modified_dict["Latitude"]

@@ -58,12 +58,6 @@ repos:
   - id: darglint
     exclude: ^(src/xleapp/plugins|tests/)
 
-- repo: https://github.com/terrencepreilly/darglint.git
-  rev: v1.8.1
-  hooks:
-  - id: darglint
-    exclude: ^(src/xleapp/plugins/[a-z_]+/tests|tests/)
-
 - repo: local
   hooks:
   - id: pyright

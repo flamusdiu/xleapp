@@ -108,4 +108,4 @@ def dict_from_row(row: sqlite3.Row) -> dict[str, t.Any]:
     Returns:
         a dict based on the row data
     """
-    return dict(zip(row.keys(), row))
+    return dict(zip(row.keys(), row, strict=True))
