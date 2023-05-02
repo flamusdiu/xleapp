@@ -27,10 +27,7 @@ def raw(data: t.ByteString) -> str:
         a filtered string
     """
     return "".join(
-        [
-            chr(byte) if byte >= BYTE_SPACE and byte < BYTE_DEL else ASCII_PERIOD
-            for byte in data
-        ],
+        [chr(byte) if BYTE_SPACE <= byte < BYTE_DEL else ASCII_PERIOD for byte in data],
     )
 
 
@@ -44,12 +41,7 @@ def print_str(data: t.ByteString) -> filter:
     Returns:
         a filtered string
     """
-    cleansed = "".join(
-        [
-            chr(byte) if byte >= BYTE_SPACE and byte < BYTE_DEL else ASCII_NULL
-            for byte in data
-        ],
-    )
+    cleansed = raw(data)
     return filter(
         lambda string: len(string) >= SMALLEST_STRING_TO_RETURN,
         cleansed.split(ASCII_NULL),

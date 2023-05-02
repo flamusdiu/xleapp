@@ -154,7 +154,7 @@ def test_artifact():
                         row_dict = dict_from_row(row)  # noqa
                         self.data.append(tuple(row_dict.values()))
 
-    return dataclass(TestArtifact, frozen=True, eq=True)
+    return dataclass(TestArtifact, eq=True)
 
 
 @pytest.fixture
@@ -181,6 +181,7 @@ def app(
 
     fake_filesystem.makedir("reports")
     output_path = pathlib.Path() / "reports"
+    input_path = pathlib.Path() / "ios_image"
 
     mocker.patch(
         "xleapp.app.Application.discover_plugins", return_value=fake_discover_plugins()
@@ -195,9 +196,8 @@ def app(
         xleapp.globals.app = app
 
     app.device.update({"Type": "device_type"})
-    app.output_path = output_path
 
-    yield app()
+    yield app(output_path, input_path)
 
     shutil.rmtree(app.report_folder)
 

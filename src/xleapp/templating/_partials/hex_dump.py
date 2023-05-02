@@ -18,14 +18,12 @@ class HexDumpHtml(templating.HtmlPage):
         str_hex = ""
         str_ascii = ""
 
-        """ Generates offset column
-        """
+        # Generates offset column
         offset_rows = math.ceil(len(data_hex) / (char_per_row * 2))
         offsets = [range(0, len(data_hex), char_per_row)][:offset_rows]
         str_offset = "<br>".join([str(hex(s)[2:]).zfill(4).upper() for s in offsets])
 
-        """ Generates hex data column
-        """
+        # Generates hex data column
         char = 0
         for i in range(0, len(data_hex), 2):
             str_hex += data_hex[i : i + 2] + "&nbsp;"
@@ -36,8 +34,7 @@ class HexDumpHtml(templating.HtmlPage):
             else:
                 char += 1
 
-        """ Generates ascii column of data
-        """
+        # Generates ascii column of data
         for i in range(0, len(str_raw), char_per_row):
             str_ascii += str_raw[i : i + char_per_row] + "<br>"
 

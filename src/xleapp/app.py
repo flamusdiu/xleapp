@@ -263,7 +263,7 @@ class Application:
                 if html_report(selected_artifact).report:
                     logger_log.info(f"{msg_artifact}")
             else:
-                logger_log.warn(
+                logger_log.warning(
                     f"{msg_artifact}: "
                     "Report not generated! Artifact "
                     "marked for no report generation. Check "

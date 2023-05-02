@@ -29,11 +29,11 @@ def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
         try:
             cls.process_time, _ = process_wrapper.orig_func()
         except InvalidFileException as err:
-            logger_log.warn(f"-> {err}")
+            logger_log.warning(f"-> {err}")
             cls.processed = False
 
         if not cls.processed:
-            logger_log.warn("-> Failed to processed!")
+            logger_log.warning("-> Failed to processed!")
         logger_log.info(f"{msg_artifact} finished in {cls.process_time:.2f}s")
 
     process_wrapper.orig_func = timed(cls.process)

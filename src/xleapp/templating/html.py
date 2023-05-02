@@ -60,11 +60,6 @@ class Template:
     def __call__(self, func: DecoratedFunc) -> DecoratedFunc:
         @functools.wraps(func)
         def template_wrapper(cls: HtmlPage) -> t.Any:
-            if not isinstance(cls, HtmlPage):
-                TypeError(
-                    f"{repr(cls.__name__)} not {repr(HtmlPage.__name__)} class for"
-                    f" using {repr(__name__)} as a decorator!",
-                )
             template_j = g.app.jinja_env.get_template(self._template)
             cls.template = template_j
             return func(cls)

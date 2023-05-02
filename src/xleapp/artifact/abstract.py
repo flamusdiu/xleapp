@@ -1,12 +1,17 @@
 """This module contains all the functions for Artifact abstract class.
 
-Python requires that attributes with out default values come after attributes with defaults.
+Python requires that attributes with out default values come after attributes with
+defaults.
 
 The class order ABC > AbstractArtifactDefaults > AbstractBase ensures this is correct.
 
-:obj:`AbstractBase` contains all attributes without a default. Please place any extra attributes that do not require defaults within this class. Also ensure to use `field(init=false)` for each attribute so they are not required when the class is first created.
+:obj:`AbstractBase` contains all attributes without a default. Please place any extra
+attributes that do not require defaults within this class. Also ensure to use
+`field(init=false)` for each attribute so they are not required when the class is first
+created.
 
-:obj:`AbstractArtifactDefaults` provides any attributes with defaults. Also, use `field(init=False)` for each one as before.
+:obj:`AbstractArtifactDefaults` provides any attributes with defaults. Also, use
+`field(init=False)` for each one as before.
 
 :obj:`Artifact` is the class every artifact needs to be subclassed from.
 

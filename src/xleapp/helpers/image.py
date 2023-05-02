@@ -36,7 +36,7 @@ def generate_thumbnail(
         os.path.basename(os.path.abspath(report_folder)),
         thumb_name,
     )
-    html_thumb_tag = '<img src="{}"></img>'.format(path_to_thumb)
+    html_thumb_tag = f'<img src="{path_to_thumb}"></img>'
     if thumb_list:
         shutil.copyfile(thumb_list[0], os.path.join(report_folder, thumb_name))
     else:
@@ -46,10 +46,7 @@ def generate_thumbnail(
             f"{g.app.default_configs.get('MEDIA_ROOT')}/{image_directory}/{image_filename}",
         )
         if files:
-            try:
-                im = Image.open(files[0])
-                im.thumbnail(g.app.default_configs.get("THUMB_SIZE"))
-                im.save(os.path.join(report_folder, thumb_name))
-            except:  # noqa
-                pass  # unsupported format
+            im = Image.open(files[0])
+            im.thumbnail(g.app.default_configs.get("THUMB_SIZE"))
+            im.save(os.path.join(report_folder, thumb_name))
     return html_thumb_tag

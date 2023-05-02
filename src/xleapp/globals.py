@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import typing as t
+from xleapp.app import Application
 
 
-if t.TYPE_CHECKING:
-    from xleapp.app import Application
-
-app: Application
+app: Application = Application

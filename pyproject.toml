@@ -17,7 +17,7 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
   "Topic :: Security",
   "Topic :: Utilities",
   "Typing :: Typed"
@@ -33,7 +33,7 @@ Jinja2 = "^3.1.2"
 pillow = "^9.5.0"
 prettytable = "^3.3.0"
 PySimpleGUI = "^4.60.4"
-python = ">=3.9,<3.11"
+python = ">=3.10,<3.11"
 python-magic = "^0.4.27"
 PyYAML = "^6.0"
 simplekml = "^1.3.6"
@@ -71,7 +71,7 @@ xleapp = "xleapp.cli:cli"
 format = "grouped"
 line-length = 90
 update-check = false
-target-version = "py39"
+target-version = "py310"
 fix = true
 unfixable = ["E711"]
 
@@ -113,6 +113,8 @@ exclude = [
 # E203: Whitespace before ":"
 # W503: Line breaks should occur after the binary operator to keep
 #       all variable names aligned. Disabled infavor of W504 (PEP8 updates)
+# Q000: Remove bad quotes
+# PLR2004: Magic value used in comparison, consider replacing 10 with a constant variable
 # PLR0913: Too many arguments to function call
 ignore = [
   "A003",
@@ -130,7 +132,7 @@ ignore = [
 "**/types.py" = ["F401"]
 "**/gui/log.py" = ["PLW0603"]
 "docs/**" = ["E"]
-"tests/**" = ["S101", "D107", "PLR0913"]
+"tests/**" = ["S101", "D107", "PLR0913", "PLR2004"]
 
 [tool.pylint.messages_control]
 max-line-length = 90
@@ -146,6 +148,7 @@ disable = [
   "invalid-name",
   "invalid-unary-operand-type",
   "line-too-long",
+  "logging-fstring-interpolation",
   "no-else-continue",
   "no-else-raise",
   "no-else-return",
@@ -176,9 +179,9 @@ disable = [
   "use-dict-literal",
   "use-implicit-booleaness-not-comparison",
   "use-implicit-booleaness-not-len",
+  "useless-import-alias",
   "wrong-import-order",
   "wrong-import-position",
-  "redefined-loop-name",
 
  # misc
   "abstract-class-instantiated",
@@ -244,7 +247,7 @@ lines-between-types = 1
 [tool.black]
 line_length = 90
 include = '\.pyi?$'
-target_version = ["py39"]
+target_version = ["py310"]
 exclude = '''
 /(
     | \.eggs         # exclude a few common directories in the
@@ -257,13 +260,12 @@ exclude = '''
 '''
 
 [tool.pyright]
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 typeCheckignMode = "basic"
 include = ["src/xleapp"]
 exclude = [
   "**/__pycache__",
   "src/xleapp/tests",
-  "src/xleapp/plugins",
   "src/xleapp/report/chat_rendering.py"
 ]
 defineConstant = { DEBUG = true }

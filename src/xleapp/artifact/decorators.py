@@ -72,7 +72,7 @@ def artifact_process(cls: DecoratedFunc) -> DecoratedFunc:
         logger_log.info(f"\n{msg_artifact} processing...")
         cls.process_time, _ = cls.process()
         if not cls.processed:
-            logger_log.warn("-> Failed to processed!")
+            logger_log.warning("-> Failed to processed!")
         logger_log.info(f"{msg_artifact} finished in {cls.process_time:.2f}s")
 
     return t.cast(DecoratedFunc, process_wrapper)

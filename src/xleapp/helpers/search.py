@@ -49,7 +49,7 @@ class PathValidator(descriptors.Validator):
         """
         if not isinstance(value, (pathlib.Path, os.PathLike, str)):
             raise TypeError(f"Expected {repr(value)} to be a Path or Pathlike object")
-        return pathlib.Path(value).resolve()
+        return pathlib.Path(value).resolve(strict=True)
 
 
 class HandleValidator(descriptors.Validator):
@@ -178,13 +178,10 @@ class FileHandles(collections.UserDict):
             elif isinstance(item, Handle):
                 path = pathlib.Path(item.path).resolve()
 
-            """
-            If we have more then 10 files, then set only
-            file names instead of `FileIO` or
-            `sqlite3.connection` to save memory. Most artifacts
-            probably have less then 5 files they will read/use.
-            """
-
+            # If we have more then 10 files, then set only
+            # file names instead of `FileIO` or
+            # `sqlite3.connection` to save memory. Most artifacts
+            # probably have less then 5 files they will read/use.
             if (
                 len(files) > MAX_NUMBER_OF_FILES_HANDLES_TO_OPEN
                 or file_names_only

@@ -37,7 +37,7 @@ class ProcessThread(abc.ABC, threading.Thread):
 
     @abc.abstractmethod
     def run(self):
-        NotImplementedError("Need to define a run method!")
+        """Process to run in thread"""
 
     @property
     def stopped(self) -> bool:
