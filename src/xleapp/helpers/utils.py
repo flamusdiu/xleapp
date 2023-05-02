@@ -76,7 +76,7 @@ def get_next_unused_name(path: str) -> str:
     if ext is None:
         new_name += f"{ext}"
     while os.path.exists(os.path.join(folder, new_name)):
-        new_name = basename + "-{:02}".format(num)
+        new_name = basename + "-{num:02}"
         if ext is None:
             new_name += f"{ext}"
         num += 1

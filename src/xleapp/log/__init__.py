@@ -68,13 +68,13 @@ class FileHandlerWithHeader(logging.FileHandler):
         self.file_pre_exists = Path(filename)
         logging.FileHandler.__init__(self, filename, mode, encoding, delay)
         if not delay and self.stream is not None:
-            self.stream.write("%s\n" % header)
+            self.stream.write(f"{header}\n")
 
     def emit(self, record: logging.LogRecord):
         if self.stream is None:
             self.stream = self._open()
             if not self.file_pre_exists:
-                self.stream.write("%s\n" % self.header)
+                self.stream.write(f"{self.header}\n")
 
         message = record.msg
         if message.startswith("->"):
