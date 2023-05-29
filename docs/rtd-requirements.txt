@@ -2,5 +2,5 @@ sphinx==6.2.1
 sphinxcontrib-images==0.9.4
 sphinxcontrib-napoleon==0.7
 sphinxcontrib-mermaid==0.8.1
-sphinx-rtd-theme==1.2.0
+sphinx-rtd-theme==1.2.1
 recommonmark==0.7.1
