@@ -70,7 +70,6 @@ xleapp = "xleapp.cli:cli"
 [tool.ruff]
 format = "grouped"
 line-length = 90
-update-check = false
 target-version = "py310"
 fix = true
 unfixable = ["E711"]
