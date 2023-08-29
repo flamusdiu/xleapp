@@ -32,14 +32,14 @@ repos:
     exclude: (tox.ini|.*.bat)
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.8.0
+  rev: v3.10.1
   hooks:
     - id: pyupgrade
       stages: [commit]
       args: [--py3-plus]
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: 1.14.0
+  rev: 1.16.0
   hooks:
     - id: blacken-docs
       stages: [commit]
@@ -47,7 +47,7 @@ repos:
       language_version: python3
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.276
+  rev: v0.0.286
   hooks:
   -   id: ruff
       args: [--fix, --exit-non-zero-on-fix]
