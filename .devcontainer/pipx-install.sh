@@ -1,10 +1,8 @@
 #!/bin/sh
 
-packages="poetry pre-commit tox isort sphinx ruff pyright"
+packages="poetry pre-commit tox isort ruff pyright"
 
 types_inject="types-PyYAML types-Jinja2 types-pillow"
-pytest_inject="pyfakefs pytest-cache pytest-cov pytest-dependency pytest-mock tqdm requests"
-sphinx_inject="sphinx-rtd-theme sphinxcontrib-images sphinxcontrib-mermaid sphinxcontrib-napoleon"
 
 install() {
 for p in $1; do
@@ -20,7 +18,3 @@ done
 
 install "${packages}"
 inject ruff "${types_inject}"
-inject pytest "${pytest_inject}"
-inject sphinx "${sphinx_inject}"
-
-pip install --user sphinx-rtd-theme docutils
