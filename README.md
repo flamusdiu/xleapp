@@ -17,7 +17,7 @@ xLEAPP is the framework created to merge several tools together. More informatio
 
 * Provides a centralized and modular framework
 * Provides a simplified way to write plugins (artifacts) for each different supported platform.
-* Parses iOS, macOS, Android, Chromebook, warranty returns, and Windows artifacts depending on the plugins installed.
+* Parses iOS, macOS, Android, ChromeOS and Chrome browser, warranty returns, Drone, Linux, and Windows artifacts depending on the plugins installed.
 
 ## Other Documentation
 
