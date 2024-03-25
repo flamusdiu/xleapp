@@ -15,7 +15,7 @@ ci:
   autofix_prs: false
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.5.0
   hooks:
   - id: debug-statements
   - id: end-of-file-fixer
@@ -32,7 +32,7 @@ repos:
     exclude: (tox.ini|.*.bat)
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.10.1
+  rev: v3.15.2
   hooks:
     - id: pyupgrade
       stages: [commit]
@@ -47,7 +47,7 @@ repos:
       language_version: python3
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.286
+  rev: v0.3.4
   hooks:
   -   id: ruff
       args: [--fix, --exit-non-zero-on-fix]
