@@ -1,6 +1,9 @@
+from dataclasses import dataclass
+
 from .base import MagicType
 
 
+@dataclass
 class Midi(MagicType):
     """
     Implements the Midi audio type matcher.
@@ -19,6 +22,7 @@ class Midi(MagicType):
         )
 
 
+@dataclass
 class Mp3(MagicType):
     """
     Implements the MP3 audio type matcher.
@@ -45,6 +49,7 @@ class Mp3(MagicType):
         return False
 
 
+@dataclass
 class M4a(MagicType):
     """
     Implements the M4A audio type matcher.
@@ -68,6 +73,7 @@ class M4a(MagicType):
         )
 
 
+@dataclass
 class Ogg(MagicType):
     """
     Implements the OGG audio type matcher.
@@ -86,6 +92,7 @@ class Ogg(MagicType):
         )
 
 
+@dataclass
 class Flac(MagicType):
     """
     Implements the FLAC audio type matcher.
@@ -104,6 +111,7 @@ class Flac(MagicType):
         )
 
 
+@dataclass
 class Wav(MagicType):
     """
     Implements the WAV audio type matcher.
@@ -126,6 +134,7 @@ class Wav(MagicType):
         )
 
 
+@dataclass
 class Amr(MagicType):
     """
     Implements the AMR audio type matcher.
@@ -146,6 +155,7 @@ class Amr(MagicType):
         )
 
 
+@dataclass
 class Aac(MagicType):
     """Implements the Aac audio type matcher."""
 
@@ -156,6 +166,7 @@ class Aac(MagicType):
         return buf[:2] == bytearray([0xFF, 0xF1]) or buf[:2] == bytearray([0xFF, 0xF9])
 
 
+@dataclass
 class Aiff(MagicType):
     """
     Implements the AIFF audio type matcher.

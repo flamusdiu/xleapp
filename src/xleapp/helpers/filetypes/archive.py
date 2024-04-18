@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import struct
+from dataclasses import dataclass
 
 from .base import MagicType
 
@@ -51,6 +51,7 @@ class Epub(MagicType):
         )
 
 
+@dataclass
 class Zip(MagicType):
     """
     Implements the Zip archive type matcher.
@@ -69,6 +70,7 @@ class Zip(MagicType):
         )
 
 
+@dataclass
 class Tar(MagicType):
     """
     Implements the Tar archive type matcher.
@@ -88,6 +90,7 @@ class Tar(MagicType):
         )
 
 
+@dataclass
 class Rar(MagicType):
     """
     Implements the RAR archive type matcher.
@@ -109,6 +112,7 @@ class Rar(MagicType):
         )
 
 
+@dataclass
 class Gz(MagicType):
     """
     Implements the GZ archive type matcher.
@@ -121,6 +125,7 @@ class Gz(MagicType):
         return len(buf) > 2 and buf[0] == 0x1F and buf[1] == 0x8B and buf[2] == 0x8
 
 
+@dataclass
 class Bz2(MagicType):
     """
     Implements the BZ2 archive type matcher.
@@ -133,6 +138,7 @@ class Bz2(MagicType):
         return len(buf) > 2 and buf[0] == 0x42 and buf[1] == 0x5A and buf[2] == 0x68
 
 
+@dataclass
 class SevenZ(MagicType):
     """
     Implements the SevenZ (7z) archive type matcher.
@@ -153,6 +159,7 @@ class SevenZ(MagicType):
         )
 
 
+@dataclass
 class Pdf(MagicType):
     """
     Implements the PDF archive type matcher.
@@ -177,6 +184,7 @@ class Pdf(MagicType):
         )
 
 
+@dataclass
 class Exe(MagicType):
     """
     Implements the EXE archive type matcher.
@@ -189,6 +197,7 @@ class Exe(MagicType):
         return len(buf) > 1 and buf[0] == 0x4D and buf[1] == 0x5A
 
 
+@dataclass
 class Swf(MagicType):
     """
     Implements the SWF archive type matcher.
@@ -206,6 +215,7 @@ class Swf(MagicType):
         )
 
 
+@dataclass
 class Rtf(MagicType):
     """
     Implements the RTF archive type matcher.
@@ -225,6 +235,7 @@ class Rtf(MagicType):
         )
 
 
+@dataclass
 class Nes(MagicType):
     """
     Implements the NES archive type matcher.
@@ -243,6 +254,7 @@ class Nes(MagicType):
         )
 
 
+@dataclass
 class Crx(MagicType):
     """
     Implements the CRX archive type matcher.
@@ -261,6 +273,7 @@ class Crx(MagicType):
         )
 
 
+@dataclass
 class Cab(MagicType):
     """
     Implements the CAB archive type matcher.
@@ -276,6 +289,7 @@ class Cab(MagicType):
         )
 
 
+@dataclass
 class Eot(MagicType):
     """
     Implements the EOT archive type matcher.
@@ -297,6 +311,7 @@ class Eot(MagicType):
         )
 
 
+@dataclass
 class Ps(MagicType):
     """
     Implements the PS archive type matcher.
@@ -309,6 +324,7 @@ class Ps(MagicType):
         return len(buf) > 1 and buf[0] == 0x25 and buf[1] == 0x21
 
 
+@dataclass
 class Xz(MagicType):
     """
     Implements the XS archive type matcher.
@@ -329,6 +345,7 @@ class Xz(MagicType):
         )
 
 
+@dataclass
 class Sqlite(MagicType):
     """
     Implements the Sqlite DB archive type matcher.
@@ -347,6 +364,7 @@ class Sqlite(MagicType):
         )
 
 
+@dataclass
 class Deb(MagicType):
     """
     Implements the DEB archive type matcher.
@@ -382,6 +400,7 @@ class Deb(MagicType):
         )
 
 
+@dataclass
 class Ar(MagicType):
     """
     Implements the AR archive type matcher.
@@ -403,6 +422,7 @@ class Ar(MagicType):
         )
 
 
+@dataclass
 class Z(MagicType):
     """
     Implements the Z archive type matcher.
@@ -417,6 +437,7 @@ class Z(MagicType):
         )
 
 
+@dataclass
 class Lzop(MagicType):
     """
     Implements the Lzop archive type matcher.
@@ -439,6 +460,7 @@ class Lzop(MagicType):
         )
 
 
+@dataclass
 class Lz(MagicType):
     """
     Implements the Lz archive type matcher.
@@ -457,6 +479,7 @@ class Lz(MagicType):
         )
 
 
+@dataclass
 class Elf(MagicType):
     """
     Implements the Elf archive type matcher
@@ -475,6 +498,7 @@ class Elf(MagicType):
         )
 
 
+@dataclass
 class Lz4(MagicType):
     """
     Implements the Lz4 archive type matcher.
@@ -493,6 +517,7 @@ class Lz4(MagicType):
         )
 
 
+@dataclass
 class Br(MagicType):
     """Implements the Br image type matcher."""
 
@@ -503,6 +528,7 @@ class Br(MagicType):
         return buf[:4] == bytearray([0xCE, 0xB2, 0xCF, 0x81])
 
 
+@dataclass
 class Dcm(MagicType):
     """Implements the Dcm image type matcher."""
 
@@ -513,6 +539,7 @@ class Dcm(MagicType):
         return buf[128:131] == bytearray([0x44, 0x49, 0x43, 0x4D])
 
 
+@dataclass
 class Rpm(MagicType):
     """Implements the Rpm image type matcher."""
 
@@ -523,6 +550,7 @@ class Rpm(MagicType):
         return buf[:4] == bytearray([0xED, 0xAB, 0xEE, 0xDB])
 
 
+@dataclass
 class Zstd(MagicType):
     """
     Implements the Zstd archive type matcher.

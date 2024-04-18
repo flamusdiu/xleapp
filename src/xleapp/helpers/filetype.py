@@ -31,14 +31,15 @@ import functools
 import pathlib
 from typing import BinaryIO, overload
 
+from .filetypes import APPLICATION as application_matchers
 from .filetypes import ARCHIVE as archive_matchers
 from .filetypes import AUDIO as audio_matchers
-from .filetypes import APPLICATION as application_matchers
 from .filetypes import DOCUMENT as document_matchers
 from .filetypes import FONT as font_matchers
 from .filetypes import IMAGE as image_matchers
+from .filetypes import MAGIC_TYPES
 from .filetypes import VIDEO as video_matchers
-from .filetypes import MAGIC_TYPES, MagicType
+from .filetypes import MagicType
 
 # utils.py
 
@@ -123,7 +124,7 @@ def get_bytes(obj: object | BinaryIO) -> bytes:
             obj.seek(start_pos)
             return get_bytes(magic_bytes)
 
-    raise TypeError("Unsupported type as file input: %s" % type(obj))
+    raise TypeError(f"Unsupported type as file input: {type(obj)}")
 
 
 # match.py
@@ -149,8 +150,6 @@ def match(obj: object, matchers: list[MagicType] = MAGIC_TYPES) -> MagicType | N
     for matcher in matchers:
         if matcher.match(buf):
             return matcher
-
-    return None
 
 
 # Configure match functions
@@ -221,7 +220,7 @@ def guess_extension(obj: object) -> str | MagicType | None:
     return kind.EXTENSION if kind else kind
 
 
-def get_type(mime=None, ext=None) -> MagicType | None:
+def get_type(mime: str | None = None, ext: str | None = None) -> MagicType | None:
     """
     Returns the file type instance searching by
     MIME type or file extension.
@@ -236,4 +235,3 @@ def get_type(mime=None, ext=None) -> MagicType | None:
     for kind in types:
         if kind.EXTENSION == ext or kind.MIME == mime:
             return kind
-    return None

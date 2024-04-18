@@ -1,8 +1,12 @@
+import abc
+from dataclasses import dataclass
 from typing import Sized
+
 from .base import MagicType
 
 
-class ZippedDocumentBase(MagicType):
+@dataclass
+class ZippedDocumentBase(abc.ABC, MagicType):
     def match(self, buf: bytes) -> bool:
         # start by checking for ZIP local file header signature
         if self.search_signature(buf, 0, 6000) != 0:
@@ -37,6 +41,7 @@ class ZippedDocumentBase(MagicType):
             return -1
 
 
+@dataclass
 class OpenDocument(ZippedDocumentBase):
     def match_document(self, buf: bytes) -> bool:
         # Check if first file in archive is the identifying file
@@ -47,6 +52,7 @@ class OpenDocument(ZippedDocumentBase):
         return self.compare_bytes(buf, bytes(self.MIME, "ASCII"), 0x26)
 
 
+@dataclass
 class OfficeOpenXml(ZippedDocumentBase):
     def match_document(self, buf: bytes) -> bool:
         # Check if first file in archive is the identifying file
@@ -94,6 +100,7 @@ class OfficeOpenXml(ZippedDocumentBase):
         return False
 
 
+@dataclass
 class Doc(MagicType):
     """
     Implements the Microsoft Word (Office 97-2003) document type matcher.
@@ -134,6 +141,7 @@ class Odt(OpenDocument):
     EXTENSION: str = "odt"
 
 
+@dataclass
 class Xls(MagicType):
     """
     Implements the Microsoft Excel (Office 97-2003) document type matcher.
@@ -177,6 +185,7 @@ class Ods(OpenDocument):
     EXTENSION: str = "ods"
 
 
+@dataclass
 class Ppt(MagicType):
     """
     Implements the Microsoft PowerPoint (Office 97-2003) document type matcher.

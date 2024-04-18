@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass(frozen=True)
 class MagicType(abc.ABC):
     """
     Represents the file type object inherited by

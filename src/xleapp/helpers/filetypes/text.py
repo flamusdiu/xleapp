@@ -1,18 +1,21 @@
+import abc
+from dataclasses import dataclass
+
 from .base import MagicType
 
 
-class XmlTextBase(MagicType):
+@dataclass
+class XmlTextBase(abc.ABC, MagicType):
     """
     Implements the XML base type.
     """
 
-    def _is_xml(self, buf):
+    def _is_xml(self, buf: bytes) -> bool:
         signature = b"\x3C\x3F\x78\x6D\x6C\x20\x76\x65\x72\x73\x69\x6F\x6E\x3D\x22\x31\x2E\x30\x22"
-        if len(buf) > 19 and buf[0:19] == signature:
-            return True
-        return False
+        return len(buf) > 19 and buf[0:19] == signature
 
 
+@dataclass
 class Json(MagicType):
     """Implements the Json text type matcher."""
 
@@ -35,6 +38,7 @@ class Json(MagicType):
         return False
 
 
+@dataclass
 class Html(MagicType):
     """Implements the Html text type matcher."""
 
@@ -70,6 +74,7 @@ class Html(MagicType):
         return False
 
 
+@dataclass
 class Plist(XmlTextBase):
     """Implements the XML Property List type matcher."""
 
@@ -77,11 +82,13 @@ class Plist(XmlTextBase):
     EXTENSION: str = "plist"
 
     def match(self, buf: bytes) -> bool:
-        if not self._is_xml(buf):
-            return False
-        return len(buf) > 19 and (
-            b"\x3C\x21\x44\x4F\x43\x54\x59\x50\x45\x20\x70\x6C\x69\x73\x74\x20\x50\x55\x42\x4C\x49\x43"
-            in buf[19:80]
-            or b"\x3C\x70\x6C\x69\x73\x74\x20\x76\x65\x72\x73\x69\x6F\x6E\x3D\x22\x31\x2E\x30\x22\x3E"
-            in buf[19:64]
+        return (
+            self._is_xml(buf)
+            and len(buf) > 19
+            and (
+                b"\x3C\x21\x44\x4F\x43\x54\x59\x50\x45\x20\x70\x6C\x69\x73\x74\x20\x50\x55\x42\x4C\x49\x43"
+                in buf[19:80]
+                or b"\x3C\x70\x6C\x69\x73\x74\x20\x76\x65\x72\x73\x69\x6F\x6E\x3D\x22\x31\x2E\x30\x22\x3E"
+                in buf[19:64]
+            )
         )
