@@ -1,0 +1,433 @@
+{
+  "application": [
+    {
+      "mime_type": "application/wasm",
+      "extension": "wasm",
+      "example": ""
+    }
+  ],
+  "archive": [
+    {
+      "mime_type": "application/x-unix-archive",
+      "extension": "ar",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-brotli",
+      "extension": "br",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-bzip2",
+      "extension": "bz2",
+      "example": ""
+    },
+    {
+      "mime_type": "application/vnd.ms-cab-compressed",
+      "extension": "cab",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-google-chrome-extension",
+      "extension": "crx",
+      "example": ""
+    },
+    {
+      "mime_type": "application/dicom",
+      "extension": "dcm",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-deb",
+      "extension": "deb",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-executable",
+      "extension": "elf",
+      "example": ""
+    },
+    {
+      "mime_type": "application/octet-stream",
+      "extension": "eot",
+      "example": ""
+    },
+    {
+      "mime_type": "application/epub+zip",
+      "extension": "epub",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-msdownload",
+      "extension": "exe",
+      "example": ""
+    },
+    {
+      "mime_type": "application/gzip",
+      "extension": "gz",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-lzip",
+      "extension": "lz",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-lz4",
+      "extension": "lz4",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-lzop",
+      "extension": "lzo",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-nintendo-nes-rom",
+      "extension": "nes",
+      "example": ""
+    },
+    {
+      "mime_type": "application/pdf",
+      "extension": "pdf",
+      "example": "file-sample_150kB.pdf"
+    },
+    {
+      "mime_type": "application/postscript",
+      "extension": "ps",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-rar-compressed",
+      "extension": "rar",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-rpm",
+      "extension": "rpm",
+      "example": ""
+    },
+    {
+      "mime_type": "application/rtf",
+      "extension": "rtf",
+      "example": "file-sample_100kB.rtf"
+    },
+    {
+      "mime_type": "application/x-7z-compressed",
+      "extension": "7z",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-sqlite3",
+      "extension": "sqlite",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-shockwave-flash",
+      "extension": "swf",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-tar",
+      "extension": "tar",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-xz",
+      "extension": "xz",
+      "example": ""
+    },
+    {
+      "mime_type": "application/x-compress",
+      "extension": "Z",
+      "example": ""
+    },
+    {
+      "mime_type": "application/zip",
+      "extension": "zip",
+      "example": "zip_2MB.zip"
+    },
+    {
+      "mime_type": "application/zstd",
+      "extension": "zst",
+      "example": ""
+    }
+  ],
+  "audio": [
+    {
+      "mime_type": "audio/aac",
+      "extension": "aac",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/x-aiff",
+      "extension": "aiff",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/amr",
+      "extension": "amr",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/x-flac",
+      "extension": "flac",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/mp4",
+      "extension": "m4a",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/midi",
+      "extension": "midi",
+      "example": ""
+    },
+    {
+      "mime_type": "audio/mpeg",
+      "extension": "mp3",
+      "example": "file_example_MP3_700KB.mp3"
+    },
+    {
+      "mime_type": "audio/ogg",
+      "extension": "ogg",
+      "example": "file_example_OGG_480_1_7mg.ogg"
+    },
+    {
+      "mime_type": "audio/x-wav",
+      "extension": "wav",
+      "example": "file_example_WAV_1MG.wav"
+    }
+  ],
+  "document": [
+    {
+      "mime_type": "application/msword",
+      "extension": "doc",
+      "example": "file-sample_100kB.doc"
+    },
+    {
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "extension": "docx",
+      "example": ""
+    },
+    {
+      "mime_type": "application/vnd.oasis.opendocument.presentation",
+      "extension": "odp",
+      "example": "file_example_ODP_200kB.odp"
+    },
+    {
+      "mime_type": "application/vnd.oasis.opendocument.spreadsheet",
+      "extension": "ods",
+      "example": "file_example_ODS_10.ods"
+    },
+    {
+      "mime_type": "application/vnd.oasis.opendocument.text",
+      "extension": "odt",
+      "example": "file-sample_100kB.odt"
+    },
+    {
+      "mime_type": "application/vnd.ms-powerpoint",
+      "extension": "ppt",
+      "example": "file_example_PPT_250kB.ppt"
+    },
+    {
+      "mime_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "extension": "pptx",
+      "example": ""
+    },
+    {
+      "mime_type": "application/vnd.ms-excel",
+      "extension": "xls",
+      "example": "file_example_XLS_10.xls"
+    },
+    {
+      "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "extension": "xlsx",
+      "example": ""
+    }
+  ],
+  "font": [
+    {
+      "mime_type": "application/font-sfnt",
+      "extension": "otf",
+      "example": ""
+    },
+    {
+      "mime_type": "application/font-sfnt",
+      "extension": "ttf",
+      "example": ""
+    },
+    {
+      "mime_type": "application/font-woff",
+      "extension": "woff",
+      "example": ""
+    },
+    {
+      "mime_type": "application/font-woff",
+      "extension": "woff2",
+      "example": ""
+    }
+  ],
+  "image": [
+    {
+      "mime_type": "image/apng",
+      "extension": "apng",
+      "example": ""
+    },
+    {
+      "mime_type": "image/avif",
+      "extension": "avif",
+      "example": ""
+    },
+    {
+      "mime_type": "image/bmp",
+      "extension": "bmp",
+      "example": ""
+    },
+    {
+      "mime_type": "image/x-canon-cr2",
+      "extension": "cr2",
+      "example": ""
+    },
+    {
+      "mime_type": "application/dicom",
+      "extension": "dcm",
+      "example": ""
+    },
+    {
+      "mime_type": "image/vnd.dwg",
+      "extension": "dwg",
+      "example": ""
+    },
+    {
+      "mime_type": "image/gif",
+      "extension": "gif",
+      "example": "file_example_GIF_500kB.gif"
+    },
+    {
+      "mime_type": "image/heic",
+      "extension": "heic",
+      "example": ""
+    },
+    {
+      "mime_type": "image/x-icon",
+      "extension": "ico",
+      "example": "file_example_favicon.ico"
+    },
+    {
+      "mime_type": "image/jpeg",
+      "extension": "jpg",
+      "example": "file_example_JPG_100kB.jpg"
+    },
+    {
+      "mime_type": "image/jpx",
+      "extension": "jpx",
+      "example": ""
+    },
+    {
+      "mime_type": "image/vnd.ms-photo",
+      "extension": "jxr",
+      "example": ""
+    },
+    {
+      "mime_type": "image/png",
+      "extension": "png",
+      "example": "file_example_PNG_500kB.png"
+    },
+    {
+      "mime_type": "image/vnd.adobe.photoshop",
+      "extension": "psd",
+      "example": ""
+    },
+    {
+      "mime_type": "image/qoi",
+      "extension": "qoi",
+      "example": ""
+    },
+    {
+      "mime_type": "image/tiff",
+      "extension": "tif",
+      "example": ""
+    },
+    {
+      "mime_type": "image/webp",
+      "extension": "webp",
+      "example": "file_example_WEBP_50kB.webp"
+    },
+    {
+      "mime_type": "image/x-xcf",
+      "extension": "xcf",
+      "example": ""
+    }
+  ],
+  "text": [
+    {
+      "mime_type": "text/html",
+      "extension": "html",
+      "example": ""
+    },
+    {
+      "mime_type": "application/json",
+      "extension": "json",
+      "example": "file_example_JSON_1kb.json"
+    },
+    {
+      "mime_type": "application/x-plist",
+      "extension": "plist",
+      "example": ""
+    }
+  ],
+  "video": [
+    {
+      "mime_type": "video/x-msvideo",
+      "extension": "avi",
+      "example": "file_example_AVI_480_750kB.avi"
+    },
+    {
+      "mime_type": "video/x-flv",
+      "extension": "flv",
+      "example": ""
+    },
+    {
+      "mime_type": "video/3gpp",
+      "extension": "3gp",
+      "example": ""
+    },
+    {
+      "mime_type": "video/x-m4v",
+      "extension": "m4v",
+      "example": ""
+    },
+    {
+      "mime_type": "video/x-matroska",
+      "extension": "mkv",
+      "example": ""
+    },
+    {
+      "mime_type": "video/quicktime",
+      "extension": "mov",
+      "example": "file_example_MOV_480_700kB.mov"
+    },
+    {
+      "mime_type": "video/mp4",
+      "extension": "mp4",
+      "example": "file_example_MP4_480_1_5MG.mp4"
+    },
+    {
+      "mime_type": "video/mpeg",
+      "extension": "mpg",
+      "example": ""
+    },
+    {
+      "mime_type": "video/webm",
+      "extension": "webm",
+      "example": "file_example_WEBM_480_900KB.webm"
+    },
+    {
+      "mime_type": "video/x-ms-wmv",
+      "extension": "wmv",
+      "example": "file_example_WMV_480_1_2MB.wmv"
+    }
+  ]
+}
