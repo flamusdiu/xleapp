@@ -1,4 +1,4 @@
-sphinx==6.2.1
+sphinx==7.3.7
 sphinxcontrib-images==0.9.4
 sphinxcontrib-napoleon==0.7
 sphinxcontrib-mermaid==0.9.2
