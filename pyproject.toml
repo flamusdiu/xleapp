@@ -134,6 +134,7 @@ ignore = [
 "**/gui/log.py" = ["PLW0603"]
 "docs/**" = ["E"]
 "tests/**" = ["S101", "D107", "PLR0913", "PLR2004"]
+"src/xleapp/helpers/filetypes/**" = ["PLR2004"]
 
 [tool.pylint.messages_control]
 max-line-length = 90

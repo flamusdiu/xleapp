@@ -1,11 +1,10 @@
-import abc
 from dataclasses import dataclass
 
 from .base import MagicType
 
 
-@dataclass
-class XmlTextBase(abc.ABC, MagicType):
+@dataclass(frozen=True)
+class XmlTextBase(MagicType):
     """
     Implements the XML base type.
     """
@@ -15,7 +14,7 @@ class XmlTextBase(abc.ABC, MagicType):
         return len(buf) > 19 and buf[0:19] == signature
 
 
-@dataclass
+@dataclass(frozen=True)
 class Json(MagicType):
     """Implements the Json text type matcher."""
 
@@ -38,7 +37,7 @@ class Json(MagicType):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Html(MagicType):
     """Implements the Html text type matcher."""
 
@@ -74,7 +73,7 @@ class Html(MagicType):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Plist(XmlTextBase):
     """Implements the XML Property List type matcher."""
 

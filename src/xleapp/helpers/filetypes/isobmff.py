@@ -1,12 +1,11 @@
-import abc
 import codecs
 from dataclasses import dataclass
 
 from .base import MagicType
 
 
-@dataclass
-class IsoBmff(abc.ABC, MagicType):
+@dataclass(frozen=True)
+class IsoBmff(MagicType):
     """
     Implements the ISO-BMFF base type.
     """

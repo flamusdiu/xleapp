@@ -4,7 +4,7 @@ from .base import MagicType
 from .isobmff import IsoBmff
 
 
-@dataclass
+@dataclass(frozen=True)
 class Jpeg(MagicType):
     """
     Implements the JPEG image type matcher.
@@ -17,7 +17,7 @@ class Jpeg(MagicType):
         return len(buf) > 2 and buf[0] == 0xFF and buf[1] == 0xD8 and buf[2] == 0xFF
 
 
-@dataclass
+@dataclass(frozen=True)
 class Jpx(MagicType):
     """
     Implements the JPEG2000 image type matcher.
@@ -37,7 +37,7 @@ class Jpx(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Apng(MagicType):
     """
     Implements the APNG image type matcher.
@@ -61,7 +61,7 @@ class Apng(MagicType):
 
                 # acTL chunk in APNG must appear before IDAT
                 # IEND is end of PNG
-                if chunk_type == "IDAT" or chunk_type == "IEND":
+                if chunk_type in ("IDAT", "IEND"):
                     return False
                 if chunk_type == "acTL":
                     return True
@@ -72,7 +72,7 @@ class Apng(MagicType):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Png(MagicType):
     """
     Implements the PNG image type matcher.
@@ -91,7 +91,7 @@ class Png(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Gif(MagicType):
     """
     Implements the GIF image type matcher.
@@ -104,7 +104,7 @@ class Gif(MagicType):
         return len(buf) > 2 and buf[0] == 0x47 and buf[1] == 0x49 and buf[2] == 0x46
 
 
-@dataclass
+@dataclass(frozen=True)
 class Webp(MagicType):
     """
     Implements the WEBP image type matcher.
@@ -129,7 +129,7 @@ class Webp(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Cr2(MagicType):
     """
     Implements the CR2 image type matcher.
@@ -152,7 +152,7 @@ class Cr2(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Tiff(MagicType):
     """
     Implements the TIFF image type matcher.
@@ -174,7 +174,7 @@ class Tiff(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Bmp(MagicType):
     """
     Implements the BMP image type matcher.
@@ -187,7 +187,7 @@ class Bmp(MagicType):
         return len(buf) > 1 and buf[0] == 0x42 and buf[1] == 0x4D
 
 
-@dataclass
+@dataclass(frozen=True)
 class Jxr(MagicType):
     """
     Implements the JXR image type matcher.
@@ -200,7 +200,7 @@ class Jxr(MagicType):
         return len(buf) > 2 and buf[0] == 0x49 and buf[1] == 0x49 and buf[2] == 0xBC
 
 
-@dataclass
+@dataclass(frozen=True)
 class Psd(MagicType):
     """
     Implements the PSD image type matcher.
@@ -219,7 +219,7 @@ class Psd(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ico(MagicType):
     """
     Implements the ICO image type matcher.
@@ -258,9 +258,8 @@ class Heic(IsoBmff):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Dcm(MagicType):
-
     MIME: str = "application/dicom"
     EXTENSION: str = "dcm"
     OFFSET = 128
@@ -275,7 +274,7 @@ class Dcm(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Dwg(MagicType):
     """Implements the Dwg image type matcher."""
 
@@ -286,7 +285,7 @@ class Dwg(MagicType):
         return buf[:4] == bytearray([0x41, 0x43, 0x31, 0x30])
 
 
-@dataclass
+@dataclass(frozen=True)
 class Xcf(MagicType):
     """Implements the Xcf image type matcher."""
 
@@ -319,7 +318,7 @@ class Avif(IsoBmff):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Qoi(MagicType):
     """
     Implements the QOI image type matcher.

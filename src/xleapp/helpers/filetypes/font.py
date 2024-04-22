@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .base import MagicType
 
 
-@dataclass
+@dataclass(frozen=True)
 class Woff(MagicType):
     """
     Implements the WOFF font type matcher.
@@ -37,7 +37,7 @@ class Woff(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Woff2(MagicType):
     """
     Implements the WOFF2 font type matcher.
@@ -71,7 +71,7 @@ class Woff2(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ttf(MagicType):
     """
     Implements the TTF font type matcher.
@@ -91,7 +91,7 @@ class Ttf(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Otf(MagicType):
     """
     Implements the OTF font type matcher.

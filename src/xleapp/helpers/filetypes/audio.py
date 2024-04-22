@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .base import MagicType
 
 
-@dataclass
+@dataclass(frozen=True)
 class Midi(MagicType):
     """
     Implements the Midi audio type matcher.
@@ -22,7 +22,7 @@ class Midi(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Mp3(MagicType):
     """
     Implements the MP3 audio type matcher.
@@ -49,7 +49,7 @@ class Mp3(MagicType):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class M4a(MagicType):
     """
     Implements the M4A audio type matcher.
@@ -73,7 +73,7 @@ class M4a(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ogg(MagicType):
     """
     Implements the OGG audio type matcher.
@@ -92,7 +92,7 @@ class Ogg(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Flac(MagicType):
     """
     Implements the FLAC audio type matcher.
@@ -111,7 +111,7 @@ class Flac(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Wav(MagicType):
     """
     Implements the WAV audio type matcher.
@@ -134,7 +134,7 @@ class Wav(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Amr(MagicType):
     """
     Implements the AMR audio type matcher.
@@ -155,7 +155,7 @@ class Amr(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Aac(MagicType):
     """Implements the Aac audio type matcher."""
 
@@ -166,7 +166,7 @@ class Aac(MagicType):
         return buf[:2] == bytearray([0xFF, 0xF1]) or buf[:2] == bytearray([0xFF, 0xF9])
 
 
-@dataclass
+@dataclass(frozen=True)
 class Aiff(MagicType):
     """
     Implements the AIFF audio type matcher.

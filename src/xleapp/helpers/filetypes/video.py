@@ -4,7 +4,7 @@ from .base import MagicType
 from .isobmff import IsoBmff
 
 
-@dataclass
+@dataclass(frozen=True)
 class Mp4(IsoBmff):
     """
     Implements the MP4 video type matcher.
@@ -24,7 +24,7 @@ class Mp4(IsoBmff):
         return major_brand in ["mp41", "mp42", "isom"]
 
 
-@dataclass
+@dataclass(frozen=True)
 class M4v(MagicType):
     """
     Implements the M4V video type matcher.
@@ -50,7 +50,7 @@ class M4v(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Mkv(MagicType):
     """
     Implements the MKV video type matcher.
@@ -65,7 +65,7 @@ class Mkv(MagicType):
         return contains_ebml_element and contains_doctype_element
 
 
-@dataclass
+@dataclass(frozen=True)
 class Webm(MagicType):
     """
     Implements the WebM video type matcher.
@@ -80,6 +80,7 @@ class Webm(MagicType):
         return contains_ebml_element and contains_doctype_element
 
 
+@dataclass(frozen=True)
 class Mov(IsoBmff):
     """
     Implements the MOV video type matcher.
@@ -96,7 +97,7 @@ class Mov(IsoBmff):
         return major_brand == "qt  "
 
 
-@dataclass
+@dataclass(frozen=True)
 class Avi(MagicType):
     """
     Implements the AVI video type matcher.
@@ -119,7 +120,7 @@ class Avi(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Wmv(MagicType):
     """
     Implements the WMV video type matcher.
@@ -144,7 +145,7 @@ class Wmv(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Flv(MagicType):
     """
     Implements the FLV video type matcher.
@@ -163,7 +164,7 @@ class Flv(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Mpeg(MagicType):
     """
     Implements the MPEG video type matcher.
@@ -183,7 +184,7 @@ class Mpeg(MagicType):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class M3gp(MagicType):
     """Implements the 3gp video type matcher."""
 

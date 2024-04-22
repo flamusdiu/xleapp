@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .base import MagicType
 
 
-@dataclass
+@dataclass(frozen=True)
 class Wasm(MagicType):
     """Implements the Wasm image type matcher."""
 

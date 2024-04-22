@@ -5,8 +5,8 @@ from typing import Sized
 from .base import MagicType
 
 
-@dataclass
-class ZippedDocumentBase(abc.ABC, MagicType):
+@dataclass(frozen=True)
+class ZippedDocumentBase(MagicType):
     def match(self, buf: bytes) -> bool:
         # start by checking for ZIP local file header signature
         if self.search_signature(buf, 0, 6000) != 0:
@@ -14,6 +14,7 @@ class ZippedDocumentBase(abc.ABC, MagicType):
 
         return self.match_document(buf)
 
+    @abc.abstractmethod
     def match_document(self, buf: bytes) -> bool:
         raise NotImplementedError
 
@@ -41,7 +42,7 @@ class ZippedDocumentBase(abc.ABC, MagicType):
             return -1
 
 
-@dataclass
+@dataclass(frozen=True)
 class OpenDocument(ZippedDocumentBase):
     def match_document(self, buf: bytes) -> bool:
         # Check if first file in archive is the identifying file
@@ -52,7 +53,7 @@ class OpenDocument(ZippedDocumentBase):
         return self.compare_bytes(buf, bytes(self.MIME, "ASCII"), 0x26)
 
 
-@dataclass
+@dataclass(frozen=True)
 class OfficeOpenXml(ZippedDocumentBase):
     def match_document(self, buf: bytes) -> bool:
         # Check if first file in archive is the identifying file
@@ -100,7 +101,7 @@ class OfficeOpenXml(ZippedDocumentBase):
         return False
 
 
-@dataclass
+@dataclass(frozen=True)
 class Doc(MagicType):
     """
     Implements the Microsoft Word (Office 97-2003) document type matcher.
@@ -123,6 +124,7 @@ class Doc(MagicType):
         return False
 
 
+@dataclass(frozen=True)
 class Docx(OfficeOpenXml):
     """
     Implements the Microsoft Word OOXML (Office 2007+) document type matcher.
@@ -132,6 +134,7 @@ class Docx(OfficeOpenXml):
     EXTENSION: str = "docx"
 
 
+@dataclass(frozen=True)
 class Odt(OpenDocument):
     """
     Implements the OpenDocument Text document type matcher.
@@ -141,7 +144,7 @@ class Odt(OpenDocument):
     EXTENSION: str = "odt"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Xls(MagicType):
     """
     Implements the Microsoft Excel (Office 97-2003) document type matcher.
@@ -167,6 +170,7 @@ class Xls(MagicType):
         return False
 
 
+@dataclass(frozen=True)
 class Xlsx(OfficeOpenXml):
     """
     Implements the Microsoft Excel OOXML (Office 2007+) document type matcher.
@@ -176,6 +180,7 @@ class Xlsx(OfficeOpenXml):
     EXTENSION: str = "xlsx"
 
 
+@dataclass(frozen=True)
 class Ods(OpenDocument):
     """
     Implements the OpenDocument Spreadsheet document type matcher.
@@ -185,7 +190,7 @@ class Ods(OpenDocument):
     EXTENSION: str = "ods"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ppt(MagicType):
     """
     Implements the Microsoft PowerPoint (Office 97-2003) document type matcher.
@@ -213,6 +218,7 @@ class Ppt(MagicType):
         return False
 
 
+@dataclass(frozen=True)
 class Pptx(OfficeOpenXml):
     """
     Implements the Microsoft PowerPoint OOXML (Office 2007+) document type matcher.
@@ -222,6 +228,7 @@ class Pptx(OfficeOpenXml):
     EXTENSION: str = "pptx"
 
 
+@dataclass(frozen=True)
 class Odp(OpenDocument):
     """
     Implements the OpenDocument Presentation document type matcher.
