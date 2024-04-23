@@ -117,17 +117,7 @@ TEXT: list[MagicType] = [
 ]
 
 
-# Expose supported type matchers
-magic_types_list = [
-    APPLICATION,
-    ARCHIVE,
-    AUDIO,
-    DOCUMENT,
-    FONT,
-    IMAGE,
-    TEXT,
-    VIDEO,
-]
-MAGIC_TYPES: list[MagicType] = [
-    magic_type for magic_types in magic_types_list for magic_type in magic_types
-]
+# Expose supported type matchers. Keep Order
+MAGIC_TYPES: list[MagicType] = list(
+    IMAGE + AUDIO + VIDEO + FONT + DOCUMENT + ARCHIVE + APPLICATION + TEXT
+)

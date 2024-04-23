@@ -1,6 +1,7 @@
 import pathlib
 from typing import Generator
 
+
 from xleapp.helpers.filetype import _NUM_SIGNATURE_BYTES, get_signature_bytes, signature
 
 

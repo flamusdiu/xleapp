@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from .base import MagicType
+from xleapp.helpers.strings import binary_sublength
 
 
 @dataclass(frozen=True)
@@ -23,15 +24,15 @@ class Json(MagicType):
 
     def match(self, buf: bytes) -> bool:
         if len(buf) > 4:
+            spaces = binary_sublength(buf[0:10], 0x20)
             return (
                 (buf[0] == 0x5B and buf[1] == 0x7B)
                 or (buf[0] == 0x7B and buf[1] == 0x22)
                 or (
                     buf[0] == 0x7B
                     and buf[1] == 0x0A
-                    and buf[2] == 0x20
-                    and buf[3] == 0x20
-                    and buf[4] == 0x22
+                    and spaces > 1
+                    and buf[spaces + 2] == 0x22
                 )
             )
         return False

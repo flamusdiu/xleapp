@@ -28,8 +28,9 @@ SOFTWARE.
 """
 
 import functools
+import io
 import pathlib
-from typing import BinaryIO, overload
+from typing import overload
 
 from .filetypes import APPLICATION as application_matchers
 from .filetypes import ARCHIVE as archive_matchers
@@ -64,9 +65,15 @@ def get_signature_bytes(path: pathlib.Path | str) -> bytes:
 
 
 @overload
-def signature(array: memoryview) -> memoryview: ...
+def signature(array: memoryview) -> memoryview:
+    ...
+
+
 @overload
-def signature(array: bytes) -> bytes: ...
+def signature(array: bytes) -> bytes:
+    ...
+
+
 def signature(array):
     """
     Returns the first 8192 bytes of the given bytearray
@@ -84,7 +91,7 @@ def signature(array):
     return array[:index]
 
 
-def get_bytes(obj: object | BinaryIO) -> bytes:
+def get_bytes(obj: object) -> bytes:  # noqa: PLR0911
     """
     Infers the input type and reads the first 8192 bytes,
     returning a sliced bytearray.
@@ -114,7 +121,7 @@ def get_bytes(obj: object | BinaryIO) -> bytes:
     if isinstance(obj, pathlib.Path):
         return get_signature_bytes(obj)
 
-    if isinstance(obj, BinaryIO):
+    if isinstance(obj, io.IOBase):
         try:
             return get_bytes(obj.read(_NUM_SIGNATURE_BYTES))
         except AttributeError:
