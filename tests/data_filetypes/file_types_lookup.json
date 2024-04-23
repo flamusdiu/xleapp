@@ -3,431 +3,487 @@
     {
       "mime_type": "application/wasm",
       "extension": "wasm",
-      "example": ""
+      "examples": [
+        "simple.wasm"
+      ]
     }
   ],
   "archive": [
     {
       "mime_type": "application/x-unix-archive",
       "extension": "ar",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-brotli",
       "extension": "br",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-bzip2",
       "extension": "bz2",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/vnd.ms-cab-compressed",
       "extension": "cab",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-google-chrome-extension",
       "extension": "crx",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/dicom",
       "extension": "dcm",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-deb",
       "extension": "deb",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-executable",
       "extension": "elf",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/octet-stream",
       "extension": "eot",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/epub+zip",
       "extension": "epub",
-      "example": ""
+      "examples": [
+        "Alices Adventures in Wonderland.epub"
+      ]
     },
     {
       "mime_type": "application/x-msdownload",
       "extension": "exe",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/gzip",
       "extension": "gz",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-lzip",
       "extension": "lz",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-lz4",
       "extension": "lz4",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-lzop",
       "extension": "lzo",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-nintendo-nes-rom",
       "extension": "nes",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/pdf",
       "extension": "pdf",
-      "example": "file-sample_150kB.pdf"
+      "examples": [
+        "file-sample_150kB.pdf"
+      ]
     },
     {
       "mime_type": "application/postscript",
       "extension": "ps",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-rar-compressed",
       "extension": "rar",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-rpm",
       "extension": "rpm",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/rtf",
       "extension": "rtf",
-      "example": "file-sample_100kB.rtf"
+      "examples": [
+        "file-sample_100kB.rtf"
+      ]
     },
     {
       "mime_type": "application/x-7z-compressed",
       "extension": "7z",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-sqlite3",
       "extension": "sqlite",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-shockwave-flash",
       "extension": "swf",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-tar",
       "extension": "tar",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-xz",
       "extension": "xz",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/x-compress",
       "extension": "Z",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/zip",
       "extension": "zip",
-      "example": "zip_2MB.zip"
+      "examples": [
+        "zip_2MB.zip"
+      ]
     },
     {
       "mime_type": "application/zstd",
       "extension": "zst",
-      "example": ""
+      "examples": []
     }
   ],
   "audio": [
     {
       "mime_type": "audio/aac",
       "extension": "aac",
-      "example": ""
+      "examples": [
+        "sample3.aac"
+      ]
     },
     {
       "mime_type": "audio/x-aiff",
       "extension": "aiff",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "audio/amr",
       "extension": "amr",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "audio/x-flac",
       "extension": "flac",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "audio/mp4",
       "extension": "m4a",
-      "example": ""
+      "examples": [
+        "sample1.m4a"
+      ]
     },
     {
       "mime_type": "audio/midi",
       "extension": "midi",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "audio/mpeg",
       "extension": "mp3",
-      "example": "file_example_MP3_700KB.mp3"
+      "examples": [
+        "file_example_MP3_700KB.mp3"
+      ]
     },
     {
       "mime_type": "audio/ogg",
       "extension": "ogg",
-      "example": "file_example_OGG_480_1_7mg.ogg"
+      "examples": [
+        "file_example_OGG_480_1_7mg.ogg",
+        "file_example_OOG_1MG.ogg"
+      ]
     },
     {
       "mime_type": "audio/x-wav",
       "extension": "wav",
-      "example": "file_example_WAV_1MG.wav"
+      "examples": [
+        "file_example_WAV_1MG.wav"
+      ]
     }
   ],
   "document": [
     {
       "mime_type": "application/msword",
       "extension": "doc",
-      "example": "file-sample_100kB.doc"
+      "examples": [
+        "file-sample_100kB.doc"
+      ]
     },
     {
       "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "extension": "docx",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/vnd.oasis.opendocument.presentation",
       "extension": "odp",
-      "example": "file_example_ODP_200kB.odp"
+      "examples": [
+        "file_example_ODP_200kB.odp"
+      ]
     },
     {
       "mime_type": "application/vnd.oasis.opendocument.spreadsheet",
       "extension": "ods",
-      "example": "file_example_ODS_10.ods"
+      "examples": [
+        "file_example_ODS_10.ods"
+      ]
     },
     {
       "mime_type": "application/vnd.oasis.opendocument.text",
       "extension": "odt",
-      "example": "file-sample_100kB.odt"
+      "examples": [
+        "file-sample_100kB.odt"
+      ]
     },
     {
       "mime_type": "application/vnd.ms-powerpoint",
       "extension": "ppt",
-      "example": "file_example_PPT_250kB.ppt"
+      "examples": [
+        "file_example_PPT_250kB.ppt"
+      ]
     },
     {
       "mime_type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       "extension": "pptx",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/vnd.ms-excel",
       "extension": "xls",
-      "example": "file_example_XLS_10.xls"
+      "examples": [
+        "file_example_XLS_10.xls"
+      ]
     },
     {
       "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "extension": "xlsx",
-      "example": ""
+      "examples": []
     }
   ],
   "font": [
     {
       "mime_type": "application/font-sfnt",
       "extension": "otf",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/font-sfnt",
       "extension": "ttf",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/font-woff",
       "extension": "woff",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/font-woff",
       "extension": "woff2",
-      "example": ""
+      "examples": []
     }
   ],
   "image": [
     {
       "mime_type": "image/apng",
       "extension": "apng",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/avif",
       "extension": "avif",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/bmp",
       "extension": "bmp",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/x-canon-cr2",
       "extension": "cr2",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/dicom",
       "extension": "dcm",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/vnd.dwg",
       "extension": "dwg",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/gif",
       "extension": "gif",
-      "example": "file_example_GIF_500kB.gif"
+      "examples": [
+        "file_example_GIF_500kB.gif"
+      ]
     },
     {
       "mime_type": "image/heic",
       "extension": "heic",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/x-icon",
       "extension": "ico",
-      "example": "file_example_favicon.ico"
+      "examples": [
+        "file_example_favicon.ico"
+      ]
     },
     {
       "mime_type": "image/jpeg",
       "extension": "jpg",
-      "example": "file_example_JPG_100kB.jpg"
+      "examples": [
+        "file_example_JPG_100kB.jpg"
+      ]
     },
     {
       "mime_type": "image/jpx",
       "extension": "jpx",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/vnd.ms-photo",
       "extension": "jxr",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/png",
       "extension": "png",
-      "example": "file_example_PNG_500kB.png"
+      "examples": [
+        "file_example_PNG_500kB.png"
+      ]
     },
     {
       "mime_type": "image/vnd.adobe.photoshop",
       "extension": "psd",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/qoi",
       "extension": "qoi",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/tiff",
       "extension": "tif",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "image/webp",
       "extension": "webp",
-      "example": "file_example_WEBP_50kB.webp"
+      "examples": [
+        "file_example_WEBP_50kB.webp"
+      ]
     },
     {
       "mime_type": "image/x-xcf",
       "extension": "xcf",
-      "example": ""
+      "examples": []
     }
   ],
   "text": [
     {
       "mime_type": "text/html",
       "extension": "html",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "application/json",
       "extension": "json",
-      "example": "file_example_JSON_1kb.json"
+      "examples": [
+        "file_example_JSON_1kb.json",
+        "file_types_lookup.json"
+      ]
     },
     {
       "mime_type": "application/x-plist",
       "extension": "plist",
-      "example": ""
+      "examples": []
     }
   ],
   "video": [
     {
       "mime_type": "video/x-msvideo",
       "extension": "avi",
-      "example": "file_example_AVI_480_750kB.avi"
+      "examples": [
+        "file_example_AVI_480_750kB.avi"
+      ]
     },
     {
       "mime_type": "video/x-flv",
       "extension": "flv",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "video/3gpp",
       "extension": "3gp",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "video/x-m4v",
       "extension": "m4v",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "video/x-matroska",
       "extension": "mkv",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "video/quicktime",
       "extension": "mov",
-      "example": "file_example_MOV_480_700kB.mov"
+      "examples": [
+        "file_example_MOV_480_700kB.mov"
+      ]
     },
     {
       "mime_type": "video/mp4",
       "extension": "mp4",
-      "example": "file_example_MP4_480_1_5MG.mp4"
+      "examples": [
+        "file_example_MP4_480_1_5MG.mp4"
+      ]
     },
     {
       "mime_type": "video/mpeg",
       "extension": "mpg",
-      "example": ""
+      "examples": []
     },
     {
       "mime_type": "video/webm",
       "extension": "webm",
-      "example": "file_example_WEBM_480_900KB.webm"
+      "examples": [
+        "file_example_WEBM_480_900KB.webm"
+      ]
     },
     {
       "mime_type": "video/x-ms-wmv",
       "extension": "wmv",
-      "example": "file_example_WMV_480_1_2MB.wmv"
+      "examples": [
+        "file_example_WMV_480_1_2MB.wmv"
+      ]
     }
   ]
 }

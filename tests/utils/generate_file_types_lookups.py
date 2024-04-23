@@ -1,49 +1,13 @@
-import importlib
-import importlib.util
-import inspect
 import json
 import pathlib
-from typing import Generator, cast
 
-from utils import ROOT_TEST_DIR
-
-from xleapp.helpers.filetypes.base import MagicType
-
-
-class PackageNotFound(Exception):
-    """Package not found or invalid"""
-
-
-def get_modules_in_packages(package_name: str) -> Generator[type[MagicType], None, None]:
-    package = importlib.util.find_spec(package_name)
-
-    if not package or not package.origin:
-        raise PackageNotFound(f"Package {{{package_name}}} not found or invalid!")
-
-    files: Generator[pathlib.Path, None, None] = pathlib.Path(
-        package.origin
-    ).parent.iterdir()
-    file: pathlib.Path
-
-    for file in files:
-        if file not in ["__init__.py", "__pycache__.py"]:
-            if file.suffix != ".py":
-                continue
-
-            package = f"{package_name}.{file.stem}"
-            for _name, cls in inspect.getmembers(
-                importlib.import_module(package), inspect.isclass
-            ):
-                if MagicType in cls.mro():
-                    if cls == MagicType:
-                        continue
-                    yield cast(type[MagicType], cls)
+from utils import ROOT_TEST_DIR, get_modules_in_packages
 
 
 class Config(dict):
     mime_type: str
     extension: str
-    example: str = ""
+    examples: list[str] = []
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, Config):
@@ -76,11 +40,14 @@ def create_config(
         first_cls.EXTENSION,
     )
 
-    example_file = get_example_file(first_cls.EXTENSION) or ""
+    example_files: list[str] = get_example_files(first_cls.EXTENSION) or []
+    example_files.sort()
 
-    if config and (not config.get("example") or config.get("example") == example_file):
-        config["example"] = example_file
-        return parent_module_name, config, True
+    if config:
+        current_example_files: list[str] | None = config.get("examples")
+        if not current_example_files or current_example_files == example_files:
+            config["examples"] = example_files
+            return parent_module_name, config, True
 
     if not config:
         return (
@@ -88,19 +55,17 @@ def create_config(
             Config(
                 mime_type=first_cls.MIME,
                 extension=first_cls.EXTENSION,
-                example=example_file,
+                examples=example_files,
             ),
             False,
         )
     return None, None, False
 
 
-def get_example_file(extension: str) -> str | None:
+def get_example_files(extension: str) -> list[str] | None:
     example_files_dir: pathlib.Path = ROOT_TEST_DIR / "data_filetypes"
-    file: pathlib.Path
-
-    for file in example_files_dir.glob(f"*.{extension}"):
-        return file.name
+    files: list[str] = [file.name for file in example_files_dir.glob(f"*.{extension}")]
+    return files
 
 
 if __name__ == "__main__":
