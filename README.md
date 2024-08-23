@@ -1,5 +1,11 @@
 # xLEAPP
 
+> [!NOTE]
+> This is an alpha application. I am having trouble getting a testing suite to test the main app object.
+> So, I have been trying to solve this problem. Please use official packages for real DFIR work.
+> If you want to help, please find me on https://azuleonyx.bio.link
+
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
