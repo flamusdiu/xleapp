@@ -1,9 +1,9 @@
 minimum_pre_commit_version: 2.15.0
 exclude: ^LICENSES/|\.(html|csv|svg)$
 default_stages: [
-    commit,
-    merge-commit,
-    push,
+    pre-commit,
+    pre-merge-commit,
+    pre-push,
     prepare-commit-msg,
     commit-msg,
     post-checkout,
@@ -15,39 +15,39 @@ ci:
   autofix_prs: false
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v5.0.0
   hooks:
   - id: debug-statements
   - id: end-of-file-fixer
     exclude: \.txt$
-    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+    stages: [pre-commit, pre-merge-commit, pre-push, prepare-commit-msg, commit-msg,
              post-checkout, post-commit, post-merge, post-rewrite]
   - id: trailing-whitespace
-    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+    stages: [pre-commit, pre-merge-commit, pre-push, prepare-commit-msg, commit-msg,
              post-checkout, post-commit, post-merge, post-rewrite]
   - id: mixed-line-ending
-    stages: [commit, merge-commit, push, prepare-commit-msg, commit-msg,
+    stages: [pre-commit, pre-merge-commit, pre-push, prepare-commit-msg, commit-msg,
              post-checkout, post-commit, post-merge, post-rewrite]
     args: ["--fix=lf"]
     exclude: (tox.ini|.*.bat)
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.10.1
+  rev: v3.18.0
   hooks:
     - id: pyupgrade
-      stages: [commit]
+      stages: [pre-commit]
       args: [--py3-plus]
 
 - repo: https://github.com/asottile/blacken-docs
-  rev: 1.16.0
+  rev: 1.19.0
   hooks:
     - id: blacken-docs
-      stages: [commit]
+      stages: [pre-commit]
       additional_dependencies: [black==23.3.0]
       language_version: python3
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.286
+  rev: v0.7.0
   hooks:
   -   id: ruff
       args: [--fix, --exit-non-zero-on-fix]
@@ -145,4 +145,4 @@ repos:
     pass_filenames: false
     language: system
     types: [python]
-    stages: [push]
+    stages: [pre-push]
